@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -std=c11
+CFLAGS=-Wall -std=c11 -lrt
 PROGRAM=kolej_linowa
 LOGI=kolej_log.txt
 

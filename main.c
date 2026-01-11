@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #define TOTAL_CHAIRS 72
 #define NUM_TOURISTS 30
@@ -34,6 +36,12 @@ typedef struct {
 char log_filename[] = "kolej_log.txt";
 FILE *log_file;
 
+int shm_state_id;
+int shm_stats_id;
+
+StationState *state;
+DailyStats  *stats;
+
 void log_event(const char *format, ...) {
     va_list args;
     time_t now = time(NULL);
@@ -57,6 +65,8 @@ int main(void) {
 
     srand(time(NULL));
     
+    // Logi
+
     log_file = fopen(log_filename, "w");
     if (!log_file) { 
         perror("fopen log");
@@ -67,16 +77,40 @@ int main(void) {
     printf("SYMULACJA KOLEI LINOWEJ\n");
     printf("PLIK Z LOGAMI: %s\n\n", log_filename);
 
-    StationState state = {0};
-    DailyStats stats = {0};
+    // Inicjalizacja pamieci wspoldzielonej
+
+    key_t key_state = ftok(".", 'S');
+    key_t key_stats = ftok(".", 'T');
+    if (key_state == -1 || key_stats == -1) {
+        perror("ftok");
+        return 1;
+    }
+
+    shm_state_id = shmget(key_state, sizeof(StationState), IPC_CREAT | 0600);
+    shm_stats_id = shmget(key_stats, sizeof(DailyStats),   IPC_CREAT | 0600);
+    if (shm_state_id == -1 || shm_stats_id == -1) {
+        perror("shmget");
+        return 1;
+    }
+
+    state = (StationState *)shmat(shm_state_id, NULL, 0);
+    stats = (DailyStats  *)shmat(shm_stats_id,  NULL, 0);
+    if (state == (void *)-1 || stats == (void *)-1) {
+        perror("shmat");
+        return 1;
+    }
+
+    // incjializacja ogólna
+
+    memset(state, 0, sizeof(StationState));
+    memset(stats,  0, sizeof(DailyStats));
     
-    state.is_running = 1;
-    state.start_time = time(NULL);
-    state.end_time = state.start_time + SIM_DURATION;
+    state->is_running = 1;
+    state->start_time = time(NULL);
+    state->end_time = state->start_time + SIM_DURATION;
 
     char time_str[9];
-    strftime(time_str, sizeof(time_str), "%T", localtime(&state.start_time));
-
+    strftime(time_str, sizeof(time_str), "%T", localtime(&state->start_time));
     log_event("------------------------------------------");
     log_event("Inicjalizacja");
     log_event("Czas rozpoczecia: %s", time_str);
