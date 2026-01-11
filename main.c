@@ -14,6 +14,9 @@
 #define NUM_TOURISTS 30
 #define SIM_DURATION 5
 
+#define MAX_STATION_CAPACITY 50
+#define ENTRY_GATES 4 
+
 typedef struct {
     int is_running;
     int busy_chairs;
@@ -41,6 +44,9 @@ int shm_state_id;
 int shm_stats_id;
 int sem_log_id;
 
+int sem_station_id;  // 1 semafor
+int sem_entry_id;    // 4 semafory
+
 StationState *state;
 DailyStats  *stats;
 
@@ -53,8 +59,13 @@ void cleanup_ipc(void) {
     
     if (shm_state_id != -1)   shmctl(shm_state_id, IPC_RMID, NULL);
     if (shm_stats_id != -1)   shmctl(shm_stats_id, IPC_RMID, NULL);
-
+    //logi
     if (sem_log_id != -1) semctl(sem_log_id, 0, IPC_RMID);
+    //stacja
+    if (sem_station_id != -1) semctl(sem_station_id, 0, IPC_RMID);
+    //wejscia
+    if (sem_entry_id != -1) semctl(sem_entry_id, 0, IPC_RMID);
+
 }
 
 // Semafory
@@ -145,7 +156,8 @@ int main(void) {
         return 1;
     }
 
-    // inicjalizacja semafora
+    // inicjalizacja semafora logów
+    union semun arg;
 
     sem_log_id = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
     if (sem_log_id == -1) {
@@ -154,7 +166,7 @@ int main(void) {
         return 1;
     }
 
-    union semun arg;
+    
     arg.val = 1;
     if (semctl(sem_log_id, 0, SETVAL, arg) == -1) {
         perror("Error: semctl");
@@ -163,6 +175,30 @@ int main(void) {
     }
 
     log_event("-- Semafory zainicjalizowane --");
+
+    // inicjalizacja semaforów stacji i wejść
+
+    // Semafor pojemności stacji (1 semafor, MAX_STATION_CAPACITY)
+    sem_station_id = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
+    if (sem_station_id == -1) {
+        perror("semget station");
+        cleanup_ipc();
+        return 1;
+    }
+    arg.val = MAX_STATION_CAPACITY;  // 50 osób max
+    semctl(sem_station_id, 0, SETVAL, arg);
+
+    // Semafor bramek wejściowych (4 bramki)
+    sem_entry_id = semget(IPC_PRIVATE, ENTRY_GATES, IPC_CREAT | 0600);
+    if (sem_entry_id == -1) {
+        perror("semget entry");
+        cleanup_ipc();
+        return 1;
+    }
+    for (int i = 0; i < ENTRY_GATES; i++) {
+        arg.val = 1;  // Każda bramka dostępna
+        semctl(sem_entry_id, i, SETVAL, arg);
+    }
 
     // incjializacja ogólna
 
@@ -186,6 +222,34 @@ int main(void) {
 
     // printf("Krzesełka: %d, turyści: %d\n", TOTAL_CHAIRS, NUM_TOURISTS);
     // printf("czas trwania: %d sekund\n", SIM_DURATION);
+
+    // TEST SEMAFORÓW - symulacja 10 turystów
+    log_event("TEST: Symulacja wejscia turystow przez bramki");
+    for (int tourist = 1; tourist <= 10; tourist++) {
+        
+        // Przejscie przez bramke losową
+        int gate = rand() % ENTRY_GATES;
+        
+        sem_wait(sem_entry_id, gate);
+        log_event("Turysta %d wszedl przez bramke %d", tourist, gate + 1);
+        sleep(0.5);  // 0.5s na bramce
+        sem_signal(sem_entry_id, gate);
+        
+        // Wejscie na stacje
+        sem_wait(sem_station_id, 0);
+        state->people_in_station++;
+        log_event("Turysta %d na stacji (%d/%d osob)", 
+                tourist, state->people_in_station, MAX_STATION_CAPACITY);
+        sleep(1);  // 1s na stacji
+        state->people_in_station--;
+        sem_signal(sem_station_id, 0);
+        
+        state->total_passes++;
+    }
+
+
+    log_event("TEST: Wejscia turystow zakonczone (%d przejsc)", state->total_passes);
+
 
     sleep(SIM_DURATION);
 
