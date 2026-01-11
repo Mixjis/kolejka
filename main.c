@@ -8,6 +8,7 @@
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/sem.h>
 
 #define TOTAL_CHAIRS 72
 #define NUM_TOURISTS 30
@@ -38,11 +39,51 @@ FILE *log_file;
 
 int shm_state_id;
 int shm_stats_id;
+int sem_log_id;
 
 StationState *state;
 DailyStats  *stats;
 
+
+// Czyszczenie IPC
+
+void cleanup_ipc(void) {
+    if (state != (void *)-1)  shmdt(state);
+    if (stats != (void *)-1)  shmdt(stats);
+    
+    if (shm_state_id != -1)   shmctl(shm_state_id, IPC_RMID, NULL);
+    if (shm_stats_id != -1)   shmctl(shm_stats_id, IPC_RMID, NULL);
+
+    if (sem_log_id != -1) semctl(sem_log_id, 0, IPC_RMID);
+}
+
+// Semafory
+
+union semun {
+    int val;
+    struct semid_ds *buf;
+    unsigned short *array;
+};
+
+void sem_wait(int sem_id, int sem_num) {
+    struct sembuf sb = {sem_num, -1, 0};
+    if (semop(sem_id, &sb, 1) == -1) {
+        perror("semop wait");
+    }
+}
+
+void sem_signal(int sem_id, int sem_num) {
+    struct sembuf sb = {sem_num, 1, 0};
+    if (semop(sem_id, &sb, 1) == -1) {
+        perror("semop signal");
+    }
+}
+
+// Funkcja do Logów
+
 void log_event(const char *format, ...) {
+    sem_wait(sem_log_id, 0);
+
     va_list args;
     time_t now = time(NULL);
     struct tm *tm_info = localtime(&now);
@@ -59,6 +100,8 @@ void log_event(const char *format, ...) {
         fprintf(f, "\n");
         fclose(f);
     }
+
+    sem_signal(sem_log_id, 0);
 }
 
 int main(void) {
@@ -89,16 +132,37 @@ int main(void) {
     shm_state_id = shmget(key_state, sizeof(StationState), IPC_CREAT | 0600);
     shm_stats_id = shmget(key_stats, sizeof(DailyStats),   IPC_CREAT | 0600);
     if (shm_state_id == -1 || shm_stats_id == -1) {
-        perror("shmget");
+        perror("Error: shmget");
+        cleanup_ipc();
         return 1;
     }
 
     state = (StationState *)shmat(shm_state_id, NULL, 0);
     stats = (DailyStats  *)shmat(shm_stats_id,  NULL, 0);
     if (state == (void *)-1 || stats == (void *)-1) {
-        perror("shmat");
+        perror("Error: shmat");
+        cleanup_ipc();
         return 1;
     }
+
+    // inicjalizacja semafora
+
+    sem_log_id = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
+    if (sem_log_id == -1) {
+        perror("Error: semget");
+        cleanup_ipc();
+        return 1;
+    }
+
+    union semun arg;
+    arg.val = 1;
+    if (semctl(sem_log_id, 0, SETVAL, arg) == -1) {
+        perror("Error: semctl");
+        cleanup_ipc();
+        return 1;
+    }
+
+    log_event("-- Semafory zainicjalizowane --");
 
     // incjializacja ogólna
 
@@ -126,7 +190,7 @@ int main(void) {
     sleep(SIM_DURATION);
 
     printf("Koniec.\n");
-
+    cleanup_ipc();
 
     return 0;
 }
