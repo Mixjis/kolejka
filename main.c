@@ -12,7 +12,7 @@
 
 #define TOTAL_CHAIRS 72
 #define NUM_TOURISTS 30
-#define SIM_DURATION 5
+#define SIM_DURATION 60
 
 #define MAX_STATION_CAPACITY 50
 #define ENTRY_GATES 4 
@@ -37,16 +37,29 @@ typedef struct {
     int walkers;
 } DailyStats;
 
+typedef struct {
+    int ticket_id;
+    int tourist_type; 
+    int age;
+    int is_vip;
+    int ticket_type;
+    time_t first_use;
+    int rides_count;
+} TicketRegistry;
+
 char log_filename[] = "kolej_log.txt";
 FILE *log_file;
 
+
+int shm_tickets_id; 
 int shm_state_id;
 int shm_stats_id;
-int sem_log_id;
 
+int sem_log_id;
 int sem_station_id;  // 1 semafor
 int sem_entry_id;    // 4 semafory
 
+TicketRegistry *tickets;
 StationState *state;
 DailyStats  *stats;
 
@@ -54,16 +67,18 @@ DailyStats  *stats;
 // Czyszczenie IPC
 
 void cleanup_ipc(void) {
+    // pamiec wspoldzielona
     if (state != (void *)-1)  shmdt(state);
     if (stats != (void *)-1)  shmdt(stats);
-    
+    if (tickets != (void *)-1) shmdt(tickets);
+
     if (shm_state_id != -1)   shmctl(shm_state_id, IPC_RMID, NULL);
     if (shm_stats_id != -1)   shmctl(shm_stats_id, IPC_RMID, NULL);
-    //logi
+    if (shm_tickets_id != -1) shmctl(shm_tickets_id, IPC_RMID, NULL);
+
+    //semafory
     if (sem_log_id != -1) semctl(sem_log_id, 0, IPC_RMID);
-    //stacja
     if (sem_station_id != -1) semctl(sem_station_id, 0, IPC_RMID);
-    //wejscia
     if (sem_entry_id != -1) semctl(sem_entry_id, 0, IPC_RMID);
 
 }
@@ -115,6 +130,15 @@ void log_event(const char *format, ...) {
     sem_signal(sem_log_id, 0);
 }
 
+// obliczanie ceny biletu
+
+float calculate_ticket_price(int ticket_type, int age) {
+    float prices[] = {20.0f, 50.0f, 80.0f, 120.0f, 150.0f};
+    float price = prices[ticket_type];
+    if (age < 10 || age > 65) price *= 0.75f;  // 25% zniżki
+    return price;
+}
+
 int main(void) {
 
     srand(time(NULL));
@@ -131,7 +155,7 @@ int main(void) {
     printf("SYMULACJA KOLEI LINOWEJ\n");
     printf("PLIK Z LOGAMI: %s\n\n", log_filename);
 
-    // Inicjalizacja pamieci wspoldzielonej
+    // SHM stanu stacji i statystyk
 
     key_t key_state = ftok(".", 'S');
     key_t key_stats = ftok(".", 'T');
@@ -155,6 +179,33 @@ int main(void) {
         cleanup_ipc();
         return 1;
     }
+
+    // SHM rejestru biletów
+
+    key_t key_tickets = ftok(".", 'K');
+    if (key_tickets == -1) {
+        perror("ftok tickets");
+        cleanup_ipc();
+        return 1;
+    }
+
+    shm_tickets_id = shmget(key_tickets, sizeof(TicketRegistry) * (NUM_TOURISTS + 1), 
+                            IPC_CREAT | 0600);
+    if (shm_tickets_id == -1) {
+        perror("shmget tickets");
+        cleanup_ipc();
+        return 1;
+    }
+
+    tickets = (TicketRegistry *)shmat(shm_tickets_id, NULL, 0);
+    if (tickets == (void *)-1) {
+        perror("shmat tickets");
+        cleanup_ipc();
+        return 1;
+    }
+
+    memset(tickets, 0, sizeof(TicketRegistry) * (NUM_TOURISTS + 1));
+
 
     // inicjalizacja semafora logów
     union semun arg;
@@ -200,6 +251,7 @@ int main(void) {
         semctl(sem_entry_id, i, SETVAL, arg);
     }
 
+
     // incjializacja ogólna
 
     memset(state, 0, sizeof(StationState));
@@ -212,7 +264,6 @@ int main(void) {
     char time_str[9];
     strftime(time_str, sizeof(time_str), "%T", localtime(&state->start_time));
     log_event("------------------------------------------");
-    log_event("Inicjalizacja");
     log_event("Czas rozpoczecia: %s", time_str);
     log_event("Liczba krzeslek: %d", TOTAL_CHAIRS);
     log_event("------------------------------------------");
@@ -223,36 +274,65 @@ int main(void) {
     // printf("Krzesełka: %d, turyści: %d\n", TOTAL_CHAIRS, NUM_TOURISTS);
     // printf("czas trwania: %d sekund\n", SIM_DURATION);
 
-    // TEST SEMAFORÓW - symulacja 10 turystów
-    log_event("TEST: Symulacja wejscia turystow przez bramki");
-    for (int tourist = 1; tourist <= 10; tourist++) {
+   // Główna pętla symulacji
+   
+    log_event("START: Glowna petla symulacji %ds", SIM_DURATION);
+    time_t start_loop = time(NULL);
+
+    while (time(NULL) - start_loop < SIM_DURATION) {
+        sleep(5);
         
-        // Przejscie przez bramke losową
-        int gate = rand() % ENTRY_GATES;
+        // Losowy ruch turystów
+        int arrivals = rand() % 6;
         
-        sem_wait(sem_entry_id, gate);
-        log_event("Turysta %d wszedl przez bramke %d", tourist, gate + 1);
-        sleep(0.5);  // 0.5s na bramce
-        sem_signal(sem_entry_id, gate);
+        for (int i = 0; i < arrivals && state->people_in_station < MAX_STATION_CAPACITY; i++) {
+            int gate = rand() % ENTRY_GATES;
+            
+            // Wejście przez bramkę
+            sem_wait(sem_entry_id, gate);
+            state->total_passes++;
+            log_event("WEJSCIE bramka%d (#%d)", gate+1, state->total_passes);
+            sem_signal(sem_entry_id, gate);
+            
+            // Na stację
+            sem_wait(sem_station_id, 0);
+            state->people_in_station++;
+            sem_signal(sem_station_id, 0);
+        }
         
-        // Wejscie na stacje
-        sem_wait(sem_station_id, 0);
-        state->people_in_station++;
-        log_event("Turysta %d na stacji (%d/%d osob)", 
-                tourist, state->people_in_station, MAX_STATION_CAPACITY);
-        sleep(1);  // 1s na stacji
-        state->people_in_station--;
-        sem_signal(sem_station_id, 0);
-        
-        state->total_passes++;
+        // Status
+        if ((time(NULL) - start_loop) % 15 < 5) {
+            log_event("STATUS: Stacja %d/50 | Przejsc %d | Krzeselka %d/36", 
+                    state->people_in_station, 
+                    state->total_passes, 
+                    state->busy_chairs);
+            printf("Status: Stacja %d/50 | Passes %d\r", 
+                state->people_in_station, state->total_passes);
+            fflush(stdout);
+        }
     }
+    
+    // TEST - rejestracja biletów
+    // log_event("TEST: Rejestr 5 biletow");
+    // for (int i = 1; i <= 5; i++) {
+    //     tickets[i].ticket_id = i;
+    //     tickets[i].tourist_type = rand() % 2;
+    //     tickets[i].age = 5 + rand() % 70;
+    //     tickets[i].is_vip = (rand() % 100 < 5);  // 5% VIP
+    //     tickets[i].ticket_type = rand() % 5;
+    //     tickets[i].first_use = time(NULL);
+    //     tickets[i].rides_count = 0;
+    
+    //     float price = calculate_ticket_price(tickets[i].ticket_type, tickets[i].age);
+    //     log_event("BILET #%d: typ%d wiek%d vip=%d cena=%.1f", 
+    //             i, tickets[i].ticket_type, tickets[i].age, 
+    //             tickets[i].is_vip, price);
+    // }
+    // printf("5 biletow zarejestrowanych w SHM\n");
 
 
-    log_event("TEST: Wejscia turystow zakonczone (%d przejsc)", state->total_passes);
-
-
-    sleep(SIM_DURATION);
-
+    //sleep(SIM_DURATION);
+    log_event("KONIEC petli symulacji");
     printf("Koniec.\n");
     cleanup_ipc();
 
