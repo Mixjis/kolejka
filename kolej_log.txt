@@ -1,0 +1,14 @@
+[21:04:51] -- Semafory zainicjalizowane --
+[21:04:51] Kasjer uruchomiony PID=369
+[21:04:51] KASJER: Kasa otwarta PID=369
+[21:04:51] SYSTEM: Kolejka komunikatow utworzona (key=0x51451275)
+[21:04:51] KASJER: Zamkniecie. 0 biletow na 0.0PLN
+[21:04:51] ------------------------------------------
+[21:04:51] Czas rozpoczecia: 21:04:51
+[21:04:51] Liczba krzeslek: 72
+[21:04:51] ------------------------------------------
+[21:04:51] TEST: Wysylanie wiadomosci
+[21:04:51] MAIN: Wyslano STOP (mtype=1)
+[21:04:51] MAIN: Odczytano: cmd=1 od PID=368: FAJNA WIADOMOSC TESTOWA
+[21:04:53] Zamykanie kasjera PID=369
+[21:04:53] Kasjer zakonczony

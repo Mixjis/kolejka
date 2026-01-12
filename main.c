@@ -11,8 +11,9 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
-
 #include <sys/wait.h>
+#include <sys/msg.h>
+
 #include <signal.h>
 
 #define TOTAL_CHAIRS 72
@@ -52,6 +53,13 @@ typedef struct {
     int rides_count;
 } TicketRegistry;
 
+typedef struct {
+    long mtype;         
+    int command;        // 1: PAUSE, 2: PLAY  
+    pid_t sender;       
+    char message[128]; 
+} WorkerMessage;
+
 char log_filename[] = "kolej_log.txt";
 FILE *log_file;
 
@@ -63,6 +71,8 @@ int shm_stats_id;
 int sem_log_id;
 int sem_station_id;  // 1 semafor
 int sem_entry_id;    // 4 semafory
+
+int msg_queue_id;
 
 TicketRegistry *tickets;
 StationState *state;
@@ -85,6 +95,12 @@ void cleanup_ipc(void) {
     if (sem_log_id != -1) semctl(sem_log_id, 0, IPC_RMID);
     if (sem_station_id != -1) semctl(sem_station_id, 0, IPC_RMID);
     if (sem_entry_id != -1) semctl(sem_entry_id, 0, IPC_RMID);
+
+    // kolejka komunikatow
+
+    if (msg_queue_id != -1) {
+        msgctl(msg_queue_id, IPC_RMID, NULL);
+    }
 
 }
 
@@ -140,7 +156,7 @@ void log_event(const char *format, ...) {
 float calculate_ticket_price(int ticket_type, int age) {
     float prices[] = {20.0f, 50.0f, 80.0f, 120.0f, 150.0f};
     float price = prices[ticket_type];
-    if (age < 10 || age > 65) price *= 0.75f;  // 25% zniżki
+    if (age < 10 || age > 65) price *= 0.75f;
     return price;
 }
 
@@ -295,7 +311,7 @@ int main(void) {
         return 1;
     }
     for (int i = 0; i < ENTRY_GATES; i++) {
-        arg.val = 1;  // Każda bramka dostępna
+        arg.val = 1;
         semctl(sem_entry_id, i, SETVAL, arg);
     }
 
@@ -314,6 +330,25 @@ int main(void) {
         cleanup_ipc();
         return 1;
     }
+
+    // Kolejka komunikatów
+
+    key_t key_msg = ftok(".", 'Q');
+    if (key_msg == -1) {
+        perror("ftok msg");
+        cleanup_ipc();
+        return 1;
+    }
+
+    msg_queue_id = msgget(key_msg, IPC_CREAT | 0600);
+    if (msg_queue_id == -1) {
+        perror("msgget");
+        cleanup_ipc();
+        return 1;
+    }
+
+    log_event("SYSTEM: Kolejka komunikatow utworzona (key=0x%X)", key_msg);
+    printf("Msg queue ID: %d\n", msg_queue_id);
 
 
     // incjializacja ogólna
@@ -338,51 +373,76 @@ int main(void) {
     // printf("Krzesełka: %d, turyści: %d\n", TOTAL_CHAIRS, NUM_TOURISTS);
     // printf("czas trwania: %d sekund\n", SIM_DURATION);
 
-   // Główna pętla symulacji
-   
-    log_event("START: Glowna petla symulacji %ds", SIM_DURATION);
-    time_t start_loop = time(NULL);
+    // Tymaczasowy test kolejki 
+    log_event("TEST: Wysylanie wiadomosci");
 
-    while (time(NULL) - start_loop < SIM_DURATION) {
-        sleep(5);
-        
-        // Losowy ruch turystów
-        int arrivals = rand() % 6;
-        
-        for (int i = 0; i < arrivals && state->people_in_station < MAX_STATION_CAPACITY; i++) {
-            int gate = rand() % ENTRY_GATES;
-            
-            // Wejście przez bramkę
-            sem_wait(sem_entry_id, gate);
-            state->total_passes++;
-            log_event("WEJSCIE bramka%d (#%d)", gate+1, state->total_passes);
-            sem_signal(sem_entry_id, gate);
-            
-            // Na stację
-            sem_wait(sem_station_id, 0);
-            state->people_in_station++;
-            sem_signal(sem_station_id, 0);
-        }
-        
-        // Status
-        if ((time(NULL) - start_loop) % 15 < 5) {
-            log_event("STATUS: Stacja %d/50 | Przejsc %d | Krzeselka %d/36", 
-                    state->people_in_station, 
-                    state->total_passes, 
-                    state->busy_chairs);
-            printf("Status: Stacja %d/50 | Passes %d\r", 
-                state->people_in_station, state->total_passes);
-            fflush(stdout);
-        }
+    WorkerMessage msg;
+    msg.mtype = 1;
+    msg.command = 1;  // PAUSE
+    msg.sender = getpid();
+    strcpy(msg.message, "FAJNA WIADOMOSC TESTOWA");
+
+    // Wysylanie
+    if (msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 0) == -1) {
+        perror("msgsnd test");
+    } else {
+        log_event("MAIN: Wyslano STOP (mtype=1)");
     }
 
-    //sleep(SIM_DURATION);
-    log_event("KONIEC petli symulacji");
+    // Odbior
+    if (msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 1, 0) == -1) {
+        perror("msgrcv test");
+    } else {
+        log_event("MAIN: Odczytano: cmd=%d od PID=%d: %s", 
+                msg.command, msg.sender, msg.message);
+    }
+
+
+   // Główna pętla symulacji
+   
+    // log_event("START: Glowna petla symulacji %ds", SIM_DURATION);
+    // time_t start_loop = time(NULL);
+
+    // while (time(NULL) - start_loop < SIM_DURATION) {
+    //     sleep(5);
+        
+    //     // Losowy ruch turystów
+    //     int arrivals = rand() % 6;
+        
+    //     for (int i = 0; i < arrivals && state->people_in_station < MAX_STATION_CAPACITY; i++) {
+    //         int gate = rand() % ENTRY_GATES;
+            
+    //         // Wejście przez bramkę
+    //         sem_wait(sem_entry_id, gate);
+    //         state->total_passes++;
+    //         log_event("WEJSCIE bramka%d (#%d)", gate+1, state->total_passes);
+    //         sem_signal(sem_entry_id, gate);
+            
+    //         // Na stację
+    //         sem_wait(sem_station_id, 0);
+    //         state->people_in_station++;
+    //         sem_signal(sem_station_id, 0);
+    //     }
+        
+    //     // Status
+    //     if ((time(NULL) - start_loop) % 15 < 5) {
+    //         log_event("STATUS: Stacja %d/50 | Przejsc %d | Krzeselka %d/36", 
+    //                 state->people_in_station, 
+    //                 state->total_passes, 
+    //                 state->busy_chairs);
+    //         printf("Status: Stacja %d/50 | Passes %d\r", 
+    //             state->people_in_station, state->total_passes);
+    //         fflush(stdout);
+    //     }
+    // }
+
+    // //sleep(SIM_DURATION);
+    // log_event("KONIEC petli symulacji");
     printf("Koniec.\n");
 
     if (kasjer_pid > 0) {
-        state->stop_selling = 1;  // Sygnał do zamknięcia kasy
-        sleep(2);  // Czas na sprzedaż ostatniego biletu
+        state->stop_selling = 1; 
+        sleep(2);  
         log_event("Zamykanie kasjera PID=%d", kasjer_pid);
         kill(kasjer_pid, SIGTERM);
         int status;
