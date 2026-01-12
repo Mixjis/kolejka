@@ -1,4 +1,6 @@
 // main.c
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -9,6 +11,9 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
+
+#include <sys/wait.h>
+#include <signal.h>
 
 #define TOTAL_CHAIRS 72
 #define NUM_TOURISTS 30
@@ -139,6 +144,49 @@ float calculate_ticket_price(int ticket_type, int age) {
     return price;
 }
 
+//Kasjer
+
+void kasjer_process(void) {
+    log_event("KASJER: Kasa otwarta PID=%d", getpid());
+    
+    int tickets_sold = 0;
+    float total_revenue = 0.0f;
+    
+    while (state->is_running && !state->stop_selling) {
+        sleep(rand() % 3 + 1);
+        
+        if (state->emergency_stop) {
+            log_event("KASJER: Awaria, Wstrzymanie pracy");
+            while (state->emergency_stop && state->is_running) {
+                sleep(1);
+            }
+            log_event("KASJER: Wznowienie pracy");
+        }
+        
+        if (rand() % 2) {
+            tickets_sold++;
+            int age = 5 + rand() % 70;
+            int ticket_type = rand() % 5;
+            float price = calculate_ticket_price(ticket_type, age);
+            total_revenue += price;
+            
+            // SHM
+            tickets[tickets_sold].ticket_id = tickets_sold;
+            tickets[tickets_sold].age = age;
+            tickets[tickets_sold].ticket_type = ticket_type;
+            tickets[tickets_sold].first_use = time(NULL);
+            
+            log_event("KASJER: Bilet#%d typ%d wiek%d=%.1fPLN (sprzedanych: %d)", 
+                      tickets_sold, ticket_type, age, price, tickets_sold);
+        }
+    }
+    
+    log_event("KASJER: Zamkniecie. %d biletow na %.1fPLN", tickets_sold, total_revenue);
+    exit(0);
+}
+
+//main
+
 int main(void) {
 
     srand(time(NULL));
@@ -251,6 +299,22 @@ int main(void) {
         semctl(sem_entry_id, i, SETVAL, arg);
     }
 
+    // Tworzenie procesu kasjera
+
+    pid_t kasjer_pid = fork();
+    if (kasjer_pid == 0) {
+        kasjer_process();
+    } 
+    else if (kasjer_pid > 0) {
+        printf("Kasjer PID: %d\n", kasjer_pid);
+        log_event("Kasjer uruchomiony PID=%d", kasjer_pid);
+    } 
+    else {
+        perror("fork kasjer");
+        cleanup_ipc();
+        return 1;
+    }
+
 
     // incjializacja ogólna
 
@@ -311,29 +375,22 @@ int main(void) {
             fflush(stdout);
         }
     }
-    
-    // TEST - rejestracja biletów
-    // log_event("TEST: Rejestr 5 biletow");
-    // for (int i = 1; i <= 5; i++) {
-    //     tickets[i].ticket_id = i;
-    //     tickets[i].tourist_type = rand() % 2;
-    //     tickets[i].age = 5 + rand() % 70;
-    //     tickets[i].is_vip = (rand() % 100 < 5);  // 5% VIP
-    //     tickets[i].ticket_type = rand() % 5;
-    //     tickets[i].first_use = time(NULL);
-    //     tickets[i].rides_count = 0;
-    
-    //     float price = calculate_ticket_price(tickets[i].ticket_type, tickets[i].age);
-    //     log_event("BILET #%d: typ%d wiek%d vip=%d cena=%.1f", 
-    //             i, tickets[i].ticket_type, tickets[i].age, 
-    //             tickets[i].is_vip, price);
-    // }
-    // printf("5 biletow zarejestrowanych w SHM\n");
-
 
     //sleep(SIM_DURATION);
     log_event("KONIEC petli symulacji");
     printf("Koniec.\n");
+
+    if (kasjer_pid > 0) {
+        state->stop_selling = 1;  // Sygnał do zamknięcia kasy
+        sleep(2);  // Czas na sprzedaż ostatniego biletu
+        log_event("Zamykanie kasjera PID=%d", kasjer_pid);
+        kill(kasjer_pid, SIGTERM);
+        int status;
+        waitpid(kasjer_pid, &status, 0);
+        log_event("Kasjer zakonczony");
+    }
+
+
     cleanup_ipc();
 
     return 0;
