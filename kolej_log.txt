@@ -1,14 +1,44 @@
-[21:04:51] -- Semafory zainicjalizowane --
-[21:04:51] Kasjer uruchomiony PID=369
-[21:04:51] KASJER: Kasa otwarta PID=369
-[21:04:51] SYSTEM: Kolejka komunikatow utworzona (key=0x51451275)
-[21:04:51] KASJER: Zamkniecie. 0 biletow na 0.0PLN
-[21:04:51] ------------------------------------------
-[21:04:51] Czas rozpoczecia: 21:04:51
-[21:04:51] Liczba krzeslek: 72
-[21:04:51] ------------------------------------------
-[21:04:51] TEST: Wysylanie wiadomosci
-[21:04:51] MAIN: Wyslano STOP (mtype=1)
-[21:04:51] MAIN: Odczytano: cmd=1 od PID=368: FAJNA WIADOMOSC TESTOWA
-[21:04:53] Zamykanie kasjera PID=369
-[21:04:53] Kasjer zakonczony
+[00:22:55] -- Semafory zainicjalizowane --
+[00:22:55] Kasjer uruchomiony PID=461
+[00:22:55] KASJER: Kasa otwarta PID=461
+[00:22:55] SYSTEM: Kolejka komunikatow utworzona (key=0x51451275)
+[00:22:55] KASJER: Zamkniecie. 0 biletow na 0.0PLN
+[00:22:55] SYSTEM: Handlery SIGUSR1/2 skonfigurowane
+[00:22:55] ------------------------------------------
+[00:22:55] Czas rozpoczecia: 00:22:55
+[00:22:55] Liczba krzeslek: 72
+[00:22:55] ------------------------------------------
+[00:22:55] START: Glowna petla symulacji 60s
+[00:23:00] WEJSCIE bramka1 (#1)
+[00:23:00] WEJSCIE bramka2 (#2)
+[00:23:00] WEJSCIE bramka2 (#3)
+[00:23:10] WEJSCIE bramka1 (#4)
+[00:23:10] WEJSCIE bramka4 (#5)
+[00:23:10] STATUS: Stacja 5/50 | Przejsc 5 | Krzeselka 0/36
+[00:23:15] WEJSCIE bramka3 (#6)
+[00:23:15] WEJSCIE bramka2 (#7)
+[00:23:20] WEJSCIE bramka4 (#8)
+[00:23:20] WEJSCIE bramka1 (#9)
+[00:23:20] WEJSCIE bramka2 (#10)
+[00:23:25] *** ZATRZYMANIE AWARYJNE (SIGUSR1) ***
+[00:23:25] WEJSCIE bramka1 (#11)
+[00:23:25] WEJSCIE bramka3 (#12)
+[00:23:25] WEJSCIE bramka3 (#13)
+[00:23:25] WEJSCIE bramka2 (#14)
+[00:23:25] WEJSCIE bramka4 (#15)
+[00:23:25] STATUS: Stacja 15/50 | Przejsc 15 | Krzeselka 0/36
+[00:23:30] WEJSCIE bramka2 (#16)
+[00:23:40] WEJSCIE bramka3 (#17)
+[00:23:40] STATUS: Stacja 17/50 | Przejsc 17 | Krzeselka 0/36
+[00:23:42] *** MAIN: WZNOWIENIE (SIGUSR2) ***
+[00:23:43] STATUS: Stacja 17/50 | Przejsc 17 | Krzeselka 0/36
+[00:23:53] WEJSCIE bramka4 (#18)
+[00:23:53] WEJSCIE bramka3 (#19)
+[00:23:53] WEJSCIE bramka1 (#20)
+[00:23:58] WEJSCIE bramka4 (#21)
+[00:23:58] WEJSCIE bramka2 (#22)
+[00:23:58] WEJSCIE bramka1 (#23)
+[00:23:58] WEJSCIE bramka2 (#24)
+[00:23:58] STATUS: Stacja 24/50 | Przejsc 24 | Krzeselka 0/36
+[00:24:00] Zamykanie kasjera PID=461
+[00:24:00] Kasjer zakonczony

@@ -201,6 +201,43 @@ void kasjer_process(void) {
     exit(0);
 }
 
+// obsługa awaryjnego zatrzymania
+
+void emergency_stop_handler(int sig) {
+    if (!state->emergency_stop) {
+        log_event("*** ZATRZYMANIE AWARYJNE (SIGUSR1) ***");
+        state->emergency_stop = 1;
+        
+        WorkerMessage msg;
+        msg.mtype = 1;
+        msg.command = 1;     // PAUSE
+        msg.sender = getpid();
+        strcpy(msg.message, "AWARYJNY STOP");
+        
+        if (msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 0) == -1) {
+            perror("msgsnd emergency");
+        }
+    }
+}
+
+// obsługa wznowienia
+
+void resume_handler(int sig) {
+    if (state->emergency_stop) {
+        log_event("*** MAIN: WZNOWIENIE (SIGUSR2) ***");
+        
+        WorkerMessage msg;
+        msg.mtype = 1;
+        msg.command = 2;     // PLAY
+        msg.sender = getpid();
+        strcpy(msg.message, "WZNOWIENIE");
+        msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 0);
+        
+        sleep(1);
+        state->emergency_stop = 0;
+    }
+}
+
 //main
 
 int main(void) {
@@ -350,6 +387,27 @@ int main(void) {
     log_event("SYSTEM: Kolejka komunikatow utworzona (key=0x%X)", key_msg);
     printf("Msg queue ID: %d\n", msg_queue_id);
 
+    // Obsługa sygnału awaryjnego zatrzymania
+
+    struct sigaction sa_stop, sa_resume;
+
+    sa_stop.sa_handler = emergency_stop_handler;
+    sigemptyset(&sa_stop.sa_mask);
+    sa_stop.sa_flags = 0;
+    if (sigaction(SIGUSR1, &sa_stop, NULL) == -1) {
+        perror("sigaction SIGUSR1");
+    }
+
+    sa_resume.sa_handler = resume_handler;
+    sigemptyset(&sa_resume.sa_mask);
+    sa_resume.sa_flags = 0;
+    if (sigaction(SIGUSR2, &sa_resume, NULL) == -1) {
+        perror("sigaction SIGUSR2");
+    }
+
+    log_event("SYSTEM: Handlery SIGUSR1/2 skonfigurowane");
+    printf("Test sygnalow: kill -USR1 %d (STOP), kill -USR2 %d (RESUME)\n", getpid(), getpid());
+
 
     // incjializacja ogólna
 
@@ -373,68 +431,43 @@ int main(void) {
     // printf("Krzesełka: %d, turyści: %d\n", TOTAL_CHAIRS, NUM_TOURISTS);
     // printf("czas trwania: %d sekund\n", SIM_DURATION);
 
-    // Tymaczasowy test kolejki 
-    log_event("TEST: Wysylanie wiadomosci");
-
-    WorkerMessage msg;
-    msg.mtype = 1;
-    msg.command = 1;  // PAUSE
-    msg.sender = getpid();
-    strcpy(msg.message, "FAJNA WIADOMOSC TESTOWA");
-
-    // Wysylanie
-    if (msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 0) == -1) {
-        perror("msgsnd test");
-    } else {
-        log_event("MAIN: Wyslano STOP (mtype=1)");
-    }
-
-    // Odbior
-    if (msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 1, 0) == -1) {
-        perror("msgrcv test");
-    } else {
-        log_event("MAIN: Odczytano: cmd=%d od PID=%d: %s", 
-                msg.command, msg.sender, msg.message);
-    }
-
-
    // Główna pętla symulacji
    
-    // log_event("START: Glowna petla symulacji %ds", SIM_DURATION);
-    // time_t start_loop = time(NULL);
+    log_event("START: Glowna petla symulacji %ds", SIM_DURATION);
+    time_t start_loop = time(NULL);
 
-    // while (time(NULL) - start_loop < SIM_DURATION) {
-    //     sleep(5);
+    while (time(NULL) - start_loop < SIM_DURATION) {
+        sleep(5);
         
-    //     // Losowy ruch turystów
-    //     int arrivals = rand() % 6;
+        // Losowy ruch turystów
+        int arrivals = rand() % 6;
         
-    //     for (int i = 0; i < arrivals && state->people_in_station < MAX_STATION_CAPACITY; i++) {
-    //         int gate = rand() % ENTRY_GATES;
+        for (int i = 0; i < arrivals && state->people_in_station < MAX_STATION_CAPACITY; i++) {
+            int gate = rand() % ENTRY_GATES;
             
-    //         // Wejście przez bramkę
-    //         sem_wait(sem_entry_id, gate);
-    //         state->total_passes++;
-    //         log_event("WEJSCIE bramka%d (#%d)", gate+1, state->total_passes);
-    //         sem_signal(sem_entry_id, gate);
+            // Wejście przez bramkę
+            sem_wait(sem_entry_id, gate);
+            state->total_passes++;
+            log_event("WEJSCIE bramka%d (#%d)", gate+1, state->total_passes);
+            sem_signal(sem_entry_id, gate);
             
-    //         // Na stację
-    //         sem_wait(sem_station_id, 0);
-    //         state->people_in_station++;
-    //         sem_signal(sem_station_id, 0);
-    //     }
+            // Na stację
+            sem_wait(sem_station_id, 0);
+            state->people_in_station++;
+            sem_signal(sem_station_id, 0);
+        }
         
-    //     // Status
-    //     if ((time(NULL) - start_loop) % 15 < 5) {
-    //         log_event("STATUS: Stacja %d/50 | Przejsc %d | Krzeselka %d/36", 
-    //                 state->people_in_station, 
-    //                 state->total_passes, 
-    //                 state->busy_chairs);
-    //         printf("Status: Stacja %d/50 | Passes %d\r", 
-    //             state->people_in_station, state->total_passes);
-    //         fflush(stdout);
-    //     }
-    // }
+        // Status
+        if ((time(NULL) - start_loop) % 15 < 5) {
+            log_event("STATUS: Stacja %d/50 | Przejsc %d | Krzeselka %d/36", 
+                    state->people_in_station, 
+                    state->total_passes, 
+                    state->busy_chairs);
+            printf("Status: Stacja %d/50 | Przejscia %d\r", 
+                state->people_in_station, state->total_passes);
+            fflush(stdout);
+        }
+    }
 
     // //sleep(SIM_DURATION);
     // log_event("KONIEC petli symulacji");
