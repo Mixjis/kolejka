@@ -234,6 +234,48 @@ void dolny_pracownik_process(void) {
     log_event("PRACOWNIK1: koniec pracy");
 }
 
+// Pracownik na górze kolejki
+void gorny_pracownik_process(void) {
+    log_event("PRACOWNIK2: start (PID=%d)", getpid());
+    
+    WorkerMessage msg_in, msg_out;
+    int tourist_leave = 0;
+    
+    while (state->is_running) {
+        // 1. ODCZYT KOMEND (mtype=2 dla Pracownik2)
+        if (msgrcv(msg_queue_id, &msg_in, sizeof(msg_in) - sizeof(long), 2, IPC_NOWAIT) != -1) {
+            if (msg_in.command == 1) {
+                log_event("PRACOWNIK2: Otrzymano STOP od PID=%d: %s", msg_in.sender, msg_in.message);
+                while (state->emergency_stop && state->is_running) {
+                    sleep(1);
+                }
+            } else if (msg_in.command == 2) {
+                log_event("PRACOWNIK2: Otrzymano RESUME od PID=%d", msg_in.sender);
+            }
+        }
+        
+        // 2. SYMULUJ TURYSTĘ OPUSZCZAJĄCEGO (co 5s)
+        if (!state->emergency_stop && state->busy_chairs > 0 && state->is_running) {
+            tourist_leave++;
+            state->busy_chairs--;
+            log_event("PRACOWNIK2: Turysta#%d opuścił (zajęte: %d/36)", 
+                      tourist_leave, state->busy_chairs);
+            // 3. WYSŁAŃ POTWIERDZENIE DO DOLNEGO (mtype=1)
+            msg_out.mtype = 1;
+            msg_out.command = 3;  // ACK
+            msg_out.sender = getpid();
+            sprintf(msg_out.message, "ACK turysta#%d", tourist_leave);
+            msgsnd(msg_queue_id, &msg_out, sizeof(msg_out) - sizeof(long), 0);
+            
+            sleep(5);  // 5s między turystami
+        } else {
+            sleep(1);
+        }
+    }
+    
+    log_event("PRACOWNIK2: koniec pracy");
+}
+
 
 
 // obsługa awaryjnego zatrzymania
@@ -488,6 +530,22 @@ int main(void) {
         return 1;
     }
 
+    //process pracownika na górze kolejki
+
+    pid_t pid_pracownik2 = fork();
+    if (pid_pracownik2 == 0) {
+        gorny_pracownik_process();
+        exit(0);
+    } else if (pid_pracownik2 > 0) {
+        printf("Pracownik2 PID: %d\n", pid_pracownik2);
+        log_event("PRACOWNIK2 uruchomiony PID=%d", pid_pracownik2);
+    } else {
+        perror("fork pracownik2");
+        cleanup_ipc();
+        return 1;
+    }
+
+
     // Początek symulacji
 
     // printf("Krzesełka: %d, turyści: %d\n", TOTAL_CHAIRS, NUM_TOURISTS);
@@ -540,22 +598,29 @@ int main(void) {
     state->is_running = 0;
     sleep(1);
 
+    int status;
     if (kasjer_pid > 0) {
         sleep(2);  
         log_event("Zamykanie kasjera PID=%d", kasjer_pid);
         kill(kasjer_pid, SIGTERM);
-        int status;
         waitpid(kasjer_pid, &status, 0);
         log_event("Kasjer zakonczony");
     }
 
     if (pid_pracownik1 > 0) {
-    log_event("Zamykanie pracownika PID=%d", pid_pracownik1);
-    kill(pid_pracownik1, SIGTERM);
-    int status;
-    waitpid(pid_pracownik1, &status, 0);
-    log_event("PRACOWNIK1 zakonczony");
+        log_event("Zamykanie pracownika na dole PID=%d", pid_pracownik1);
+        kill(pid_pracownik1, SIGTERM);
+        waitpid(pid_pracownik1, &status, 0);
+        log_event("PRACOWNIK1 zakonczony");
     }
+
+    if (pid_pracownik2 > 0) { 
+        log_event("Zamykanie pracownik na gorze PID=%d", pid_pracownik2);
+        kill(pid_pracownik2, SIGTERM);
+        waitpid(pid_pracownik2, &status, 0);
+        log_event("PRACOWNIK2 zakonczony");
+    }
+
 
     cleanup_ipc();
 
