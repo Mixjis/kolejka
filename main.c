@@ -279,7 +279,7 @@ void gorny_pracownik_process(void) {
 void turysta_process(int tourist_id) {
     log_event("TURYSTA-%d: start PID=%d", tourist_id, getpid());
     
-    int is_biker = rand() % 3;  // 0=spacer, 1=T1, 2=T2, 3=T3
+    int is_biker = rand() % 4;  // 0=spacer, 1=T1, 2=T2, 3=T3
     int age = 5 + rand() % 70;  // 5-75 lat
     int ticket_id = tourist_id;
     
@@ -302,27 +302,33 @@ void turysta_process(int tourist_id) {
 
     sem_wait(sem_station_id, 0); // Pojemność 
     state->people_in_station++;
-    log_event("TURYSTA-%d: przez bramkę #%d → stacja (%d/50)", 
-            tourist_id, gate+1, state->people_in_station);
+    log_event("TURYSTA-%d: przez bramkę #%d → stacja (%d/50)", tourist_id, gate+1, state->people_in_station);
     sem_signal(sem_entry_id, gate);   // zwolnienie bramki
     
 
     while (state->is_running && state->busy_chairs >= 36) {
-        log_event("TURYSTA-%d: Czekam na krzesełko...", tourist_id);
+        log_event("TURYSTA-%d: Oczekuje na krzesełko (zajęte: %d/36)...", tourist_id, state->busy_chairs);
         sleep(2);
     }
-    
-    sem_signal(sem_station_id, 0);
-    log_event("TURYSTA-%d: opuszcza stację (pojemność OK)", tourist_id);
+    if (!state->is_running) {
+        log_event("TURYSTA-%d: koniec - brak krzeseł", tourist_id);
+        exit(0);
+    }
+
     tickets[ticket_id].rides_count++;
-    log_event("TURYSTA-%d: Wsiadł na krzesełko (przejazd #%d)", 
-              tourist_id, tickets[ticket_id].rides_count);
-    
+    log_event("TURYSTA-%d: Wsiadł na krzesełko (przejazd #%d)", tourist_id, tickets[ticket_id].rides_count);
+
+    sem_signal(sem_station_id, 0);
+
+
+    log_event("TURYSTA-%d: Przejazd w górę (4s)...", tourist_id);
     sleep(4);
     
+    log_event("TURYSTA-%d: Dotarł na górę", tourist_id);
+    
+    // 8. CZEKAJ NA KOŃCOWE WYJŚCIE (Com16)
     while (state->is_running) {
-        sleep(10);
-        if (rand() % 3 == 0) break;  // 33% szansa powrotu
+        sleep(5);
     }
     
     log_event("TURYSTA-%d: koniec", tourist_id);
