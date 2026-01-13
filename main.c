@@ -55,7 +55,7 @@ typedef struct {
 
 typedef struct {
     long mtype;         
-    int command;        // 1: PAUSE, 2: PLAY  
+    int command;        // 1: STOP, 2: START, 3: ACK  
     pid_t sender;       
     char message[128]; 
 } WorkerMessage;
@@ -242,7 +242,7 @@ void gorny_pracownik_process(void) {
     int tourist_leave = 0;
     
     while (state->is_running) {
-        // 1. ODCZYT KOMEND (mtype=2 dla Pracownik2)
+        // Odczytaj komunikaty
         if (msgrcv(msg_queue_id, &msg_in, sizeof(msg_in) - sizeof(long), 2, IPC_NOWAIT) != -1) {
             if (msg_in.command == 1) {
                 log_event("PRACOWNIK2: Otrzymano STOP od PID=%d: %s", msg_in.sender, msg_in.message);
@@ -254,20 +254,20 @@ void gorny_pracownik_process(void) {
             }
         }
         
-        // 2. SYMULUJ TURYSTĘ OPUSZCZAJĄCEGO (co 5s)
+        // wyslanie turysty
         if (!state->emergency_stop && state->busy_chairs > 0 && state->is_running) {
             tourist_leave++;
             state->busy_chairs--;
             log_event("PRACOWNIK2: Turysta#%d opuścił (zajęte: %d/36)", 
                       tourist_leave, state->busy_chairs);
-            // 3. WYSŁAŃ POTWIERDZENIE DO DOLNEGO (mtype=1)
+            // Potwierdzenie dla dolnego pracownika
             msg_out.mtype = 1;
             msg_out.command = 3;  // ACK
             msg_out.sender = getpid();
             sprintf(msg_out.message, "ACK turysta#%d", tourist_leave);
             msgsnd(msg_queue_id, &msg_out, sizeof(msg_out) - sizeof(long), 0);
             
-            sleep(5);  // 5s między turystami
+            sleep(5);
         } else {
             sleep(1);
         }
@@ -276,6 +276,46 @@ void gorny_pracownik_process(void) {
     log_event("PRACOWNIK2: koniec pracy");
 }
 
+void turysta_process(int tourist_id) {
+    log_event("TURYSTA-%d: start PID=%d", tourist_id, getpid());
+    
+    int is_biker = rand() % 3;  // 0=spacer, 1=T1, 2=T2, 3=T3
+    int age = 5 + rand() % 70;  // 5-75 lat
+    int ticket_id = tourist_id;
+    
+    int ticket_type = tickets[ticket_id].ticket_type;
+    float price = calculate_ticket_price(ticket_type, age);
+    
+    char type_str[32];
+    if (is_biker == 0) strcpy(type_str, "Pieszy");
+    else sprintf(type_str, "Rowerzysta (trasa %d)", is_biker);
+    
+    log_event("TURYSTA-%d: %s, wiek %d, bilet typ %d (%.0f PLN)", 
+              tourist_id, type_str, age, ticket_type, price);
+    
+    sleep(rand() % 3 + 1);
+    
+    log_event("TURYSTA-%d: Wejście do stacji", tourist_id);
+    
+    while (state->is_running && state->busy_chairs >= 36) {
+        log_event("TURYSTA-%d: Czekam na krzesełko...", tourist_id);
+        sleep(2);
+    }
+    
+    tickets[ticket_id].rides_count++;
+    log_event("TURYSTA-%d: Wsiadł na krzesełko (przejazd #%d)", 
+              tourist_id, tickets[ticket_id].rides_count);
+    
+    sleep(4);
+    
+    while (state->is_running) {
+        sleep(10);
+        if (rand() % 3 == 0) break;  // 33% szansa powrotu
+    }
+    
+    log_event("TURYSTA-%d: koniec", tourist_id);
+    exit(0);
+}
 
 
 // obsługa awaryjnego zatrzymania
@@ -286,7 +326,7 @@ void emergency_stop_handler(int sig) {
         
         WorkerMessage msg;
         msg.mtype = 1;
-        msg.command = 1;     // PAUSE
+        msg.command = 1;     // STOP
         msg.sender = getpid();
         strcpy(msg.message, "AWARYJNY STOP");
         
@@ -545,6 +585,22 @@ int main(void) {
         return 1;
     }
 
+    //proces turysty
+
+    pid_t pid_turysta1 = fork();
+    if (pid_turysta1 == 0) {
+        turysta_process(1);
+        exit(0);
+    } else if (pid_turysta1 > 0) {
+        printf("Turysta1 PID: %d\n", pid_turysta1);
+        log_event("TURYSTA-1: fork PID=%d", pid_turysta1);
+    } else {
+        perror("fork turysta1");
+        cleanup_ipc();
+        return 1;
+    }
+
+
 
     // Początek symulacji
 
@@ -619,6 +675,15 @@ int main(void) {
         kill(pid_pracownik2, SIGTERM);
         waitpid(pid_pracownik2, &status, 0);
         log_event("PRACOWNIK2 zakonczony");
+    }
+
+    // ---
+
+    if (pid_turysta1 > 0) {
+        log_event("Oczekiwanie na turysta1 PID=%d", pid_turysta1);
+        kill(pid_pracownik2, SIGTERM);
+        waitpid(pid_turysta1, &status, 0);
+        log_event("TURYSTA-1 zakonczony");
     }
 
 
