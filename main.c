@@ -295,13 +295,25 @@ void turysta_process(int tourist_id) {
     
     sleep(rand() % 3 + 1);
     
-    log_event("TURYSTA-%d: Wejście do stacji", tourist_id);
+    // wejscie
+
+    int gate = rand() % ENTRY_GATES;
+    sem_wait(sem_entry_id, gate); // Bramka
+
+    sem_wait(sem_station_id, 0); // Pojemność 
+    state->people_in_station++;
+    log_event("TURYSTA-%d: przez bramkę #%d → stacja (%d/50)", 
+            tourist_id, gate+1, state->people_in_station);
+    sem_signal(sem_entry_id, gate);   // zwolnienie bramki
     
+
     while (state->is_running && state->busy_chairs >= 36) {
         log_event("TURYSTA-%d: Czekam na krzesełko...", tourist_id);
         sleep(2);
     }
     
+    sem_signal(sem_station_id, 0);
+    log_event("TURYSTA-%d: opuszcza stację (pojemność OK)", tourist_id);
     tickets[ticket_id].rides_count++;
     log_event("TURYSTA-%d: Wsiadł na krzesełko (przejazd #%d)", 
               tourist_id, tickets[ticket_id].rides_count);

@@ -1,107 +1,113 @@
-[21:23:49] -- Semafory zainicjalizowane --
-[21:23:49] SYSTEM: Kolejka komunikatow utworzona (key=0x51451275)
-[21:23:49] SYSTEM: Handlery SIGUSR1/2 skonfigurowane
-[21:23:49] ------------------------------------------
-[21:23:49] Czas rozpoczecia: 21:23:49
-[21:23:49] Liczba krzeslek: 72
-[21:23:49] ------------------------------------------
-[21:23:49] Kasjer uruchomiony PID=253
-[21:23:49] KASJER: Kasa otwarta PID=253
-[21:23:49] PRACOWNIK1 uruchomiony PID=254
-[21:23:49] PRACOWNIK1: start (PID=254)
-[21:23:49] PRACOWNIK2 uruchomiony PID=255
-[21:23:49] PRACOWNIK2: start (PID=255)
-[21:23:49] PRACOWNIK1: Wysłano krzesełko #1 (zajęte: 1/36)
-[21:23:49] TURYSTA-1: fork PID=256
-[21:23:49] TURYSTA-1: start PID=256
-[21:23:49] PRACOWNIK2: Turysta#1 opuścił (zajęte: 0/36)
-[21:23:49] START: Glowna petla symulacji 60s
-[21:23:49] TURYSTA-1: Rowerzysta (trasa 1), wiek 43, bilet typ 0 (20 PLN)
-[21:23:52] PRACOWNIK1: Wysłano krzesełko #2 (zajęte: 1/36)
-[21:23:52] TURYSTA-1: Wejście do stacji
-[21:23:52] TURYSTA-1: Wsiadł na krzesełko (przejazd #1)
-[21:23:54] KASJER: Bilet#1 typ2 wiek54=80.0PLN (sprzedanych: 1)
-[21:23:54] PRACOWNIK2: Turysta#2 opuścił (zajęte: 0/36)
-[21:23:54] WEJSCIE bramka1 (#1)
-[21:23:55] PRACOWNIK1: Wysłano krzesełko #3 (zajęte: 1/36)
-[21:23:58] PRACOWNIK1: Wysłano krzesełko #4 (zajęte: 2/36)
-[21:23:59] PRACOWNIK2: Turysta#3 opuścił (zajęte: 1/36)
-[21:23:59] WEJSCIE bramka2 (#2)
-[21:23:59] WEJSCIE bramka2 (#3)
-[21:24:01] PRACOWNIK1: Wysłano krzesełko #5 (zajęte: 2/36)
-[21:24:04] PRACOWNIK2: Turysta#4 opuścił (zajęte: 1/36)
-[21:24:04] PRACOWNIK1: Wysłano krzesełko #6 (zajęte: 2/36)
-[21:24:04] WEJSCIE bramka1 (#4)
-[21:24:04] WEJSCIE bramka1 (#5)
-[21:24:04] WEJSCIE bramka2 (#6)
-[21:24:04] WEJSCIE bramka1 (#7)
-[21:24:04] WEJSCIE bramka2 (#8)
-[21:24:04] STATUS: Stacja 8/50 | Przejsc 8 | Krzeselka 2/36
-[21:24:07] KASJER: Bilet#2 typ1 wiek73=37.5PLN (sprzedanych: 2)
-[21:24:07] PRACOWNIK1: Wysłano krzesełko #7 (zajęte: 3/36)
-[21:24:09] PRACOWNIK2: Turysta#5 opuścił (zajęte: 2/36)
-[21:24:09] WEJSCIE bramka4 (#9)
-[21:24:09] WEJSCIE bramka3 (#10)
-[21:24:10] PRACOWNIK1: Wysłano krzesełko #8 (zajęte: 3/36)
-[21:24:11] KASJER: Bilet#3 typ4 wiek68=112.5PLN (sprzedanych: 3)
-[21:24:13] PRACOWNIK1: Wysłano krzesełko #9 (zajęte: 4/36)
-[21:24:14] KASJER: Bilet#4 typ4 wiek53=150.0PLN (sprzedanych: 4)
-[21:24:14] PRACOWNIK2: Turysta#6 opuścił (zajęte: 3/36)
-[21:24:14] WEJSCIE bramka1 (#11)
-[21:24:16] KASJER: Bilet#5 typ0 wiek52=20.0PLN (sprzedanych: 5)
-[21:24:16] PRACOWNIK1: Wysłano krzesełko #10 (zajęte: 4/36)
-[21:24:19] PRACOWNIK2: Turysta#7 opuścił (zajęte: 3/36)
-[21:24:19] PRACOWNIK1: Wysłano krzesełko #11 (zajęte: 4/36)
-[21:24:19] WEJSCIE bramka2 (#12)
-[21:24:19] WEJSCIE bramka1 (#13)
-[21:24:19] WEJSCIE bramka2 (#14)
-[21:24:19] STATUS: Stacja 14/50 | Przejsc 14 | Krzeselka 4/36
-[21:24:21] KASJER: Bilet#6 typ4 wiek15=150.0PLN (sprzedanych: 6)
-[21:24:22] PRACOWNIK1: Wysłano krzesełko #12 (zajęte: 5/36)
-[21:24:24] PRACOWNIK2: Turysta#8 opuścił (zajęte: 4/36)
-[21:24:24] WEJSCIE bramka1 (#15)
-[21:24:24] WEJSCIE bramka3 (#16)
-[21:24:25] PRACOWNIK1: Wysłano krzesełko #13 (zajęte: 5/36)
-[21:24:27] KASJER: Bilet#7 typ0 wiek57=20.0PLN (sprzedanych: 7)
-[21:24:28] PRACOWNIK1: Wysłano krzesełko #14 (zajęte: 6/36)
-[21:24:29] PRACOWNIK2: Turysta#9 opuścił (zajęte: 5/36)
-[21:24:29] WEJSCIE bramka2 (#17)
-[21:24:31] PRACOWNIK1: Wysłano krzesełko #15 (zajęte: 6/36)
-[21:24:34] KASJER: Bilet#8 typ3 wiek34=120.0PLN (sprzedanych: 8)
-[21:24:34] PRACOWNIK2: Turysta#10 opuścił (zajęte: 5/36)
-[21:24:34] PRACOWNIK1: Wysłano krzesełko #16 (zajęte: 6/36)
-[21:24:34] WEJSCIE bramka3 (#18)
-[21:24:34] WEJSCIE bramka2 (#19)
-[21:24:34] WEJSCIE bramka1 (#20)
-[21:24:34] WEJSCIE bramka2 (#21)
-[21:24:34] STATUS: Stacja 21/50 | Przejsc 21 | Krzeselka 6/36
-[21:24:36] KASJER: Bilet#9 typ4 wiek72=112.5PLN (sprzedanych: 9)
-[21:24:37] PRACOWNIK1: Wysłano krzesełko #17 (zajęte: 7/36)
-[21:24:39] PRACOWNIK2: Turysta#11 opuścił (zajęte: 6/36)
-[21:24:39] WEJSCIE bramka4 (#22)
-[21:24:39] WEJSCIE bramka2 (#23)
-[21:24:39] WEJSCIE bramka1 (#24)
-[21:24:39] WEJSCIE bramka1 (#25)
-[21:24:40] PRACOWNIK1: Wysłano krzesełko #18 (zajęte: 7/36)
-[21:24:41] KASJER: Bilet#10 typ1 wiek47=50.0PLN (sprzedanych: 10)
-[21:24:43] PRACOWNIK1: Wysłano krzesełko #19 (zajęte: 8/36)
-[21:24:44] KASJER: Bilet#11 typ0 wiek70=15.0PLN (sprzedanych: 11)
-[21:24:44] PRACOWNIK2: Turysta#12 opuścił (zajęte: 7/36)
-[21:24:46] PRACOWNIK1: Wysłano krzesełko #20 (zajęte: 8/36)
-[21:24:48] KASJER: Bilet#12 typ0 wiek52=20.0PLN (sprzedanych: 12)
-[21:24:49] PRACOWNIK2: Turysta#13 opuścił (zajęte: 7/36)
-[21:24:49] KASJER: Bilet#13 typ3 wiek70=90.0PLN (sprzedanych: 13)
-[21:24:49] PRACOWNIK1: Wysłano krzesełko #21 (zajęte: 8/36)
-[21:24:49] WEJSCIE bramka1 (#26)
-[21:24:49] STATUS: Stacja 26/50 | Przejsc 26 | Krzeselka 8/36
-[21:24:51] KASJER: Zamkniecie. 13 biletow na 977.5PLN
-[21:24:52] PRACOWNIK1: koniec pracy
-[21:24:53] Zamykanie kasjera PID=253
-[21:24:53] Kasjer zakonczony
-[21:24:53] Zamykanie pracownika na dole PID=254
-[21:24:53] PRACOWNIK1 zakonczony
-[21:24:53] Zamykanie pracownik na gorze PID=255
-[21:24:53] PRACOWNIK2 zakonczony
-[21:24:53] Oczekiwanie na turysta1 PID=256
-[21:24:56] TURYSTA-1: koniec
-[21:24:56] TURYSTA-1 zakonczony
+[21:42:10] -- Semafory zainicjalizowane --
+[21:42:10] SYSTEM: Kolejka komunikatow utworzona (key=0x51451275)
+[21:42:10] SYSTEM: Handlery SIGUSR1/2 skonfigurowane
+[21:42:10] ------------------------------------------
+[21:42:10] Czas rozpoczecia: 21:42:10
+[21:42:10] Liczba krzeslek: 72
+[21:42:10] ------------------------------------------
+[21:42:10] Kasjer uruchomiony PID=272
+[21:42:10] KASJER: Kasa otwarta PID=272
+[21:42:10] PRACOWNIK1 uruchomiony PID=273
+[21:42:10] PRACOWNIK1: start (PID=273)
+[21:42:10] PRACOWNIK2 uruchomiony PID=274
+[21:42:10] PRACOWNIK2: start (PID=274)
+[21:42:10] PRACOWNIK1: Wysłano krzesełko #1 (zajęte: 1/36)
+[21:42:10] TURYSTA-1: fork PID=275
+[21:42:10] TURYSTA-1: start PID=275
+[21:42:10] PRACOWNIK2: Turysta#1 opuścił (zajęte: 0/36)
+[21:42:10] START: Glowna petla symulacji 60s
+[21:42:10] TURYSTA-1: Rowerzysta (trasa 2), wiek 52, bilet typ 0 (20 PLN)
+[21:42:13] KASJER: Bilet#1 typ2 wiek17=80.0PLN (sprzedanych: 1)
+[21:42:13] PRACOWNIK1: Wysłano krzesełko #2 (zajęte: 1/36)
+[21:42:13] TURYSTA-1: przez bramkę #1 → stacja (1/50)
+[21:42:13] TURYSTA-1: opuszcza stację (pojemność OK)
+[21:42:13] TURYSTA-1: Wsiadł na krzesełko (przejazd #1)
+[21:42:15] KASJER: Bilet#2 typ0 wiek63=20.0PLN (sprzedanych: 2)
+[21:42:15] PRACOWNIK2: Turysta#2 opuścił (zajęte: 0/36)
+[21:42:15] WEJSCIE bramka4 (#1)
+[21:42:15] WEJSCIE bramka1 (#2)
+[21:42:15] WEJSCIE bramka1 (#3)
+[21:42:15] WEJSCIE bramka4 (#4)
+[21:42:15] WEJSCIE bramka4 (#5)
+[21:42:16] PRACOWNIK1: Wysłano krzesełko #3 (zajęte: 1/36)
+[21:42:18] KASJER: Bilet#3 typ2 wiek42=80.0PLN (sprzedanych: 3)
+[21:42:19] PRACOWNIK1: Wysłano krzesełko #4 (zajęte: 2/36)
+[21:42:20] KASJER: Bilet#4 typ2 wiek37=80.0PLN (sprzedanych: 4)
+[21:42:20] PRACOWNIK2: Turysta#3 opuścił (zajęte: 1/36)
+[21:42:20] WEJSCIE bramka4 (#6)
+[21:42:20] WEJSCIE bramka1 (#7)
+[21:42:20] WEJSCIE bramka4 (#8)
+[21:42:20] WEJSCIE bramka4 (#9)
+[21:42:22] PRACOWNIK1: Wysłano krzesełko #5 (zajęte: 2/36)
+[21:42:23] KASJER: Bilet#5 typ0 wiek12=20.0PLN (sprzedanych: 5)
+[21:42:24] KASJER: Bilet#6 typ4 wiek58=150.0PLN (sprzedanych: 6)
+[21:42:25] PRACOWNIK2: Turysta#4 opuścił (zajęte: 1/36)
+[21:42:25] PRACOWNIK1: Wysłano krzesełko #6 (zajęte: 2/36)
+[21:42:25] STATUS: Stacja 10/50 | Przejsc 9 | Krzeselka 2/36
+[21:42:27] KASJER: Bilet#7 typ3 wiek21=120.0PLN (sprzedanych: 7)
+[21:42:28] PRACOWNIK1: Wysłano krzesełko #7 (zajęte: 3/36)
+[21:42:30] PRACOWNIK2: Turysta#5 opuścił (zajęte: 2/36)
+[21:42:30] WEJSCIE bramka3 (#10)
+[21:42:30] WEJSCIE bramka2 (#11)
+[21:42:30] WEJSCIE bramka4 (#12)
+[21:42:31] PRACOWNIK1: Wysłano krzesełko #8 (zajęte: 3/36)
+[21:42:34] PRACOWNIK1: Wysłano krzesełko #9 (zajęte: 4/36)
+[21:42:35] PRACOWNIK2: Turysta#6 opuścił (zajęte: 3/36)
+[21:42:37] PRACOWNIK1: Wysłano krzesełko #10 (zajęte: 4/36)
+[21:42:38] KASJER: Bilet#8 typ3 wiek7=90.0PLN (sprzedanych: 8)
+[21:42:40] PRACOWNIK2: Turysta#7 opuścił (zajęte: 3/36)
+[21:42:40] PRACOWNIK1: Wysłano krzesełko #11 (zajęte: 4/36)
+[21:42:40] WEJSCIE bramka1 (#13)
+[21:42:40] STATUS: Stacja 14/50 | Przejsc 13 | Krzeselka 4/36
+[21:42:43] PRACOWNIK1: Wysłano krzesełko #12 (zajęte: 5/36)
+[21:42:45] PRACOWNIK2: Turysta#8 opuścił (zajęte: 4/36)
+[21:42:45] WEJSCIE bramka2 (#14)
+[21:42:45] WEJSCIE bramka1 (#15)
+[21:42:45] WEJSCIE bramka2 (#16)
+[21:42:45] WEJSCIE bramka4 (#17)
+[21:42:45] WEJSCIE bramka2 (#18)
+[21:42:46] PRACOWNIK1: Wysłano krzesełko #13 (zajęte: 5/36)
+[21:42:48] KASJER: Bilet#9 typ2 wiek13=80.0PLN (sprzedanych: 9)
+[21:42:49] PRACOWNIK1: Wysłano krzesełko #14 (zajęte: 6/36)
+[21:42:50] PRACOWNIK2: Turysta#9 opuścił (zajęte: 5/36)
+[21:42:50] WEJSCIE bramka4 (#19)
+[21:42:50] WEJSCIE bramka1 (#20)
+[21:42:50] WEJSCIE bramka1 (#21)
+[21:42:50] WEJSCIE bramka4 (#22)
+[21:42:51] KASJER: Bilet#10 typ2 wiek32=80.0PLN (sprzedanych: 10)
+[21:42:52] PRACOWNIK1: Wysłano krzesełko #15 (zajęte: 6/36)
+[21:42:55] KASJER: Bilet#11 typ2 wiek51=80.0PLN (sprzedanych: 11)
+[21:42:55] PRACOWNIK2: Turysta#10 opuścił (zajęte: 5/36)
+[21:42:55] PRACOWNIK1: Wysłano krzesełko #16 (zajęte: 6/36)
+[21:42:55] STATUS: Stacja 23/50 | Przejsc 22 | Krzeselka 6/36
+[21:42:57] KASJER: Bilet#12 typ3 wiek59=120.0PLN (sprzedanych: 12)
+[21:42:58] PRACOWNIK1: Wysłano krzesełko #17 (zajęte: 7/36)
+[21:43:00] PRACOWNIK2: Turysta#11 opuścił (zajęte: 6/36)
+[21:43:00] KASJER: Bilet#13 typ1 wiek47=50.0PLN (sprzedanych: 13)
+[21:43:00] WEJSCIE bramka4 (#23)
+[21:43:01] KASJER: Bilet#14 typ4 wiek8=112.5PLN (sprzedanych: 14)
+[21:43:01] PRACOWNIK1: Wysłano krzesełko #18 (zajęte: 7/36)
+[21:43:04] PRACOWNIK1: Wysłano krzesełko #19 (zajęte: 8/36)
+[21:43:05] PRACOWNIK2: Turysta#12 opuścił (zajęte: 7/36)
+[21:43:06] KASJER: Bilet#15 typ2 wiek20=80.0PLN (sprzedanych: 15)
+[21:43:07] PRACOWNIK1: Wysłano krzesełko #20 (zajęte: 8/36)
+[21:43:07] KASJER: Bilet#16 typ3 wiek31=120.0PLN (sprzedanych: 16)
+[21:43:10] PRACOWNIK2: Turysta#13 opuścił (zajęte: 7/36)
+[21:43:10] PRACOWNIK1: Wysłano krzesełko #21 (zajęte: 8/36)
+[21:43:10] KASJER: Bilet#17 typ1 wiek17=50.0PLN (sprzedanych: 17)
+[21:43:10] WEJSCIE bramka3 (#24)
+[21:43:10] WEJSCIE bramka4 (#25)
+[21:43:10] WEJSCIE bramka1 (#26)
+[21:43:10] WEJSCIE bramka2 (#27)
+[21:43:10] STATUS: Stacja 28/50 | Przejsc 27 | Krzeselka 8/36
+[21:43:13] PRACOWNIK1: koniec pracy
+[21:43:13] KASJER: Zamkniecie. 17 biletow na 1412.5PLN
+[21:43:14] Zamykanie kasjera PID=272
+[21:43:14] Kasjer zakonczony
+[21:43:14] Zamykanie pracownika na dole PID=273
+[21:43:14] PRACOWNIK1 zakonczony
+[21:43:14] Zamykanie pracownik na gorze PID=274
+[21:43:14] PRACOWNIK2 zakonczony
+[21:43:14] Oczekiwanie na turysta1 PID=275
+[21:43:17] TURYSTA-1: koniec
+[21:43:17] TURYSTA-1 zakonczony
