@@ -127,7 +127,6 @@ void sem_signal(int sem_id, int sem_num) {
 }
 
 // Funkcja do Logów
-
 void log_event(const char *format, ...) {
     sem_wait(sem_log_id, 0);
 
@@ -152,7 +151,6 @@ void log_event(const char *format, ...) {
 }
 
 // obliczanie ceny biletu
-
 float calculate_ticket_price(int ticket_type, int age) {
     float prices[] = {20.0f, 50.0f, 80.0f, 120.0f, 150.0f};
     float price = prices[ticket_type];
@@ -161,7 +159,6 @@ float calculate_ticket_price(int ticket_type, int age) {
 }
 
 //Kasjer
-
 void kasjer_process(void) {
     log_event("KASJER: Kasa otwarta PID=%d", getpid());
     
@@ -201,8 +198,45 @@ void kasjer_process(void) {
     exit(0);
 }
 
-// obsługa awaryjnego zatrzymania
+// Pracownik na dole kolejki
+void dolny_pracownik_process(void) {
+    log_event("PRACOWNIK1: start (PID=%d)", getpid());
+    
+    WorkerMessage msg;
+    int chair_count = 0;
+    
+    while (state->is_running) {
+        // Odbiór komunikatów
+        if (msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 1, IPC_NOWAIT) != -1) {
+            if (msg.command == 1) {
+                log_event("PRACOWNIK1: Otrzymano sygnał zatrzymania od PID=%d", msg.sender);
+                // Czekanie na wznowienie
+                while (state->emergency_stop && state->is_running) {
+                    sleep(1);
+                }
+            } else if (msg.command == 2) {
+                log_event("PRACOWNIK1: Otrzymano sygnał wznowienia od PID=%d", msg.sender);
+            }
+        }
+        
+        // Wysyłanie krzesła
+        if (!state->emergency_stop && state->is_running) {
+            chair_count++;
+            state->busy_chairs++;
+            log_event("PRACOWNIK1: Wysłano krzesełko #%d (zajęte: %d/36)", 
+                     chair_count, state->busy_chairs);
+            sleep(3);
+        } else {
+            sleep(1);
+        }
+    }
+    
+    log_event("PRACOWNIK1: koniec pracy");
+}
 
+
+
+// obsługa awaryjnego zatrzymania
 void emergency_stop_handler(int sig) {
     if (!state->emergency_stop) {
         log_event("*** ZATRZYMANIE AWARYJNE (SIGUSR1) ***");
@@ -221,7 +255,6 @@ void emergency_stop_handler(int sig) {
 }
 
 // obsługa wznowienia
-
 void resume_handler(int sig) {
     if (state->emergency_stop) {
         log_event("*** MAIN: WZNOWIENIE (SIGUSR2) ***");
@@ -239,7 +272,6 @@ void resume_handler(int sig) {
 }
 
 //main
-
 int main(void) {
 
     srand(time(NULL));
@@ -330,8 +362,14 @@ int main(void) {
 
     // inicjalizacja semaforów stacji i wejść
 
-    // Semafor pojemności stacji (1 semafor, MAX_STATION_CAPACITY)
-    sem_station_id = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
+    // Semafor pojemności stacji
+    key_t key_station = ftok(".", 'P');
+    if (key_station == -1) {
+        perror("ftok station");
+        cleanup_ipc();
+        return 1;
+    }
+    sem_station_id = semget(key_station, 1, IPC_CREAT | 0600);
     if (sem_station_id == -1) {
         perror("semget station");
         cleanup_ipc();
@@ -341,7 +379,13 @@ int main(void) {
     semctl(sem_station_id, 0, SETVAL, arg);
 
     // Semafor bramek wejściowych (4 bramki)
-    sem_entry_id = semget(IPC_PRIVATE, ENTRY_GATES, IPC_CREAT | 0600);
+    key_t key_entry = ftok(".", 'E');
+    if (key_entry == -1) {
+        perror("ftok entry");
+        cleanup_ipc();
+        return 1;
+    }
+    sem_entry_id = semget(key_entry, ENTRY_GATES, IPC_CREAT | 0600);
     if (sem_entry_id == -1) {
         perror("semget entry");
         cleanup_ipc();
@@ -350,22 +394,6 @@ int main(void) {
     for (int i = 0; i < ENTRY_GATES; i++) {
         arg.val = 1;
         semctl(sem_entry_id, i, SETVAL, arg);
-    }
-
-    // Tworzenie procesu kasjera
-
-    pid_t kasjer_pid = fork();
-    if (kasjer_pid == 0) {
-        kasjer_process();
-    } 
-    else if (kasjer_pid > 0) {
-        printf("Kasjer PID: %d\n", kasjer_pid);
-        log_event("Kasjer uruchomiony PID=%d", kasjer_pid);
-    } 
-    else {
-        perror("fork kasjer");
-        cleanup_ipc();
-        return 1;
     }
 
     // Kolejka komunikatów
@@ -408,8 +436,7 @@ int main(void) {
     log_event("SYSTEM: Handlery SIGUSR1/2 skonfigurowane");
     printf("Test sygnalow: kill -USR1 %d (STOP), kill -USR2 %d (RESUME)\n", getpid(), getpid());
 
-
-    // incjializacja ogólna
+    // Inicjalizacja stanu
 
     memset(state, 0, sizeof(StationState));
     memset(stats,  0, sizeof(DailyStats));
@@ -418,6 +445,7 @@ int main(void) {
     state->start_time = time(NULL);
     state->end_time = state->start_time + SIM_DURATION;
 
+    // Log początkowy
     char time_str[9];
     strftime(time_str, sizeof(time_str), "%T", localtime(&state->start_time));
     log_event("------------------------------------------");
@@ -427,6 +455,40 @@ int main(void) {
     
     printf("Start time: %s\n", time_str);
     printf("czas trwania: %d sekund\n", SIM_DURATION);
+
+    // Tworzenie procesów 
+    // proces kasjera
+
+    pid_t kasjer_pid = fork();
+    if (kasjer_pid == 0) {
+        kasjer_process();
+        exit(0);
+    } 
+    else if (kasjer_pid > 0) {
+        printf("Kasjer PID: %d\n", kasjer_pid);
+        log_event("Kasjer uruchomiony PID=%d", kasjer_pid);
+    } 
+    else {
+        perror("fork kasjer");
+        cleanup_ipc();
+        return 1;
+    }
+
+    //proces pracownika na dole kolejki
+    pid_t pid_pracownik1 = fork();
+    if (pid_pracownik1 == 0) {
+        dolny_pracownik_process();
+        exit(0);
+    } else if (pid_pracownik1 > 0) {
+        printf("Pracownik1 PID: %d\n", pid_pracownik1);
+        log_event("PRACOWNIK1 uruchomiony PID=%d", pid_pracownik1);
+    } else {
+        perror("fork pracownik1");
+        cleanup_ipc();
+        return 1;
+    }
+
+    // Początek symulacji
 
     // printf("Krzesełka: %d, turyści: %d\n", TOTAL_CHAIRS, NUM_TOURISTS);
     // printf("czas trwania: %d sekund\n", SIM_DURATION);
@@ -473,8 +535,12 @@ int main(void) {
     // log_event("KONIEC petli symulacji");
     printf("Koniec.\n");
 
+    state->stop_selling = 1;
+    sleep(1);
+    state->is_running = 0;
+    sleep(1);
+
     if (kasjer_pid > 0) {
-        state->stop_selling = 1; 
         sleep(2);  
         log_event("Zamykanie kasjera PID=%d", kasjer_pid);
         kill(kasjer_pid, SIGTERM);
@@ -483,6 +549,13 @@ int main(void) {
         log_event("Kasjer zakonczony");
     }
 
+    if (pid_pracownik1 > 0) {
+    log_event("Zamykanie pracownika PID=%d", pid_pracownik1);
+    kill(pid_pracownik1, SIGTERM);
+    int status;
+    waitpid(pid_pracownik1, &status, 0);
+    log_event("PRACOWNIK1 zakonczony");
+    }
 
     cleanup_ipc();
 
