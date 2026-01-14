@@ -1,5 +1,5 @@
 // main.c
-#define _POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200809L 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -616,17 +616,25 @@ int main(void) {
 
     //proces turysty
 
-    pid_t pid_turysta1 = fork();
-    if (pid_turysta1 == 0) {
-        turysta_process(1);
-        exit(0);
-    } else if (pid_turysta1 > 0) {
-        printf("Turysta1 PID: %d\n", pid_turysta1);
-        log_event("TURYSTA-1: fork PID=%d", pid_turysta1);
-    } else {
-        perror("fork turysta1");
-        cleanup_ipc();
-        return 1;
+
+
+    pid_t tourist_pids[NUM_TOURISTS];
+
+    for (int i = 1; i <= NUM_TOURISTS; i++) {
+        pid_t pid = fork();
+        if (pid == 0) {
+            turysta_process(i);
+            exit(0);
+        } else if (pid > 0) {
+            tourist_pids[i-1] = pid;
+            log_event("TURYSTA-%d: fork PID=%d", i, pid);
+            struct timespec ts = {0, 200000000L};
+            nanosleep(&ts, NULL);
+        } else {
+            perror("fork turysta");
+            cleanup_ipc();
+            return 1;
+        }
     }
 
 
@@ -668,8 +676,8 @@ int main(void) {
                     state->people_in_station, 
                     state->total_passes, 
                     state->busy_chairs);
-            printf("Status: Stacja %d/50 | Przejscia %d\r", 
-                state->people_in_station, state->total_passes);
+            printf("Status: Stacja %d/50 | Przejscia %d | Turyści max=%d   \r\r", 
+                state->people_in_station, state->total_passes, NUM_TOURISTS);
             fflush(stdout);
         }
     }
@@ -706,13 +714,12 @@ int main(void) {
         log_event("PRACOWNIK2 zakonczony");
     }
 
-    // ---
-
-    if (pid_turysta1 > 0) {
-        log_event("Oczekiwanie na turysta1 PID=%d", pid_turysta1);
-        kill(pid_pracownik2, SIGTERM);
-        waitpid(pid_turysta1, &status, 0);
-        log_event("TURYSTA-1 zakonczony");
+    for (int i = 0; i < NUM_TOURISTS; i++) {
+        if (tourist_pids[i] > 0) {
+            kill(tourist_pids[i], SIGTERM);
+            waitpid(tourist_pids[i], &status, 0);
+            log_event("TURYSTA-%d zakonczony (PID=%d)", i+1, tourist_pids[i]);
+        }
     }
 
 
