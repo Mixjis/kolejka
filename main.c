@@ -637,6 +637,23 @@ int main(void) {
         }
     }
 
+    log_event("*** AUTO-TEST: Uruchamiam za 20s ***");
+    sleep(20);
+
+    if (state->is_running) {
+        log_event("*** TEST STOP: SIGUSR1 ***");
+        printf("\n*** TEST EMERGENCY STOP ***\n");
+        kill(getpid(), SIGUSR1);  // self!
+        sleep(8);  // Pauza
+        
+        log_event("*** TEST RESUME: SIGUSR2 ***");
+        printf("*** TEST RESUME ***\n");
+        kill(getpid(), SIGUSR2);
+        
+        log_event("*** AUTO-TEST ZAKOŃCZONY ***");
+    }
+
+    printf("\nAUTO-TEST za 20s | Manual: kill -USR1 %d (STOP)\n", getpid());
 
 
     // Początek symulacji
@@ -672,10 +689,12 @@ int main(void) {
         
         // Status
         if ((time(NULL) - start_loop) % 15 < 5) {
-            log_event("STATUS: Stacja %d/50 | Przejsc %d | Krzeselka %d/36", 
+            log_event("STATUS: Stacja %d/50 | Przejsc %d | Krzeselka %d/36 | Turysci %d/%d", 
                     state->people_in_station, 
                     state->total_passes, 
-                    state->busy_chairs);
+                    state->busy_chairs, 
+                    stats->total_tourists, 
+                    NUM_TOURISTS);
             printf("Status: Stacja %d/50 | Przejscia %d | Turyści max=%d   \r\r", 
                 state->people_in_station, state->total_passes, NUM_TOURISTS);
             fflush(stdout);
