@@ -323,14 +323,25 @@ void turysta_process(int tourist_id) {
 
     log_event("TURYSTA-%d: Przejazd w górę (4s)...", tourist_id);
     sleep(4);
-    
     log_event("TURYSTA-%d: Dotarł na górę", tourist_id);
-    
-    // 8. CZEKAJ NA KOŃCOWE WYJŚCIE (Com16)
-    while (state->is_running) {
-        sleep(5);
+
+    if (is_biker == 0) {
+        stats->walkers++;
+        log_event("TURYSTA-%d: Pieszy - wejście na szlak pieszy (walkers=%d)",
+                tourist_id, stats->walkers);
+    } else {
+        stats->bikers++;
+        log_event("TURYSTA-%d: Rowerzysta - trasa #%d (bikers=%d)",
+                tourist_id, is_biker, stats->bikers);
     }
+
     
+    if (state->people_in_station > 0) {
+        state->people_in_station--;
+    }
+    log_event("TURYSTA-%d: opuszcza system (na dole, stacja=%d/50)",
+            tourist_id, state->people_in_station);
+
     log_event("TURYSTA-%d: koniec", tourist_id);
     exit(0);
 }
