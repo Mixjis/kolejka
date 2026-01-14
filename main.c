@@ -670,23 +670,35 @@ int main(void) {
         sleep(5);
         
         // Losowy ruch turystów
-        int arrivals = rand() % 6;
+        // int arrivals = rand() % 6;
         
-        for (int i = 0; i < arrivals && state->people_in_station < MAX_STATION_CAPACITY; i++) {
-            int gate = rand() % ENTRY_GATES;
+        // for (int i = 0; i < arrivals && state->people_in_station < MAX_STATION_CAPACITY; i++) {
+        //     int gate = rand() % ENTRY_GATES;
             
-            // Wejście przez bramkę
-            sem_wait(sem_entry_id, gate);
-            state->total_passes++;
-            log_event("WEJSCIE bramka%d (#%d)", gate+1, state->total_passes);
-            sem_signal(sem_entry_id, gate);
+        //     // Wejście przez bramkę
+        //     sem_wait(sem_entry_id, gate);
+        //     state->total_passes++;
+        //     log_event("WEJSCIE bramka%d (#%d)", gate+1, state->total_passes);
+        //     sem_signal(sem_entry_id, gate);
             
-            // Na stację
-            sem_wait(sem_station_id, 0);
-            state->people_in_station++;
-            sem_signal(sem_station_id, 0);
+        //     // Na stację
+        //     sem_wait(sem_station_id, 0);
+        //     state->people_in_station++;
+        //     sem_signal(sem_station_id, 0);
+        // }
+        
+        int elapsed = time(NULL) - start_loop;
+        int remaining = SIM_DURATION - elapsed;
+
+        //log_event("Czas: pozostaly=%d", remaining);
+
+        if (remaining > 0 && remaining <= 10) {
+            printf("\033[91m %2ds do zamknięcia! \033[0m\r", remaining);
+            fflush(stdout);
+            log_event("COUNTDOWN: %ds!", remaining);
         }
-        
+
+
         // Status
         if ((time(NULL) - start_loop) % 15 < 5) {
             log_event("STATUS: Stacja %d/50 | Przejsc %d | Krzeselka %d/36 | Turysci %d/%d", 
@@ -702,13 +714,12 @@ int main(void) {
     }
 
     // //sleep(SIM_DURATION);
-    // log_event("KONIEC petli symulacji");
-    printf("Koniec.\n");
+    log_event("Koniec symulacji");
+    printf("Koniec symulacji.\n");
 
     state->stop_selling = 1;
-    sleep(1);
     state->is_running = 0;
-    sleep(1);
+    sleep(3);
 
     int status;
     if (kasjer_pid > 0) {
