@@ -1,0 +1,445 @@
+[00:17:17] -- Semafory zainicjalizowane --
+[00:17:17] SYSTEM: Kolejka komunikatow utworzona (key=0x51451275)
+[00:17:17] SYSTEM: Handlery SIGUSR1/2 skonfigurowane
+[00:17:17] ------------------------------------------
+[00:17:17] Czas rozpoczecia: 00:17:17
+[00:17:17] Liczba krzeslek: 72
+[00:17:17] ------------------------------------------
+[00:17:17] Kasjer uruchomiony PID=868
+[00:17:17] KASJER: Kasa otwarta PID=868
+[00:17:17] PRACOWNIK1 uruchomiony PID=869
+[00:17:17] PRACOWNIK1: start (PID=869)
+[00:17:17] PRACOWNIK2 uruchomiony PID=870
+[00:17:17] PRACOWNIK2: start (PID=870)
+[00:17:17] PRACOWNIK1: Wysłano krzesełko #1 (zajęte: 1/36)
+[00:17:17] TURYSTA-1: fork PID=871
+[00:17:17] TURYSTA-1: start PID=871
+[00:17:17] PRACOWNIK2: Turysta#1 opuścił (zajęte: 0/36)
+[00:17:17] TURYSTA-1: Pieszy, wiek 39, bilet typ 0 (20 PLN)
+[00:17:17] TURYSTA-2: fork PID=872
+[00:17:17] TURYSTA-2: start PID=872
+[00:17:17] TURYSTA-2: Pieszy, wiek 38, bilet typ 0 (20 PLN)
+[00:17:18] TURYSTA-3: fork PID=873
+[00:17:18] TURYSTA-3: start PID=873
+[00:17:18] TURYSTA-3: Pieszy, wiek 26, bilet typ 0 (20 PLN)
+[00:17:18] TURYSTA-4: fork PID=874
+[00:17:18] TURYSTA-4: start PID=874
+[00:17:18] TURYSTA-4: Rowerzysta (trasa 1), wiek 69, bilet typ 0 (15 PLN)
+[00:17:18] TURYSTA-5: fork PID=875
+[00:17:18] TURYSTA-5: start PID=875
+[00:17:18] TURYSTA-5: Pieszy, wiek 38, bilet typ 0 (20 PLN)
+[00:17:18] TURYSTA-6: fork PID=876
+[00:17:18] TURYSTA-6: start PID=876
+[00:17:18] TURYSTA-6: Rowerzysta (trasa 1), wiek 27, bilet typ 0 (20 PLN)
+[00:17:18] TURYSTA-2: przez bramkę #1 → stacja (1/50)
+[00:17:18] TURYSTA-2: Wsiadł na krzesełko (przejazd #1)
+[00:17:18] TURYSTA-2: Przejazd w górę (4s)...
+[00:17:18] TURYSTA-7: fork PID=877
+[00:17:18] TURYSTA-7: start PID=877
+[00:17:18] TURYSTA-7: Pieszy, wiek 26, bilet typ 0 (20 PLN)
+[00:17:19] TURYSTA-8: fork PID=878
+[00:17:19] TURYSTA-8: start PID=878
+[00:17:19] TURYSTA-8: Rowerzysta (trasa 3), wiek 36, bilet typ 0 (20 PLN)
+[00:17:19] TURYSTA-9: fork PID=879
+[00:17:19] TURYSTA-9: start PID=879
+[00:17:19] TURYSTA-9: Pieszy, wiek 32, bilet typ 0 (20 PLN)
+[00:17:19] TURYSTA-5: przez bramkę #1 → stacja (2/50)
+[00:17:19] TURYSTA-5: Wsiadł na krzesełko (przejazd #1)
+[00:17:19] TURYSTA-5: Przejazd w górę (4s)...
+[00:17:19] TURYSTA-10: fork PID=880
+[00:17:19] TURYSTA-10: start PID=880
+[00:17:19] TURYSTA-10: Rowerzysta (trasa 2), wiek 74, bilet typ 0 (15 PLN)
+[00:17:19] TURYSTA-1: przez bramkę #1 → stacja (3/50)
+[00:17:19] TURYSTA-1: Wsiadł na krzesełko (przejazd #1)
+[00:17:19] TURYSTA-1: Przejazd w górę (4s)...
+[00:17:19] TURYSTA-11: fork PID=881
+[00:17:19] TURYSTA-11: start PID=881
+[00:17:19] TURYSTA-11: Rowerzysta (trasa 1), wiek 70, bilet typ 0 (15 PLN)
+[00:17:19] TURYSTA-12: fork PID=882
+[00:17:19] TURYSTA-12: start PID=882
+[00:17:19] TURYSTA-12: Rowerzysta (trasa 1), wiek 23, bilet typ 0 (20 PLN)
+[00:17:20] TURYSTA-3: przez bramkę #3 → stacja (4/50)
+[00:17:20] TURYSTA-3: Wsiadł na krzesełko (przejazd #1)
+[00:17:20] TURYSTA-3: Przejazd w górę (4s)...
+[00:17:20] TURYSTA-13: fork PID=883
+[00:17:20] TURYSTA-13: start PID=883
+[00:17:20] TURYSTA-13: Rowerzysta (trasa 1), wiek 55, bilet typ 0 (20 PLN)
+[00:17:20] TURYSTA-4: przez bramkę #3 → stacja (5/50)
+[00:17:20] TURYSTA-4: Wsiadł na krzesełko (przejazd #1)
+[00:17:20] TURYSTA-4: Przejazd w górę (4s)...
+[00:17:20] TURYSTA-9: przez bramkę #4 → stacja (6/50)
+[00:17:20] TURYSTA-9: Wsiadł na krzesełko (przejazd #1)
+[00:17:20] TURYSTA-9: Przejazd w górę (4s)...
+[00:17:20] TURYSTA-14: fork PID=884
+[00:17:20] TURYSTA-14: start PID=884
+[00:17:20] TURYSTA-14: Pieszy, wiek 72, bilet typ 0 (15 PLN)
+[00:17:20] TURYSTA-15: fork PID=885
+[00:17:20] TURYSTA-15: start PID=885
+[00:17:20] TURYSTA-15: Pieszy, wiek 33, bilet typ 0 (20 PLN)
+[00:17:20] PRACOWNIK1: Wysłano krzesełko #2 (zajęte: 1/36)
+[00:17:20] TURYSTA-6: przez bramkę #4 → stacja (7/50)
+[00:17:20] TURYSTA-6: Wsiadł na krzesełko (przejazd #1)
+[00:17:20] TURYSTA-6: Przejazd w górę (4s)...
+[00:17:20] TURYSTA-16: fork PID=886
+[00:17:20] TURYSTA-16: start PID=886
+[00:17:20] TURYSTA-11: przez bramkę #1 → stacja (8/50)
+[00:17:20] TURYSTA-16: Pieszy, wiek 56, bilet typ 0 (20 PLN)
+[00:17:20] TURYSTA-11: Wsiadł na krzesełko (przejazd #1)
+[00:17:20] TURYSTA-11: Przejazd w górę (4s)...
+[00:17:20] TURYSTA-12: przez bramkę #4 → stacja (9/50)
+[00:17:20] TURYSTA-12: Wsiadł na krzesełko (przejazd #1)
+[00:17:20] TURYSTA-12: Przejazd w górę (4s)...
+[00:17:20] TURYSTA-17: fork PID=887
+[00:17:20] TURYSTA-17: start PID=887
+[00:17:20] TURYSTA-17: Rowerzysta (trasa 2), wiek 31, bilet typ 0 (20 PLN)
+[00:17:21] TURYSTA-18: fork PID=888
+[00:17:21] TURYSTA-18: start PID=888
+[00:17:21] TURYSTA-18: Rowerzysta (trasa 1), wiek 9, bilet typ 0 (15 PLN)
+[00:17:21] TURYSTA-19: fork PID=889
+[00:17:21] TURYSTA-19: start PID=889
+[00:17:21] TURYSTA-19: Rowerzysta (trasa 3), wiek 73, bilet typ 0 (15 PLN)
+[00:17:21] TURYSTA-10: przez bramkę #3 → stacja (10/50)
+[00:17:21] TURYSTA-10: Wsiadł na krzesełko (przejazd #1)
+[00:17:21] TURYSTA-10: Przejazd w górę (4s)...
+[00:17:21] TURYSTA-20: fork PID=890
+[00:17:21] TURYSTA-20: start PID=890
+[00:17:21] TURYSTA-20: Pieszy, wiek 5, bilet typ 0 (15 PLN)
+[00:17:21] TURYSTA-21: fork PID=891
+[00:17:21] TURYSTA-21: start PID=891
+[00:17:21] TURYSTA-21: Rowerzysta (trasa 3), wiek 44, bilet typ 0 (20 PLN)
+[00:17:21] TURYSTA-7: przez bramkę #4 → stacja (11/50)
+[00:17:21] TURYSTA-7: Wsiadł na krzesełko (przejazd #1)
+[00:17:21] TURYSTA-7: Przejazd w górę (4s)...
+[00:17:21] TURYSTA-22: fork PID=892
+[00:17:21] TURYSTA-22: start PID=892
+[00:17:21] TURYSTA-22: Rowerzysta (trasa 2), wiek 32, bilet typ 0 (20 PLN)
+[00:17:22] TURYSTA-8: przez bramkę #2 → stacja (12/50)
+[00:17:22] TURYSTA-8: Wsiadł na krzesełko (przejazd #1)
+[00:17:22] TURYSTA-8: Przejazd w górę (4s)...
+[00:17:22] TURYSTA-13: przez bramkę #4 → stacja (13/50)
+[00:17:22] TURYSTA-13: Wsiadł na krzesełko (przejazd #1)
+[00:17:22] TURYSTA-13: Przejazd w górę (4s)...
+[00:17:22] TURYSTA-18: przez bramkę #1 → stacja (14/50)
+[00:17:22] TURYSTA-18: Wsiadł na krzesełko (przejazd #1)
+[00:17:22] TURYSTA-18: Przejazd w górę (4s)...
+[00:17:22] TURYSTA-23: fork PID=893
+[00:17:22] TURYSTA-23: start PID=893
+[00:17:22] TURYSTA-23: Rowerzysta (trasa 3), wiek 13, bilet typ 0 (20 PLN)
+[00:17:22] TURYSTA-24: fork PID=894
+[00:17:22] TURYSTA-24: start PID=894
+[00:17:22] TURYSTA-24: Pieszy, wiek 59, bilet typ 0 (20 PLN)
+[00:17:22] TURYSTA-25: fork PID=895
+[00:17:22] TURYSTA-25: start PID=895
+[00:17:22] TURYSTA-25: Rowerzysta (trasa 2), wiek 32, bilet typ 0 (20 PLN)
+[00:17:22] PRACOWNIK2: Turysta#2 opuścił (zajęte: 0/36)
+[00:17:22] TURYSTA-26: fork PID=896
+[00:17:22] TURYSTA-26: start PID=896
+[00:17:22] TURYSTA-26: Pieszy, wiek 41, bilet typ 0 (20 PLN)
+[00:17:22] TURYSTA-2: Dotarł na górę
+[00:17:22] TURYSTA-2: Pieszy - wejście na szlak pieszy (walkers=1)
+[00:17:22] TURYSTA-2: opuszcza system (na dole, stacja=13/50)
+[00:17:22] TURYSTA-2: koniec
+[00:17:22] TURYSTA-27: fork PID=897
+[00:17:22] TURYSTA-27: start PID=897
+[00:17:22] TURYSTA-27: Rowerzysta (trasa 2), wiek 59, bilet typ 0 (20 PLN)
+[00:17:23] TURYSTA-23: przez bramkę #3 → stacja (14/50)
+[00:17:23] TURYSTA-23: Wsiadł na krzesełko (przejazd #1)
+[00:17:23] TURYSTA-23: Przejazd w górę (4s)...
+[00:17:23] TURYSTA-28: fork PID=898
+[00:17:23] TURYSTA-28: start PID=898
+[00:17:23] TURYSTA-28: Rowerzysta (trasa 2), wiek 31, bilet typ 0 (20 PLN)
+[00:17:23] TURYSTA-14: przez bramkę #1 → stacja (15/50)
+[00:17:23] TURYSTA-14: Wsiadł na krzesełko (przejazd #1)
+[00:17:23] TURYSTA-14: Przejazd w górę (4s)...
+[00:17:23] TURYSTA-19: przez bramkę #3 → stacja (16/50)
+[00:17:23] TURYSTA-19: Wsiadł na krzesełko (przejazd #1)
+[00:17:23] TURYSTA-19: Przejazd w górę (4s)...
+[00:17:23] TURYSTA-29: fork PID=899
+[00:17:23] TURYSTA-29: start PID=899
+[00:17:23] TURYSTA-29: Rowerzysta (trasa 1), wiek 66, bilet typ 0 (15 PLN)
+[00:17:23] TURYSTA-5: Dotarł na górę
+[00:17:23] TURYSTA-5: Pieszy - wejście na szlak pieszy (walkers=2)
+[00:17:23] TURYSTA-5: opuszcza system (na dole, stacja=15/50)
+[00:17:23] TURYSTA-5: koniec
+[00:17:23] TURYSTA-15: przez bramkę #4 → stacja (16/50)
+[00:17:23] TURYSTA-15: Wsiadł na krzesełko (przejazd #1)
+[00:17:23] TURYSTA-15: Przejazd w górę (4s)...
+[00:17:23] TURYSTA-30: fork PID=900
+[00:17:23] TURYSTA-30: start PID=900
+[00:17:23] TURYSTA-30: Pieszy, wiek 17, bilet typ 0 (20 PLN)
+[00:17:23] KASJER: Bilet#1 typ2 wiek17=80.0PLN (sprzedanych: 1)
+[00:17:23] PRACOWNIK1: Wysłano krzesełko #3 (zajęte: 1/36)
+[00:17:23] TURYSTA-1: Dotarł na górę
+[00:17:23] TURYSTA-1: Pieszy - wejście na szlak pieszy (walkers=3)
+[00:17:23] TURYSTA-1: opuszcza system (na dole, stacja=15/50)
+[00:17:23] TURYSTA-1: koniec
+[00:17:23] TURYSTA-16: przez bramkę #1 → stacja (16/50)
+[00:17:23] TURYSTA-16: Wsiadł na krzesełko (przejazd #1)
+[00:17:23] TURYSTA-16: Przejazd w górę (4s)...
+[00:17:23] *** AUTO-TEST: Uruchamiam za 20s ***
+[00:17:23] TURYSTA-17: przez bramkę #3 → stacja (17/50)
+[00:17:23] TURYSTA-17: Wsiadł na krzesełko (przejazd #1)
+[00:17:23] TURYSTA-17: Przejazd w górę (4s)...
+[00:17:24] TURYSTA-3: Dotarł na górę
+[00:17:24] TURYSTA-3: Pieszy - wejście na szlak pieszy (walkers=4)
+[00:17:24] TURYSTA-3: opuszcza system (na dole, stacja=16/50)
+[00:17:24] TURYSTA-3: koniec
+[00:17:24] TURYSTA-4: Dotarł na górę
+[00:17:24] TURYSTA-9: Dotarł na górę
+[00:17:24] TURYSTA-4: Rowerzysta - trasa #1 (bikers=1)
+[00:17:24] TURYSTA-9: Pieszy - wejście na szlak pieszy (walkers=5)
+[00:17:24] TURYSTA-4: opuszcza system (na dole, stacja=15/50)
+[00:17:24] TURYSTA-9: opuszcza system (na dole, stacja=14/50)
+[00:17:24] TURYSTA-4: koniec
+[00:17:24] TURYSTA-9: koniec
+[00:17:24] TURYSTA-20: przez bramkę #3 → stacja (15/50)
+[00:17:24] TURYSTA-20: Wsiadł na krzesełko (przejazd #1)
+[00:17:24] TURYSTA-20: Przejazd w górę (4s)...
+[00:17:24] TURYSTA-6: Dotarł na górę
+[00:17:24] TURYSTA-6: Rowerzysta - trasa #1 (bikers=2)
+[00:17:24] TURYSTA-6: opuszcza system (na dole, stacja=14/50)
+[00:17:24] TURYSTA-6: koniec
+[00:17:24] TURYSTA-11: Dotarł na górę
+[00:17:24] TURYSTA-11: Rowerzysta - trasa #1 (bikers=3)
+[00:17:24] TURYSTA-11: opuszcza system (na dole, stacja=13/50)
+[00:17:24] TURYSTA-11: koniec
+[00:17:24] TURYSTA-21: przez bramkę #4 → stacja (14/50)
+[00:17:24] TURYSTA-21: Wsiadł na krzesełko (przejazd #1)
+[00:17:24] TURYSTA-21: Przejazd w górę (4s)...
+[00:17:24] TURYSTA-12: Dotarł na górę
+[00:17:24] TURYSTA-12: Rowerzysta - trasa #1 (bikers=4)
+[00:17:24] TURYSTA-12: opuszcza system (na dole, stacja=13/50)
+[00:17:24] TURYSTA-12: koniec
+[00:17:24] TURYSTA-22: przez bramkę #2 → stacja (14/50)
+[00:17:24] TURYSTA-22: Wsiadł na krzesełko (przejazd #1)
+[00:17:24] TURYSTA-22: Przejazd w górę (4s)...
+[00:17:24] TURYSTA-27: przez bramkę #3 → stacja (15/50)
+[00:17:24] TURYSTA-27: Wsiadł na krzesełko (przejazd #1)
+[00:17:24] TURYSTA-27: Przejazd w górę (4s)...
+[00:17:25] TURYSTA-24: przez bramkę #4 → stacja (16/50)
+[00:17:25] TURYSTA-24: Wsiadł na krzesełko (przejazd #1)
+[00:17:25] TURYSTA-24: Przejazd w górę (4s)...
+[00:17:25] TURYSTA-29: przez bramkę #2 → stacja (17/50)
+[00:17:25] TURYSTA-29: Wsiadł na krzesełko (przejazd #1)
+[00:17:25] TURYSTA-29: Przejazd w górę (4s)...
+[00:17:25] TURYSTA-10: Dotarł na górę
+[00:17:25] TURYSTA-10: Rowerzysta - trasa #2 (bikers=5)
+[00:17:25] TURYSTA-10: opuszcza system (na dole, stacja=16/50)
+[00:17:25] TURYSTA-10: koniec
+[00:17:25] TURYSTA-25: przez bramkę #2 → stacja (17/50)
+[00:17:25] TURYSTA-25: Wsiadł na krzesełko (przejazd #1)
+[00:17:25] TURYSTA-25: Przejazd w górę (4s)...
+[00:17:25] TURYSTA-30: przez bramkę #1 → stacja (18/50)
+[00:17:25] TURYSTA-30: Wsiadł na krzesełko (przejazd #1)
+[00:17:25] TURYSTA-30: Przejazd w górę (4s)...
+[00:17:25] TURYSTA-26: przez bramkę #3 → stacja (19/50)
+[00:17:25] TURYSTA-26: Wsiadł na krzesełko (przejazd #1)
+[00:17:25] TURYSTA-26: Przejazd w górę (4s)...
+[00:17:25] TURYSTA-7: Dotarł na górę
+[00:17:25] TURYSTA-7: Pieszy - wejście na szlak pieszy (walkers=6)
+[00:17:25] TURYSTA-7: opuszcza system (na dole, stacja=18/50)
+[00:17:25] TURYSTA-7: koniec
+[00:17:26] TURYSTA-8: Dotarł na górę
+[00:17:26] TURYSTA-8: Rowerzysta - trasa #3 (bikers=6)
+[00:17:26] TURYSTA-8: opuszcza system (na dole, stacja=17/50)
+[00:17:26] TURYSTA-8: koniec
+[00:17:26] TURYSTA-13: Dotarł na górę
+[00:17:26] TURYSTA-13: Rowerzysta - trasa #1 (bikers=7)
+[00:17:26] TURYSTA-13: opuszcza system (na dole, stacja=16/50)
+[00:17:26] TURYSTA-13: koniec
+[00:17:26] TURYSTA-18: Dotarł na górę
+[00:17:26] TURYSTA-18: Rowerzysta - trasa #1 (bikers=8)
+[00:17:26] TURYSTA-18: opuszcza system (na dole, stacja=15/50)
+[00:17:26] TURYSTA-18: koniec
+[00:17:26] TURYSTA-28: przez bramkę #2 → stacja (16/50)
+[00:17:26] TURYSTA-28: Wsiadł na krzesełko (przejazd #1)
+[00:17:26] TURYSTA-28: Przejazd w górę (4s)...
+[00:17:26] PRACOWNIK1: Wysłano krzesełko #4 (zajęte: 2/36)
+[00:17:27] TURYSTA-23: Dotarł na górę
+[00:17:27] TURYSTA-23: Rowerzysta - trasa #3 (bikers=9)
+[00:17:27] TURYSTA-23: opuszcza system (na dole, stacja=15/50)
+[00:17:27] TURYSTA-23: koniec
+[00:17:27] TURYSTA-14: Dotarł na górę
+[00:17:27] TURYSTA-14: Pieszy - wejście na szlak pieszy (walkers=7)
+[00:17:27] TURYSTA-19: Dotarł na górę
+[00:17:27] TURYSTA-14: opuszcza system (na dole, stacja=14/50)
+[00:17:27] TURYSTA-19: Rowerzysta - trasa #3 (bikers=10)
+[00:17:27] TURYSTA-14: koniec
+[00:17:27] TURYSTA-19: opuszcza system (na dole, stacja=13/50)
+[00:17:27] TURYSTA-19: koniec
+[00:17:27] TURYSTA-15: Dotarł na górę
+[00:17:27] TURYSTA-15: Pieszy - wejście na szlak pieszy (walkers=8)
+[00:17:27] TURYSTA-15: opuszcza system (na dole, stacja=12/50)
+[00:17:27] TURYSTA-15: koniec
+[00:17:27] PRACOWNIK2: Turysta#3 opuścił (zajęte: 1/36)
+[00:17:27] TURYSTA-16: Dotarł na górę
+[00:17:27] TURYSTA-16: Pieszy - wejście na szlak pieszy (walkers=9)
+[00:17:27] TURYSTA-16: opuszcza system (na dole, stacja=11/50)
+[00:17:27] TURYSTA-16: koniec
+[00:17:27] TURYSTA-17: Dotarł na górę
+[00:17:27] TURYSTA-17: Rowerzysta - trasa #2 (bikers=11)
+[00:17:27] TURYSTA-17: opuszcza system (na dole, stacja=10/50)
+[00:17:27] TURYSTA-17: koniec
+[00:17:28] TURYSTA-20: Dotarł na górę
+[00:17:28] TURYSTA-20: Pieszy - wejście na szlak pieszy (walkers=10)
+[00:17:28] TURYSTA-20: opuszcza system (na dole, stacja=9/50)
+[00:17:28] TURYSTA-20: koniec
+[00:17:28] TURYSTA-21: Dotarł na górę
+[00:17:28] TURYSTA-21: Rowerzysta - trasa #3 (bikers=12)
+[00:17:28] TURYSTA-21: opuszcza system (na dole, stacja=8/50)
+[00:17:28] TURYSTA-21: koniec
+[00:17:28] TURYSTA-22: Dotarł na górę
+[00:17:28] TURYSTA-22: Rowerzysta - trasa #2 (bikers=13)
+[00:17:28] TURYSTA-22: opuszcza system (na dole, stacja=7/50)
+[00:17:28] TURYSTA-22: koniec
+[00:17:28] TURYSTA-27: Dotarł na górę
+[00:17:28] TURYSTA-27: Rowerzysta - trasa #2 (bikers=14)
+[00:17:28] TURYSTA-27: opuszcza system (na dole, stacja=6/50)
+[00:17:28] TURYSTA-27: koniec
+[00:17:29] TURYSTA-24: Dotarł na górę
+[00:17:29] TURYSTA-24: Pieszy - wejście na szlak pieszy (walkers=11)
+[00:17:29] TURYSTA-24: opuszcza system (na dole, stacja=5/50)
+[00:17:29] TURYSTA-24: koniec
+[00:17:29] TURYSTA-29: Dotarł na górę
+[00:17:29] TURYSTA-29: Rowerzysta - trasa #1 (bikers=15)
+[00:17:29] TURYSTA-29: opuszcza system (na dole, stacja=4/50)
+[00:17:29] TURYSTA-29: koniec
+[00:17:29] TURYSTA-25: Dotarł na górę
+[00:17:29] TURYSTA-25: Rowerzysta - trasa #2 (bikers=16)
+[00:17:29] TURYSTA-25: opuszcza system (na dole, stacja=3/50)
+[00:17:29] TURYSTA-25: koniec
+[00:17:29] TURYSTA-30: Dotarł na górę
+[00:17:29] TURYSTA-30: Pieszy - wejście na szlak pieszy (walkers=12)
+[00:17:29] TURYSTA-30: opuszcza system (na dole, stacja=2/50)
+[00:17:29] TURYSTA-30: koniec
+[00:17:29] PRACOWNIK1: Wysłano krzesełko #5 (zajęte: 2/36)
+[00:17:29] TURYSTA-26: Dotarł na górę
+[00:17:29] TURYSTA-26: Pieszy - wejście na szlak pieszy (walkers=13)
+[00:17:29] TURYSTA-26: opuszcza system (na dole, stacja=1/50)
+[00:17:29] TURYSTA-26: koniec
+[00:17:30] TURYSTA-28: Dotarł na górę
+[00:17:30] TURYSTA-28: Rowerzysta - trasa #2 (bikers=17)
+[00:17:30] TURYSTA-28: opuszcza system (na dole, stacja=0/50)
+[00:17:30] TURYSTA-28: koniec
+[00:17:30] KASJER: Bilet#2 typ2 wiek12=80.0PLN (sprzedanych: 2)
+[00:17:32] PRACOWNIK2: Turysta#4 opuścił (zajęte: 1/36)
+[00:17:32] PRACOWNIK1: Wysłano krzesełko #6 (zajęte: 2/36)
+[00:17:35] PRACOWNIK1: Wysłano krzesełko #7 (zajęte: 3/36)
+[00:17:37] PRACOWNIK2: Turysta#5 opuścił (zajęte: 2/36)
+[00:17:38] PRACOWNIK1: Wysłano krzesełko #8 (zajęte: 3/36)
+[00:17:40] KASJER: Bilet#3 typ1 wiek13=50.0PLN (sprzedanych: 3)
+[00:17:41] PRACOWNIK1: Wysłano krzesełko #9 (zajęte: 4/36)
+[00:17:41] KASJER: Bilet#4 typ1 wiek25=50.0PLN (sprzedanych: 4)
+[00:17:42] PRACOWNIK2: Turysta#6 opuścił (zajęte: 3/36)
+[00:17:43] *** TEST STOP: SIGUSR1 ***
+[00:17:43] *** ZATRZYMANIE AWARYJNE (SIGUSR1) ***
+[00:17:44] KASJER: Awaria, Wstrzymanie pracy
+[00:17:45] PRACOWNIK1: Otrzymano sygnał zatrzymania od PID=867
+[00:17:51] *** TEST RESUME: SIGUSR2 ***
+[00:17:51] *** MAIN: WZNOWIENIE (SIGUSR2) ***
+[00:17:52] *** AUTO-TEST ZAKOŃCZONY ***
+[00:17:52] START: Glowna petla symulacji 60s
+[00:17:53] PRACOWNIK2: Turysta#7 opuścił (zajęte: 2/36)
+[00:17:53] PRACOWNIK1: Wysłano krzesełko #10 (zajęte: 3/36)
+[00:17:53] KASJER: Wznowienie pracy
+[00:17:56] PRACOWNIK1: Otrzymano sygnał wznowienia od PID=867
+[00:17:56] KASJER: Bilet#5 typ1 wiek68=37.5PLN (sprzedanych: 5)
+[00:17:56] PRACOWNIK1: Wysłano krzesełko #11 (zajęte: 4/36)
+[00:17:58] PRACOWNIK2: Turysta#8 opuścił (zajęte: 3/36)
+[00:17:58] KASJER: Bilet#6 typ0 wiek61=20.0PLN (sprzedanych: 6)
+[00:17:59] PRACOWNIK1: Wysłano krzesełko #12 (zajęte: 4/36)
+[00:17:59] KASJER: Bilet#7 typ2 wiek15=80.0PLN (sprzedanych: 7)
+[00:18:02] PRACOWNIK1: Wysłano krzesełko #13 (zajęte: 5/36)
+[00:18:03] PRACOWNIK2: Turysta#9 opuścił (zajęte: 4/36)
+[00:18:05] KASJER: Bilet#8 typ3 wiek51=120.0PLN (sprzedanych: 8)
+[00:18:05] PRACOWNIK1: Wysłano krzesełko #14 (zajęte: 5/36)
+[00:18:06] KASJER: Bilet#9 typ0 wiek68=15.0PLN (sprzedanych: 9)
+[00:18:07] STATUS: Stacja 0/50 | Przejsc 0 | Krzeselka 5/36 | Turysci 0/30
+[00:18:08] PRACOWNIK2: Turysta#10 opuścił (zajęte: 4/36)
+[00:18:08] PRACOWNIK1: Wysłano krzesełko #15 (zajęte: 5/36)
+[00:18:11] PRACOWNIK1: Wysłano krzesełko #16 (zajęte: 6/36)
+[00:18:13] PRACOWNIK2: Turysta#11 opuścił (zajęte: 5/36)
+[00:18:14] KASJER: Bilet#10 typ0 wiek72=15.0PLN (sprzedanych: 10)
+[00:18:14] PRACOWNIK1: Wysłano krzesełko #17 (zajęte: 6/36)
+[00:18:17] PRACOWNIK1: Wysłano krzesełko #18 (zajęte: 7/36)
+[00:18:18] PRACOWNIK2: Turysta#12 opuścił (zajęte: 6/36)
+[00:18:19] KASJER: Bilet#11 typ3 wiek23=120.0PLN (sprzedanych: 11)
+[00:18:20] PRACOWNIK1: Wysłano krzesełko #19 (zajęte: 7/36)
+[00:18:21] KASJER: Bilet#12 typ0 wiek68=15.0PLN (sprzedanych: 12)
+[00:18:22] STATUS: Stacja 0/50 | Przejsc 0 | Krzeselka 7/36 | Turysci 0/30
+[00:18:23] PRACOWNIK2: Turysta#13 opuścił (zajęte: 6/36)
+[00:18:23] PRACOWNIK1: Wysłano krzesełko #20 (zajęte: 7/36)
+[00:18:25] KASJER: Bilet#13 typ0 wiek5=15.0PLN (sprzedanych: 13)
+[00:18:26] PRACOWNIK1: Wysłano krzesełko #21 (zajęte: 8/36)
+[00:18:27] KASJER: Bilet#14 typ4 wiek35=150.0PLN (sprzedanych: 14)
+[00:18:28] PRACOWNIK2: Turysta#14 opuścił (zajęte: 7/36)
+[00:18:28] KASJER: Bilet#15 typ4 wiek60=150.0PLN (sprzedanych: 15)
+[00:18:29] PRACOWNIK1: Wysłano krzesełko #22 (zajęte: 8/36)
+[00:18:32] PRACOWNIK1: Wysłano krzesełko #23 (zajęte: 9/36)
+[00:18:33] PRACOWNIK2: Turysta#15 opuścił (zajęte: 8/36)
+[00:18:33] KASJER: Bilet#16 typ0 wiek52=20.0PLN (sprzedanych: 16)
+[00:18:35] KASJER: Bilet#17 typ4 wiek38=150.0PLN (sprzedanych: 17)
+[00:18:35] PRACOWNIK1: Wysłano krzesełko #24 (zajęte: 9/36)
+[00:18:37] STATUS: Stacja 0/50 | Przejsc 0 | Krzeselka 9/36 | Turysci 0/30
+[00:18:38] PRACOWNIK2: Turysta#16 opuścił (zajęte: 8/36)
+[00:18:38] KASJER: Bilet#18 typ3 wiek14=120.0PLN (sprzedanych: 18)
+[00:18:38] PRACOWNIK1: Wysłano krzesełko #25 (zajęte: 9/36)
+[00:18:41] PRACOWNIK1: Wysłano krzesełko #26 (zajęte: 10/36)
+[00:18:42] COUNTDOWN: 10s!
+[00:18:43] PRACOWNIK2: Turysta#17 opuścił (zajęte: 9/36)
+[00:18:43] KASJER: Bilet#19 typ1 wiek48=50.0PLN (sprzedanych: 19)
+[00:18:44] PRACOWNIK1: Wysłano krzesełko #27 (zajęte: 10/36)
+[00:18:46] KASJER: Bilet#20 typ2 wiek27=80.0PLN (sprzedanych: 20)
+[00:18:47] PRACOWNIK1: Wysłano krzesełko #28 (zajęte: 11/36)
+[00:18:47] COUNTDOWN: 5s!
+[00:18:48] PRACOWNIK2: Turysta#18 opuścił (zajęte: 10/36)
+[00:18:50] PRACOWNIK1: Wysłano krzesełko #29 (zajęte: 11/36)
+[00:18:51] KASJER: Bilet#21 typ4 wiek50=150.0PLN (sprzedanych: 21)
+[00:18:52] STATUS: Stacja 0/50 | Przejsc 0 | Krzeselka 11/36 | Turysci 0/30
+[00:18:52] Koniec symulacji
+[00:18:53] PRACOWNIK2: koniec pracy
+[00:18:53] KASJER: Zamkniecie. 21 biletow na 1567.5PLN
+[00:18:53] PRACOWNIK1: koniec pracy
+[00:18:57] Zamykanie kasjera PID=868
+[00:18:57] Kasjer zakonczony
+[00:18:57] Zamykanie pracownika na dole PID=869
+[00:18:57] PRACOWNIK1 zakonczony
+[00:18:57] Zamykanie pracownik na gorze PID=870
+[00:18:57] PRACOWNIK2 zakonczony
+[00:18:57] TURYSTA-1 zakonczony (PID=871)
+[00:18:57] TURYSTA-2 zakonczony (PID=872)
+[00:18:57] TURYSTA-3 zakonczony (PID=873)
+[00:18:57] TURYSTA-4 zakonczony (PID=874)
+[00:18:57] TURYSTA-5 zakonczony (PID=875)
+[00:18:57] TURYSTA-6 zakonczony (PID=876)
+[00:18:57] TURYSTA-7 zakonczony (PID=877)
+[00:18:57] TURYSTA-8 zakonczony (PID=878)
+[00:18:57] TURYSTA-9 zakonczony (PID=879)
+[00:18:57] TURYSTA-10 zakonczony (PID=880)
+[00:18:57] TURYSTA-11 zakonczony (PID=881)
+[00:18:57] TURYSTA-12 zakonczony (PID=882)
+[00:18:57] TURYSTA-13 zakonczony (PID=883)
+[00:18:57] TURYSTA-14 zakonczony (PID=884)
+[00:18:57] TURYSTA-15 zakonczony (PID=885)
+[00:18:57] TURYSTA-16 zakonczony (PID=886)
+[00:18:57] TURYSTA-17 zakonczony (PID=887)
+[00:18:57] TURYSTA-18 zakonczony (PID=888)
+[00:18:57] TURYSTA-19 zakonczony (PID=889)
+[00:18:57] TURYSTA-20 zakonczony (PID=890)
+[00:18:57] TURYSTA-21 zakonczony (PID=891)
+[00:18:57] TURYSTA-22 zakonczony (PID=892)
+[00:18:57] TURYSTA-23 zakonczony (PID=893)
+[00:18:57] TURYSTA-24 zakonczony (PID=894)
+[00:18:57] TURYSTA-25 zakonczony (PID=895)
+[00:18:57] TURYSTA-26 zakonczony (PID=896)
+[00:18:57] TURYSTA-27 zakonczony (PID=897)
+[00:18:57] TURYSTA-28 zakonczony (PID=898)
+[00:18:57] TURYSTA-29 zakonczony (PID=899)
+[00:18:57] TURYSTA-30 zakonczony (PID=900)
+[00:18:57] ==================================
+[00:18:57] 🏆 RAPORT KOŃCOWY:
+[00:18:57] Bilety sprzedane: 21/30
+[00:18:57] Przejazdy ogółem: 30 (średnio 1.4/turysta)
+[00:18:57] Piesi: 13 | Rowerzyści: 17
+[00:18:57] Stacja max: 0/50 | Krzesełka max: 11/36
+[00:18:57] ==================================

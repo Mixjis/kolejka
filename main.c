@@ -15,23 +15,49 @@
 #include <sys/msg.h>
 
 #include <signal.h>
+#include <errno.h>
 
 #define TOTAL_CHAIRS 72
+#define MAX_BUSY_CHAIRS 36
+
 #define NUM_TOURISTS 30
 #define SIM_DURATION 60
 
 #define MAX_STATION_CAPACITY 50
 #define ENTRY_GATES 4 
+#define PLATFORM_GATES 3
+#define EXIT_ROUTES 2
+
+#define TRAIL_T1 5 
+#define TRAIL_T2 8
+#define TRAIL_T3 12
+
+#define TICKET_SINGLE 0
+#define TICKET_TK1 1
+#define TICKET_TK2 2
+#define TICKET_TK3 3
+#define TICKET_DAILY 4
+
+// Struktury danych
+
+typedef struct {
+    int bikers;
+    int walkers;
+    int total_occupants;
+} ChairOccupancy;
 
 typedef struct {
     int is_running;
     int busy_chairs;
     int people_in_station;
+    int people_on_platform;
     int stop_selling;
     time_t start_time;
     time_t end_time;
     int emergency_stop;
     int total_passes;
+    int waiting_for_ack;
+    pid_t stop_initiator;
 } StationState;
 
 typedef struct {
@@ -41,6 +67,11 @@ typedef struct {
     int children_served;
     int bikers;
     int walkers;
+    int tk1_sold;
+    int tk2_sold;
+    int tk3_sold;
+    int daily_sold;
+    int single_sold;
 } DailyStats;
 
 typedef struct {
@@ -49,14 +80,28 @@ typedef struct {
     int age;
     int is_vip;
     int ticket_type;
+    time_t purchase_time;
     time_t first_use;
+    time_t expiry_time;
     int rides_count;
+    int rides_limit;
+    int is_valid;
+    int has_guardian;
+    float price_paid;
 } TicketRegistry;
 
 typedef struct {
+    int ticket_id;
+    time_t usage_time;
+    int gate_id;
+    char action[32];
+} TicketUsageLog;
+
+typedef struct {
     long mtype;         
-    int command;        // 1: STOP, 2: START, 3: ACK  
-    pid_t sender;       
+    int command;        // 1: STOP, 2: START, 3: ACK, 4: READY
+    pid_t sender; 
+    pid_t recipient;      
     char message[128]; 
 } WorkerMessage;
 
@@ -160,6 +205,7 @@ float calculate_ticket_price(int ticket_type, int age) {
 
 //Kasjer
 void kasjer_process(void) {
+    srand(time(NULL) ^ getpid());
     log_event("KASJER: Kasa otwarta PID=%d", getpid());
     
     int tickets_sold = 0;
@@ -277,6 +323,7 @@ void gorny_pracownik_process(void) {
 }
 
 void turysta_process(int tourist_id) {
+    srand(time(NULL) ^ getpid());
     log_event("TURYSTA-%d: start PID=%d", tourist_id, getpid());
     
     int is_biker = rand() % 4;  // 0=spacer, 1=T1, 2=T2, 3=T3
@@ -752,6 +799,23 @@ int main(void) {
         }
     }
 
+    // Podsumowanie
+    int total_tickets_sold = 0;
+    int total_rides = 0;
+    for (int i = 1; i <= NUM_TOURISTS; i++) {
+        total_tickets_sold += (tickets[i].ticket_id > 0 ? 1 : 0);
+        total_rides += tickets[i].rides_count;
+    }
+
+    log_event("==================================");
+    log_event("RAPORT KOŃCOWY:");
+    log_event("Bilety sprzedane: %d/%d", total_tickets_sold, NUM_TOURISTS);
+    log_event("Przejazdy ogółem: %d (średnio %.1f/turysta)", 
+            total_rides, (float)total_rides / total_tickets_sold);
+    log_event("Piesi: %d | Rowerzyści: %d", stats->walkers, stats->bikers);
+    log_event("Stacja max: %d/50 | Krzesełka max: %d/36", 
+            state->people_in_station, state->busy_chairs);
+    log_event("==================================");
 
     cleanup_ipc();
 
