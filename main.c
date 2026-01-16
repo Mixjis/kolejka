@@ -19,10 +19,8 @@
 
 #define TOTAL_CHAIRS 72
 #define MAX_BUSY_CHAIRS 36
-
 #define NUM_TOURISTS 30
 #define SIM_DURATION 60
-
 #define MAX_STATION_CAPACITY 50
 #define ENTRY_GATES 4 
 #define PLATFORM_GATES 3
@@ -38,8 +36,16 @@
 #define TICKET_TK3 3
 #define TICKET_DAILY 4
 
-// Struktury danych
+// Typy komunikatów
+#define MSG_TYPE_KASJER 1
+#define MSG_TYPE_WORKER_CTRL 2
+#define MSG_TYPE_WORKER_ACK 3
+#define MSG_TYPE_CHAIR_READY 4
+#define MSG_TYPE_CHAIR_LOADED 5
+#define MSG_TYPE_TOURIST_BASE 100
 
+
+// Struktury danych
 typedef struct {
     int bikers;
     int walkers;
@@ -58,6 +64,10 @@ typedef struct {
     int total_passes;
     int waiting_for_ack;
     pid_t stop_initiator;
+    pid_t worker1_pid;
+    pid_t worker2_pid;
+    int ack_received_from_w1;
+    int ack_received_from_w2;
 } StationState;
 
 typedef struct {
@@ -72,11 +82,12 @@ typedef struct {
     int tk3_sold;
     int daily_sold;
     int single_sold;
+    int with_guardian;
 } DailyStats;
 
 typedef struct {
     int ticket_id;
-    int tourist_type; 
+    int tourist_type;
     int age;
     int is_vip;
     int ticket_type;
@@ -87,7 +98,9 @@ typedef struct {
     int rides_limit;
     int is_valid;
     int has_guardian;
+    int guardian_id;
     float price_paid;
+    int is_biker;
 } TicketRegistry;
 
 typedef struct {
@@ -99,62 +112,59 @@ typedef struct {
 
 typedef struct {
     long mtype;
-    int command;        // 1: STOP, 2: START, 3: ACK, 4: READY
+    int command;
     pid_t sender;
     pid_t recipient;
     char message[128];
+    int chair_id;
+    int tourist_id;
 } WorkerMessage;
 
+// zmienne globalne
 char log_filename[] = "kolej_log.txt";
 FILE *log_file;
-
-
-int shm_tickets_id = -1; 
+int shm_tickets_id = -1;
 int shm_state_id = -1;
 int shm_stats_id = -1;
 int shm_usage_log_id = -1;
-
 int sem_log_id = -1;
 int sem_platform_id = -1;
 int sem_station_id = -1;  // 1 semafor
 int sem_entry_id = -1;    // 4 semafory
 int sem_exit_id = -1;
-
+int sem_chair_load_id = -1;
+int sem_state_mutex_id = -1;
 int msg_queue_id = -1;
 
 TicketRegistry *tickets;
 StationState *state;
 DailyStats *stats;
 TicketUsageLog *usage_logs;
-
+static int usage_log_index = 0;
 
 // Czyszczenie IPC
 
 void cleanup_ipc(void) {
     // pamiec wspoldzielona
-    if (state != (void *)-1)  shmdt(state);
-    if (stats != (void *)-1)  shmdt(stats);
+    if (state != (void *)-1) shmdt(state);
+    if (stats != (void *)-1) shmdt(stats);
     if (tickets != (void *)-1) shmdt(tickets);
     if (usage_logs != (void *)-1) shmdt(usage_logs);
-
-    if (shm_state_id != -1)   shmctl(shm_state_id, IPC_RMID, NULL);
-    if (shm_stats_id != -1)   shmctl(shm_stats_id, IPC_RMID, NULL);
+    // shm
+    if (shm_state_id != -1) shmctl(shm_state_id, IPC_RMID, NULL);
+    if (shm_stats_id != -1) shmctl(shm_stats_id, IPC_RMID, NULL);
     if (shm_tickets_id != -1) shmctl(shm_tickets_id, IPC_RMID, NULL);
-
     if (shm_usage_log_id != -1) shmctl(shm_usage_log_id, IPC_RMID, NULL);
-    //semafory
+    // semafory
     if (sem_log_id != -1) semctl(sem_log_id, 0, IPC_RMID);
     if (sem_station_id != -1) semctl(sem_station_id, 0, IPC_RMID);
     if (sem_entry_id != -1) semctl(sem_entry_id, 0, IPC_RMID);
     if (sem_platform_id != -1) semctl(sem_platform_id, 0, IPC_RMID);
     if (sem_exit_id != -1) semctl(sem_exit_id, 0, IPC_RMID);
-
+    if (sem_chair_load_id != -1) semctl(sem_chair_load_id, 0, IPC_RMID);
+    if (sem_state_mutex_id != -1) semctl(sem_state_mutex_id, 0, IPC_RMID);
     // kolejka komunikatow
-
-    if (msg_queue_id != -1) {
-        msgctl(msg_queue_id, IPC_RMID, NULL);
-    }
-
+    if (msg_queue_id != -1) msgctl(msg_queue_id, IPC_RMID, NULL);
 }
 
 // Semafory
@@ -167,8 +177,11 @@ union semun {
 
 void sem_wait(int sem_id, int sem_num) {
     struct sembuf sb = {sem_num, -1, 0};
-    if (semop(sem_id, &sb, 1) == -1) {
-        perror("semop wait");
+    while (semop(sem_id, &sb, 1) == -1) {
+        if (errno != EINTR) {
+            perror("semop wait");
+            break;
+        }
     }
 }
 
@@ -189,9 +202,7 @@ void log_event(const char *format, ...) {
     time_t now = time(NULL);
     struct tm *tm_info = localtime(&now);
     char timestamp[10];
-    //strcpy(timestamp, ctime(&now)); 
     strftime(timestamp, sizeof(timestamp), "%H:%M:%S", tm_info);
-    
     FILE *f = fopen(log_filename, "a");
     if (f) {
         fprintf(f, "[%s] ", timestamp);
@@ -200,7 +211,7 @@ void log_event(const char *format, ...) {
         va_end(args);
         fprintf(f, "\n");
         fclose(f);
-    }else {
+    } else {
         perror("fopen log_event");
     }
 
@@ -225,8 +236,7 @@ int validate_ticket(int ticket_id) {
         tickets[ticket_id].is_valid = 0;
         return 0;
     }
-    
-    if (tickets[ticket_id].rides_limit > 0 && 
+    if (tickets[ticket_id].rides_limit > 0 &&
         tickets[ticket_id].rides_count >= tickets[ticket_id].rides_limit) {
         log_event("ERROR: Bilet %d osiągnął limit przejazdów", ticket_id);
         tickets[ticket_id].is_valid = 0;
@@ -246,15 +256,35 @@ float calculate_ticket_price(int ticket_type, int age) {
 
 // rejestracja użycia biletu
 void register_ticket_usage(int ticket_id, int gate_id, const char *action) {
-    static int log_index = 0;
-    if (log_index >= NUM_TOURISTS * 10) return;
-    usage_logs[log_index].ticket_id = ticket_id;
-    usage_logs[log_index].usage_time = time(NULL);
-    usage_logs[log_index].gate_id = gate_id;
-    strncpy(usage_logs[log_index].action, action, 31);
-    usage_logs[log_index].action[31] = '\0';
-    log_index++;
+    sem_wait(sem_log_id, 0);
+    if (usage_log_index < NUM_TOURISTS * 10) {
+        usage_logs[usage_log_index].ticket_id = ticket_id;
+        usage_logs[usage_log_index].usage_time = time(NULL);
+        usage_logs[usage_log_index].gate_id = gate_id;
+        strncpy(usage_logs[usage_log_index].action, action, 31);
+        usage_logs[usage_log_index].action[31] = '\0';
+        usage_log_index++;
+    }
+    sem_signal(sem_log_id, 0);
+}
 
+// znalezienie opiekuna dla dziecka
+int find_guardian(int child_id, int child_age) {
+    if (child_age >= 8) return -1;
+    for (int i = 1; i <= NUM_TOURISTS; i++) {
+        if (i == child_id) continue;
+        if (tickets[i].age < 18) continue;
+        int children_count = 0;
+        for (int j = 1; j <= NUM_TOURISTS; j++) {
+            if (tickets[j].guardian_id == i) {
+                children_count++;
+            }
+        }
+        if (children_count < 2) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 //Kasjer
@@ -264,79 +294,115 @@ void kasjer_process(void) {
     
     int tickets_sold = 0;
     float total_revenue = 0.0f;
-    
+    WorkerMessage msg;
+
     while (state->is_running && !state->stop_selling) {
-        sleep(rand() % 3 + 1);
+        if (msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long), MSG_TYPE_KASJER, IPC_NOWAIT) == -1) {
+            if (errno == ENOMSG) {
+                continue;
+            }
+            if (errno == EINTR) continue;
+            if (errno == EIDRM) break;
+            break;
+
+        }
         
         if (state->emergency_stop) {
             log_event("KASJER: Awaria, Wstrzymanie pracy");
             while (state->emergency_stop && state->is_running) {
-                sleep(1);
+                pause();
             }
             log_event("KASJER: Wznowienie pracy");
         }
         
-        if (rand() % 3 && tickets_sold < NUM_TOURISTS) {
-            tickets_sold++;
-            int age = 5 + rand() % 70;
-            int ticket_type = rand() % 5;
-            int is_vip = (rand() % 100 < 1) ? 1 : 0;
-            float price = calculate_ticket_price(ticket_type, age);
-            total_revenue += price;
-            
-            // SHM
-            tickets[tickets_sold].ticket_id = tickets_sold;
-            tickets[tickets_sold].age = age;
-            tickets[tickets_sold].ticket_type = ticket_type;
-            tickets[tickets_sold].is_vip = is_vip;
-            tickets[tickets_sold].purchase_time = time(NULL);
-            tickets[tickets_sold].first_use = 0;
-            tickets[tickets_sold].is_valid = 1;
-            tickets[tickets_sold].price_paid = price;
-            tickets[tickets_sold].rides_count = 0;
-            tickets[tickets_sold].has_guardian = 0;
+        if (msg.command == 100) { // BUY_REQUEST
+            int tourist_id = msg.sender;
+            if (tickets_sold < NUM_TOURISTS && tourist_id >= 1 && tourist_id <= NUM_TOURISTS) {
+                tickets_sold++;
+                int age = 5 + rand() % 70;
+                int ticket_type = rand() % 5;
+                int is_vip = (rand() % 100 < 1) ? 1 : 0;
+                int is_biker = rand() % 4;
+                float price = calculate_ticket_price(ticket_type, age);
+                total_revenue += price;
+                tickets[tourist_id].ticket_id = tourist_id;
+                tickets[tourist_id].age = age;
+                tickets[tourist_id].ticket_type = ticket_type;
+                tickets[tourist_id].is_vip = is_vip;
+                tickets[tourist_id].is_biker = is_biker;
+                tickets[tourist_id].purchase_time = time(NULL);
+                tickets[tourist_id].first_use = 0;
+                tickets[tourist_id].is_valid = 1;
+                tickets[tourist_id].price_paid = price;
+                tickets[tourist_id].rides_count = 0;
+                tickets[tourist_id].has_guardian = 0;
+                tickets[tourist_id].guardian_id = -1;
+                if (age < 8) {
+                    int guardian_id = find_guardian(tourist_id, age);
+                    if (guardian_id != -1) {
+                        tickets[tourist_id].has_guardian = 1;
+                        tickets[tourist_id].guardian_id = guardian_id;
+                        sem_wait(sem_log_id, 0);
+                        stats->with_guardian++;
+                        sem_signal(sem_log_id, 0);
+                    }
+                }
+                switch (ticket_type) {
+                    case TICKET_SINGLE:
+                        tickets[tourist_id].rides_limit = 1;
+                        tickets[tourist_id].expiry_time = 0;
+                        sem_wait(sem_log_id, 0);
+                        stats->single_sold++;
+                        sem_signal(sem_log_id, 0);
+                        break;
 
-            
-            switch (ticket_type) {
-                case TICKET_SINGLE:
-                    tickets[tickets_sold].rides_limit = 1;
-                    tickets[tickets_sold].expiry_time = 0;
-                    stats->single_sold++;
-                    break;
-                case TICKET_TK1:
-                    tickets[tickets_sold].rides_limit = 3;
-                    tickets[tickets_sold].expiry_time = time(NULL) + 3600;
-                    stats->tk1_sold++;
-                    break;
-                case TICKET_TK2:
-                    tickets[tickets_sold].rides_limit = 5;
-                    tickets[tickets_sold].expiry_time = time(NULL) + 7200;
-                    stats->tk2_sold++;
-                    break;
-                case TICKET_TK3:
-                    tickets[tickets_sold].rides_limit = 10;
-                    tickets[tickets_sold].expiry_time = time(NULL) + 14400;
-                    stats->tk3_sold++;
-                    break;
-                case TICKET_DAILY:
-                    tickets[tickets_sold].rides_limit = 0;
-                    tickets[tickets_sold].expiry_time = state->end_time;
-                    stats->daily_sold++;
-                    break;
+                    case TICKET_TK1:
+                        tickets[tourist_id].rides_limit = 3;
+                        tickets[tourist_id].expiry_time = time(NULL) + 3600;
+                        sem_wait(sem_log_id, 0);
+                        stats->tk1_sold++;
+                        sem_signal(sem_log_id, 0);
+                        break;
+
+                    case TICKET_TK2:
+                        tickets[tourist_id].rides_limit = 5;
+                        tickets[tourist_id].expiry_time = time(NULL) + 7200;
+                        sem_wait(sem_log_id, 0);
+                        stats->tk2_sold++;
+                        sem_signal(sem_log_id, 0);
+                        break;
+
+                    case TICKET_TK3:
+                        tickets[tourist_id].rides_limit = 10;
+                        tickets[tourist_id].expiry_time = time(NULL) + 14400;
+                        sem_wait(sem_log_id, 0);
+                        stats->tk3_sold++;
+                        sem_signal(sem_log_id, 0);
+                        break;
+
+                    case TICKET_DAILY:
+                        tickets[tourist_id].rides_limit = 0;
+                        tickets[tourist_id].expiry_time = state->end_time;
+                        sem_wait(sem_log_id, 0);
+                        stats->daily_sold++;
+                        sem_signal(sem_log_id, 0);
+                        break;
+
+                }
+                const char *ticket_names[] = {"Jednorazowy", "TK1", "TK2", "TK3", "Dzienny"};
+                const char *vip_str = is_vip ? "VIP" : "";
+                log_event("KASJER: Sprzedano bilet #%d dla Turysty-%d (%s, %d lat) %s",
+                    tickets_sold, tourist_id, ticket_names[ticket_type], age, vip_str);
+                WorkerMessage reply;
+                reply.mtype = msg.recipient;
+                reply.command = 3;
+                reply.sender = getpid();
+                strcpy(reply.message, "BILET GOTOWY");
+                msgsnd(msg_queue_id, &reply, sizeof(reply) - sizeof(long), 0);
             }
-
-            const char *ticket_names[] = {"Jednorazowy", "TK1", "TK2", "TK3", "Dzienny"};
-            log_event("KASJER: Bilet#%d %s wiek=%d %s=%.1fPLN (sprzedanych: %d)", 
-
-                      tickets_sold, ticket_names[ticket_type], age,
-
-                      is_vip ? "VIP" : "", price, tickets_sold);
-
-
         }
     }
-    
-    log_event("KASJER: Zamkniecie. %d biletow na %.1fPLN", tickets_sold, total_revenue);
+    log_event("KASJER: Zamkniecie. %d biletow za %.1fPLN", tickets_sold, total_revenue);
     exit(0);
 }
 
@@ -911,8 +977,6 @@ int main(void) {
         } else if (pid > 0) {
             tourist_pids[i-1] = pid;
             log_event("TURYSTA-%d: fork PID=%d", i, pid);
-            struct timespec ts = {0, 200000000L};
-            nanosleep(&ts, NULL);
         } else {
             perror("fork turysta");
             cleanup_ipc();

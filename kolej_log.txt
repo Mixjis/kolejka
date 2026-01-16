@@ -1,0 +1,313 @@
+[17:47:39] SYSTEM: IPC zainicjalizowane
+[17:47:39] SYSTEM: Handlery SIGUSR1/2 skonfigurowane
+[17:47:39] ==========================================
+[17:47:39] Rozpoczęcie Symulacji Kolei Linowej
+[17:47:39] Czas rozpoczecia: 17:47:39
+[17:47:39] Krzeslka:: 72
+[17:47:39] Bramki wejsciowe: 4, bramki peronu: 3
+[17:47:39] Czas trwania: 60 sekund
+[17:47:39] ===========================================
+[17:47:39] Kasjer uruchomiony PID=512
+[17:47:39] KASJER: Kasa otwarta PID=512
+[17:47:39] PRACOWNIK1 uruchomiony PID=513
+[17:47:39] PRACOWNIK1: start (PID=513)
+[17:47:39] PRACOWNIK2 uruchomiony PID=514
+[17:47:39] PRACOWNIK2: start (PID=514)
+[17:47:39] PRACOWNIK1: Wysłano krzesełko #1 (zajęte: 1/36)
+[17:47:39] TURYSTA-1: fork PID=515
+[17:47:39] TURYSTA-1: start PID=515
+[17:47:39] PRACOWNIK2: Turysta#1 opuścił (zajęte: 0/36)
+[17:47:39] TURYSTA-1: Pieszy, wiek 0, bilet typ Jednorazowy
+[17:47:39] TURYSTA-2: fork PID=516
+[17:47:39] TURYSTA-2: start PID=516
+[17:47:39] TURYSTA-2: Pieszy, wiek 0, bilet typ Jednorazowy
+[17:47:39] TURYSTA-3: fork PID=517
+[17:47:39] TURYSTA-3: start PID=517
+[17:47:39] TURYSTA-3: Rowerzysta (trasa 1), wiek 0, bilet typ Jednorazowy
+[17:47:40] TURYSTA-4: fork PID=518
+[17:47:40] TURYSTA-4: start PID=518
+[17:47:40] TURYSTA-4: Rowerzysta (trasa 3), wiek 0, bilet typ Jednorazowy
+[17:47:40] TURYSTA-5: fork PID=519
+[17:47:40] TURYSTA-5: start PID=519
+[17:47:40] TURYSTA-5: Pieszy, wiek 0, bilet typ Jednorazowy
+[17:47:40] ERROR: Bilet 1 nieważny
+[17:47:40] TURYSTA-1: Bilet nieważny, koniec
+[17:47:40] TURYSTA-6: fork PID=520
+[17:47:40] TURYSTA-6: start PID=520
+[17:47:40] TURYSTA-6: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:40] ERROR: Bilet 2 nieważny
+[17:47:40] TURYSTA-2: Bilet nieważny, koniec
+[17:47:40] TURYSTA-7: fork PID=521
+[17:47:40] TURYSTA-7: start PID=521
+[17:47:40] TURYSTA-7: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:40] ERROR: Bilet 3 nieważny
+[17:47:40] TURYSTA-3: Bilet nieważny, koniec
+[17:47:40] TURYSTA-8: fork PID=522
+[17:47:40] TURYSTA-8: start PID=522
+[17:47:40] TURYSTA-8: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:41] TURYSTA-9: fork PID=523
+[17:47:41] TURYSTA-9: start PID=523
+[17:47:41] TURYSTA-9: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:41] ERROR: Bilet 5 nieważny
+[17:47:41] TURYSTA-5: Bilet nieważny, koniec
+[17:47:41] TURYSTA-10: fork PID=524
+[17:47:41] TURYSTA-10: start PID=524
+[17:47:41] TURYSTA-10: Rowerzysta (trasa 3), wiek 0, bilet typ Jednorazowy
+[17:47:41] ERROR: Bilet 6 nieważny
+[17:47:41] TURYSTA-6: Bilet nieważny, koniec
+[17:47:41] TURYSTA-11: fork PID=525
+[17:47:41] TURYSTA-11: start PID=525
+[17:47:41] TURYSTA-11: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:41] TURYSTA-12: fork PID=526
+[17:47:41] TURYSTA-12: start PID=526
+[17:47:41] TURYSTA-12: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:41] ERROR: Bilet 8 nieważny
+[17:47:41] TURYSTA-8: Bilet nieważny, koniec
+[17:47:41] TURYSTA-13: fork PID=527
+[17:47:41] TURYSTA-13: start PID=527
+[17:47:41] TURYSTA-13: Rowerzysta (trasa 1), wiek 0, bilet typ Jednorazowy
+[17:47:42] ERROR: Bilet 4 nieważny
+[17:47:42] TURYSTA-4: Bilet nieważny, koniec
+[17:47:42] ERROR: Bilet 9 nieważny
+[17:47:42] TURYSTA-9: Bilet nieważny, koniec
+[17:47:42] TURYSTA-14: fork PID=528
+[17:47:42] TURYSTA-14: start PID=528
+[17:47:42] TURYSTA-14: Pieszy, wiek 0, bilet typ Jednorazowy
+[17:47:42] TURYSTA-15: fork PID=529
+[17:47:42] TURYSTA-15: start PID=529
+[17:47:42] TURYSTA-15: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:42] KASJER: Bilet#1 Dzienny wiek=28 =150.0PLN (sprzedanych: 1)
+[17:47:42] PRACOWNIK1: Wysłano krzesełko #2 (zajęte: 1/36)
+[17:47:42] ERROR: Bilet 11 nieważny
+[17:47:42] TURYSTA-11: Bilet nieważny, koniec
+[17:47:42] TURYSTA-16: fork PID=530
+[17:47:42] TURYSTA-16: start PID=530
+[17:47:42] TURYSTA-16: Pieszy, wiek 0, bilet typ Jednorazowy
+[17:47:42] ERROR: Bilet 7 nieważny
+[17:47:42] TURYSTA-7: Bilet nieważny, koniec
+[17:47:42] TURYSTA-17: fork PID=531
+[17:47:42] TURYSTA-17: start PID=531
+[17:47:42] TURYSTA-17: Rowerzysta (trasa 1), wiek 0, bilet typ Jednorazowy
+[17:47:42] TURYSTA-18: fork PID=532
+[17:47:42] TURYSTA-18: start PID=532
+[17:47:42] TURYSTA-18: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:43] ERROR: Bilet 14 nieważny
+[17:47:43] TURYSTA-14: Bilet nieważny, koniec
+[17:47:43] TURYSTA-19: fork PID=533
+[17:47:43] TURYSTA-19: start PID=533
+[17:47:43] TURYSTA-19: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:43] ERROR: Bilet 10 nieważny
+[17:47:43] TURYSTA-10: Bilet nieważny, koniec
+[17:47:43] TURYSTA-20: fork PID=534
+[17:47:43] TURYSTA-20: start PID=534
+[17:47:43] TURYSTA-20: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:43] TURYSTA-21: fork PID=535
+[17:47:43] TURYSTA-21: start PID=535
+[17:47:43] TURYSTA-21: Rowerzysta (trasa 3), wiek 0, bilet typ Jednorazowy
+[17:47:43] ERROR: Bilet 12 nieważny
+[17:47:43] TURYSTA-12: Bilet nieważny, koniec
+[17:47:43] ERROR: Bilet 17 nieważny
+[17:47:43] TURYSTA-17: Bilet nieważny, koniec
+[17:47:43] TURYSTA-22: fork PID=536
+[17:47:43] TURYSTA-22: start PID=536
+[17:47:43] TURYSTA-22: Pieszy, wiek 0, bilet typ Jednorazowy
+[17:47:43] ERROR: Bilet 13 nieważny
+[17:47:43] TURYSTA-13: Bilet nieważny, koniec
+[17:47:43] TURYSTA-23: start PID=537
+[17:47:43] TURYSTA-23: fork PID=537
+[17:47:43] TURYSTA-23: Rowerzysta (trasa 3), wiek 0, bilet typ Jednorazowy
+[17:47:44] TURYSTA-24: fork PID=538
+[17:47:44] TURYSTA-24: start PID=538
+[17:47:44] TURYSTA-24: Rowerzysta (trasa 3), wiek 0, bilet typ Jednorazowy
+[17:47:44] ERROR: Bilet 15 nieważny
+[17:47:44] TURYSTA-15: Bilet nieważny, koniec
+[17:47:44] TURYSTA-25: fork PID=539
+[17:47:44] TURYSTA-25: start PID=539
+[17:47:44] TURYSTA-25: Pieszy, wiek 0, bilet typ Jednorazowy
+[17:47:44] KASJER: Bilet#2 TK3 wiek=11 =120.0PLN (sprzedanych: 2)
+[17:47:44] PRACOWNIK2: Turysta#2 opuścił (zajęte: 0/36)
+[17:47:44] ERROR: Bilet 16 nieważny
+[17:47:44] TURYSTA-16: Bilet nieważny, koniec
+[17:47:44] TURYSTA-26: fork PID=540
+[17:47:44] TURYSTA-26: start PID=540
+[17:47:44] TURYSTA-26: Pieszy, wiek 0, bilet typ Jednorazowy
+[17:47:44] ERROR: Bilet 22 nieważny
+[17:47:44] TURYSTA-22: Bilet nieważny, koniec
+[17:47:44] TURYSTA-27: fork PID=541
+[17:47:44] TURYSTA-27: start PID=541
+[17:47:44] TURYSTA-27: Rowerzysta (trasa 3), wiek 0, bilet typ Jednorazowy
+[17:47:44] ERROR: Bilet 18 nieważny
+[17:47:44] TURYSTA-18: Bilet nieważny, koniec
+[17:47:45] TURYSTA-28: fork PID=542
+[17:47:45] TURYSTA-28: start PID=542
+[17:47:45] TURYSTA-28: Pieszy, wiek 0, bilet typ Jednorazowy
+[17:47:45] ERROR: Bilet 19 nieważny
+[17:47:45] TURYSTA-19: Bilet nieważny, koniec
+[17:47:45] TURYSTA-29: fork PID=543
+[17:47:45] TURYSTA-29: start PID=543
+[17:47:45] TURYSTA-29: Rowerzysta (trasa 1), wiek 0, bilet typ Jednorazowy
+[17:47:45] ERROR: Bilet 20 nieważny
+[17:47:45] TURYSTA-20: Bilet nieważny, koniec
+[17:47:45] ERROR: Bilet 25 nieważny
+[17:47:45] TURYSTA-25: Bilet nieważny, koniec
+[17:47:45] TURYSTA-30: fork PID=544
+[17:47:45] TURYSTA-30: start PID=544
+[17:47:45] TURYSTA-30: Rowerzysta (trasa 2), wiek 0, bilet typ Jednorazowy
+[17:47:45] PRACOWNIK1: Wysłano krzesełko #3 (zajęte: 1/36)
+[17:47:45] ERROR: Bilet 21 nieważny
+[17:47:45] TURYSTA-21: Bilet nieważny, koniec
+[17:47:45] ***EMERGENCY TEST: Uruchamiam za 10s ***
+[17:47:45] ERROR: Bilet 23 nieważny
+[17:47:45] TURYSTA-23: Bilet nieważny, koniec
+[17:47:46] ERROR: Bilet 28 nieważny
+[17:47:46] TURYSTA-28: Bilet nieważny, koniec
+[17:47:46] ERROR: Bilet 24 nieważny
+[17:47:46] TURYSTA-24: Bilet nieważny, koniec
+[17:47:46] ERROR: Bilet 29 nieważny
+[17:47:46] TURYSTA-29: Bilet nieważny, koniec
+[17:47:46] ERROR: Bilet 26 nieważny
+[17:47:46] TURYSTA-26: Bilet nieważny, koniec
+[17:47:46] ERROR: Bilet 27 nieważny
+[17:47:46] TURYSTA-27: Bilet nieważny, koniec
+[17:47:47] ERROR: Bilet 30 nieważny
+[17:47:47] TURYSTA-30: Bilet nieważny, koniec
+[17:47:47] KASJER: Bilet#3 TK3 wiek=59 =120.0PLN (sprzedanych: 3)
+[17:47:48] PRACOWNIK1: Wysłano krzesełko #4 (zajęte: 2/36)
+[17:47:49] PRACOWNIK2: Turysta#3 opuścił (zajęte: 1/36)
+[17:47:51] KASJER: Bilet#4 TK1 wiek=60 =50.0PLN (sprzedanych: 4)
+[17:47:51] PRACOWNIK1: Wysłano krzesełko #5 (zajęte: 2/36)
+[17:47:53] KASJER: Bilet#5 TK1 wiek=6 =37.5PLN (sprzedanych: 5)
+[17:47:54] KASJER: Bilet#6 TK3 wiek=60 =120.0PLN (sprzedanych: 6)
+[17:47:54] PRACOWNIK1: Wysłano krzesełko #6 (zajęte: 3/36)
+[17:47:54] PRACOWNIK2: Turysta#4 opuścił (zajęte: 2/36)
+[17:47:55] KASJER: Bilet#7 Jednorazowy wiek=64 =20.0PLN (sprzedanych: 7)
+[17:47:55] *** TEST STOP: SIGUSR1 ***
+[17:47:55] *** ZATRZYMANIE AWARYJNE (SIGUSR1) PID=511 ***
+[17:47:55] MAIN: Czekanie na ACK od pracowników...
+[17:47:57] KASJER: Awaria, Wstrzymanie pracy
+[17:47:57] PRACOWNIK1: Otrzymano sygnał zatrzymania od PID=511
+[17:47:59] PRACOWNIK2: Otrzymano STOP od PID=511: AWARYJNY STOP
+[17:48:01] *** TEST RESUME: SIGUSR2 ***
+[17:48:01] *** WZNOWIENIE (SIGUSR2) PID=511 ***
+[17:48:02] *** AUTO-TEST ZAKOŃCZONY ***
+[17:48:02] START: Główna pętla symulacji 60s
+[17:48:03] KASJER: Wznowienie pracy
+[17:48:03] KASJER: Bilet#8 TK3 wiek=17 =120.0PLN (sprzedanych: 8)
+[17:48:03] PRACOWNIK1: Wysłano krzesełko #7 (zajęte: 3/36)
+[17:48:03] PRACOWNIK2: Turysta#5 opuścił (zajęte: 2/36)
+[17:48:04] KASJER: Bilet#9 TK3 wiek=43 =120.0PLN (sprzedanych: 9)
+[17:48:05] KASJER: Bilet#10 Jednorazowy wiek=70 =15.0PLN (sprzedanych: 10)
+[17:48:06] PRACOWNIK1: Wysłano krzesełko #8 (zajęte: 3/36)
+[17:48:08] PRACOWNIK2: Turysta#6 opuścił (zajęte: 2/36)
+[17:48:09] PRACOWNIK1: Otrzymano sygnał START od PID=511
+[17:48:09] PRACOWNIK1: Wysłano krzesełko #9 (zajęte: 3/36)
+[17:48:10] KASJER: Bilet#11 Dzienny wiek=74 =112.5PLN (sprzedanych: 11)
+[17:48:12] KASJER: Bilet#12 TK3 wiek=44 =120.0PLN (sprzedanych: 12)
+[17:48:12] PRACOWNIK1: Wysłano krzesełko #10 (zajęte: 4/36)
+[17:48:13] PRACOWNIK2: Otrzymano RESUME od PID=511
+[17:48:13] PRACOWNIK2: Turysta#7 opuścił (zajęte: 3/36)
+[17:48:15] PRACOWNIK1: Wysłano krzesełko #11 (zajęte: 4/36)
+[17:48:16] KASJER: Bilet#13 TK1 wiek=69 =37.5PLN (sprzedanych: 13)
+[17:48:17] STATUS: Stacja 0/50 | Peron 0 | Przejść 0 | Krzesełka 4/36
+[17:48:18] PRACOWNIK2: Turysta#8 opuścił (zajęte: 3/36)
+[17:48:18] PRACOWNIK1: Wysłano krzesełko #12 (zajęte: 4/36)
+[17:48:19] KASJER: Bilet#14 Dzienny wiek=61 =150.0PLN (sprzedanych: 14)
+[17:48:21] PRACOWNIK1: Wysłano krzesełko #13 (zajęte: 5/36)
+[17:48:23] PRACOWNIK2: Turysta#9 opuścił (zajęte: 4/36)
+[17:48:24] PRACOWNIK1: Wysłano krzesełko #14 (zajęte: 5/36)
+[17:48:26] KASJER: Bilet#15 TK1 wiek=59 =50.0PLN (sprzedanych: 15)
+[17:48:27] PRACOWNIK1: Wysłano krzesełko #15 (zajęte: 6/36)
+[17:48:28] PRACOWNIK2: Turysta#10 opuścił (zajęte: 5/36)
+[17:48:29] KASJER: Bilet#16 Dzienny wiek=47 =150.0PLN (sprzedanych: 16)
+[17:48:30] KASJER: Bilet#17 TK1 wiek=68 =37.5PLN (sprzedanych: 17)
+[17:48:30] PRACOWNIK1: Wysłano krzesełko #16 (zajęte: 6/36)
+[17:48:32] STATUS: Stacja 0/50 | Peron 0 | Przejść 0 | Krzesełka 6/36
+[17:48:33] PRACOWNIK2: Turysta#11 opuścił (zajęte: 5/36)
+[17:48:33] PRACOWNIK1: Wysłano krzesełko #17 (zajęte: 6/36)
+[17:48:36] PRACOWNIK1: Wysłano krzesełko #18 (zajęte: 7/36)
+[17:48:38] PRACOWNIK2: Turysta#12 opuścił (zajęte: 6/36)
+[17:48:39] PRACOWNIK1: Wysłano krzesełko #19 (zajęte: 7/36)
+[17:48:41] KASJER: Bilet#18 TK1 wiek=34 =50.0PLN (sprzedanych: 18)
+[17:48:42] KASJER: Bilet#19 Jednorazowy wiek=33 =20.0PLN (sprzedanych: 19)
+[17:48:42] PRACOWNIK1: Wysłano krzesełko #20 (zajęte: 8/36)
+[17:48:43] PRACOWNIK2: Turysta#13 opuścił (zajęte: 7/36)
+[17:48:44] KASJER: Bilet#20 Dzienny wiek=45 =150.0PLN (sprzedanych: 20)
+[17:48:45] PRACOWNIK1: Wysłano krzesełko #21 (zajęte: 8/36)
+[17:48:46] KASJER: Bilet#21 TK1 wiek=60 =50.0PLN (sprzedanych: 21)
+[17:48:47] STATUS: Stacja 0/50 | Peron 0 | Przejść 0 | Krzesełka 8/36
+[17:48:48] PRACOWNIK2: Turysta#14 opuścił (zajęte: 7/36)
+[17:48:48] PRACOWNIK1: Wysłano krzesełko #22 (zajęte: 8/36)
+[17:48:49] KASJER: Bilet#22 Jednorazowy wiek=18 =20.0PLN (sprzedanych: 22)
+[17:48:51] PRACOWNIK1: Wysłano krzesełko #23 (zajęte: 9/36)
+[17:48:52] KASJER: Bilet#23 TK1 wiek=71 =37.5PLN (sprzedanych: 23)
+[17:48:52] COUNTDOWN: 10s!
+[17:48:53] PRACOWNIK2: Turysta#15 opuścił (zajęte: 8/36)
+[17:48:53] KASJER: Bilet#24 TK2 wiek=8 =60.0PLN (sprzedanych: 24)
+[17:48:54] PRACOWNIK1: Wysłano krzesełko #24 (zajęte: 9/36)
+[17:48:54] KASJER: Bilet#25 TK1 wiek=34 =50.0PLN (sprzedanych: 25)
+[17:48:57] PRACOWNIK1: Wysłano krzesełko #25 (zajęte: 10/36)
+[17:48:57] COUNTDOWN: 5s!
+[17:48:58] PRACOWNIK2: Turysta#16 opuścił (zajęte: 9/36)
+[17:49:00] PRACOWNIK1: Wysłano krzesełko #26 (zajęte: 10/36)
+[17:49:01] KASJER: Bilet#26 TK3 wiek=38 =120.0PLN (sprzedanych: 26)
+[17:49:02] STATUS: Stacja 0/50 | Peron 0 | Przejść 0 | Krzesełka 10/36
+[17:49:02] Koniec symulacji
+[17:49:03] PRACOWNIK2: koniec pracy
+[17:49:03] PRACOWNIK1: koniec pracy
+[17:49:04] KASJER: Bilet#27 Dzienny wiek=69 =112.5PLN (sprzedanych: 27)
+[17:49:04] KASJER: Zamkniecie. 27 biletow na 2200.0PLN
+[17:49:07] Zamykanie kasjera PID=512
+[17:49:07] Kasjer zakończony
+[17:49:07] Zamykanie pracownika na dole PID=513
+[17:49:07] PRACOWNIK1 zakonczony
+[17:49:07] Zamykanie pracownik na gorze PID=514
+[17:49:07] PRACOWNIK2 zakonczony
+[17:49:07] TURYSTA-1 zakonczony (PID=515)
+[17:49:07] TURYSTA-2 zakonczony (PID=516)
+[17:49:07] TURYSTA-3 zakonczony (PID=517)
+[17:49:07] TURYSTA-4 zakonczony (PID=518)
+[17:49:07] TURYSTA-5 zakonczony (PID=519)
+[17:49:07] TURYSTA-6 zakonczony (PID=520)
+[17:49:07] TURYSTA-7 zakonczony (PID=521)
+[17:49:07] TURYSTA-8 zakonczony (PID=522)
+[17:49:07] TURYSTA-9 zakonczony (PID=523)
+[17:49:07] TURYSTA-10 zakonczony (PID=524)
+[17:49:07] TURYSTA-11 zakonczony (PID=525)
+[17:49:07] TURYSTA-12 zakonczony (PID=526)
+[17:49:07] TURYSTA-13 zakonczony (PID=527)
+[17:49:07] TURYSTA-14 zakonczony (PID=528)
+[17:49:07] TURYSTA-15 zakonczony (PID=529)
+[17:49:07] TURYSTA-16 zakonczony (PID=530)
+[17:49:07] TURYSTA-17 zakonczony (PID=531)
+[17:49:07] TURYSTA-18 zakonczony (PID=532)
+[17:49:07] TURYSTA-19 zakonczony (PID=533)
+[17:49:07] TURYSTA-20 zakonczony (PID=534)
+[17:49:07] TURYSTA-21 zakonczony (PID=535)
+[17:49:07] TURYSTA-22 zakonczony (PID=536)
+[17:49:07] TURYSTA-23 zakonczony (PID=537)
+[17:49:07] TURYSTA-24 zakonczony (PID=538)
+[17:49:07] TURYSTA-25 zakonczony (PID=539)
+[17:49:07] TURYSTA-26 zakonczony (PID=540)
+[17:49:07] TURYSTA-27 zakonczony (PID=541)
+[17:49:07] TURYSTA-28 zakonczony (PID=542)
+[17:49:07] TURYSTA-29 zakonczony (PID=543)
+[17:49:07] TURYSTA-30 zakonczony (PID=544)
+[17:49:07] ==================================
+[17:49:07] RAPORT KOŃCOWY:
+[17:49:07] __________________________________
+[17:49:07] BILETY:
+[17:49:07] Bilety sprzedane: 27/30
+[17:49:07] Jednorazowe: 4 | TK1: 9 | TK2: 1 | TK3: 7 | Dzienne: 6
+[17:49:07] __________________________________
+[17:49:07] PRZEJAZDY:
+[17:49:07] Ogółem: 0 (średnio 0.0/turysta)
+[17:49:07] Piesi: 0 | Rowerzyści: 0
+[17:49:07] __________________________________
+[17:49:07] OBSŁUGA:
+[17:49:07]   VIP: 0 | Dzieci (<10lat): 0
+[17:49:07]   Przejść przez bramki: 0
+[17:49:07] __________________________________
+[17:49:07] INNE:
+[17:49:07] Max osób na stacji: 0/50
+[17:49:07] Max krzesełek zajętych: 10/36
+[17:49:07] ═══════════════════════════════════════════════
