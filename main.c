@@ -529,124 +529,163 @@ void gorny_pracownik_process(void) {
 }
 
 void turysta_process(int tourist_id) {
-    srand(time(NULL) ^ getpid());
-    log_event("TURYSTA-%d: start PID=%d", tourist_id, getpid());
-    
-    // 0=spacer, 1=T1, 2=T2, 3=T3
-    int is_biker = rand() % 4;  
-    int age = tickets[tourist_id].age;  // 5-75 lat
-    int ticket_type = tickets[tourist_id].ticket_type;
+    srand(time(NULL) ^ getpid() ^ tourist_id);
+
+    // Zakup biletu
+    WorkerMessage req;
+    req.mtype = MSG_TYPE_KASJER;
+    req.sender = tourist_id;
+    req.recipient = MSG_TYPE_TOURIST_BASE + tourist_id;
+    req.command = 100;
+    strcpy(req.message, "POPROSZE BILET");
+    if (msgsnd(msg_queue_id, &req, sizeof(req) - sizeof(long), 0) == -1) {
+        perror("msgsnd buy");
+        exit(1);
+    }
+
+    // Czekanie na bilet 
+    WorkerMessage resp;
+    int got_ticket = 0;
+    time_t wait_start = time(NULL);
+    while (!got_ticket && (time(NULL) - wait_start) < 10) {
+        if (msgrcv(msg_queue_id, &resp, sizeof(resp) - sizeof(long),
+            MSG_TYPE_TOURIST_BASE + tourist_id, IPC_NOWAIT) != -1) {
+            got_ticket = 1;
+            break;
+        }
+    }
+    if (!got_ticket) {
+        log_event("TURYSTA-%d: Timeout oczekiwania na bilet!", tourist_id);
+        exit(0);
+    }
+
+    //pobieranie danych biletu
+    int age = tickets[tourist_id].age;
     int is_vip = tickets[tourist_id].is_vip;
+    int is_biker = tickets[tourist_id].is_biker;
+    int has_guardian = tickets[tourist_id].has_guardian;
+    int guardian_id = tickets[tourist_id].guardian_id;
      
     
     char type_str[64];
     if (is_biker == 0) strcpy(type_str, "Pieszy");
-    else sprintf(type_str, "Rowerzysta (trasa %d)", is_biker);
-    
-
-    const char *ticket_names[] = {"Jednorazowy", "TK1", "TK2", "TK3", "Dzienny"};
-    log_event("TURYSTA-%d: %s, wiek %d, bilet typ %s%s", tourist_id, type_str, age, ticket_names[ticket_type], is_vip ? " VIP" : "");
-    
-
-    sleep(rand() % 2 + 1);
+    else sprintf(type_str, "Rowerzysta (trasa T%d)", is_biker);
+    log_event("TURYSTA-%d: Ma bilet: %s, %d lat, VIP=%d, Opiekun=%d",tourist_id, type_str, age, is_vip, guardian_id);
     
     // Walidacja biletu
 
     if (!validate_ticket(tourist_id)) {
-        log_event("TURYSTA-%d: Bilet nieważny, koniec", tourist_id);
+        log_event("TURYSTA-%d: Bilet nieważny!", tourist_id);
         exit(0);
     }
     
-    // wejscie
+    
 
-    int gate = rand() % ENTRY_GATES;
-
-    if (is_vip) {
-        log_event("TURYSTA-%d: VIP - priorytet na bramce #%d", tourist_id, gate+1);
+    if (age < 8 && !has_guardian) {
+        log_event("TURYSTA-%d: BŁĄD - Dziecko <8 lat bez opiekuna! Odrzucono.", tourist_id);
+        exit(0);
     }
 
-    sem_wait(sem_entry_id, gate); // Bramka
-    register_ticket_usage(tourist_id, gate, "WEJSCIE_STACJA");
+    if (age < 8 && has_guardian) {
+        log_event("TURYSTA-%d: Czekam na opiekuna (ID=%d)", tourist_id, guardian_id);
+        time_t wait = time(NULL);
+        while ((time(NULL) - wait) < 10) {
+            if (tickets[guardian_id].is_valid) break;
+        }
+    }
 
-    sem_wait(sem_station_id, 0); // Pojemność 
-    state->people_in_station++;
-    state->total_passes++;
+    // wejscie
 
-    log_event("TURYSTA-%d: przez bramkę #%d → stacja (%d/%d)", tourist_id, gate+1, state->people_in_station, MAX_STATION_CAPACITY);
-    sem_signal(sem_entry_id, gate);   // zwolnienie bramki
-    
+    if (!is_vip) {
+        int gate = rand() % ENTRY_GATES;
+        sem_wait(sem_entry_id, gate);
+        register_ticket_usage(tourist_id, gate, "WEJSCIE_BRAMKA");
+        sem_wait(sem_station_id, 0);
+        sem_wait(sem_state_mutex_id, 0);
+        state->people_in_station++;
+        int in_station = state->people_in_station;
+        sem_signal(sem_state_mutex_id, 0);
+        log_event("TURYSTA-%d: Weszło przez bramkę %d (w stacji: %d)",
+            tourist_id, gate, in_station);
+        sem_signal(sem_entry_id, gate);
+    } else {
+        log_event("TURYSTA-%d: VIP - omija kolejkę!", tourist_id);
+        sem_wait(sem_log_id, 0);
+        stats->vip_served++;
+        sem_signal(sem_log_id, 0);
+    }
 
     // Bramki peronu (3 bramki)
 
-    int platform_gate = rand() % PLATFORM_GATES;
+    int platform_gate = tourist_id % PLATFORM_GATES;
     sem_wait(sem_platform_id, platform_gate);
+    sem_wait(sem_state_mutex_id, 0);
     state->people_on_platform++;
+    int on_platform = state->people_on_platform;
+    sem_signal(sem_state_mutex_id, 0);
     register_ticket_usage(tourist_id, platform_gate, "WEJSCIE_PERON");
-    log_event("TURYSTA-%d: Wejście na peron przez bramkę #%d (%d osób na peronie)", tourist_id, platform_gate+1, state->people_on_platform);
-    sem_signal(sem_platform_id, platform_gate);
+    log_event("TURYSTA-%d: Wchodzi na krzesełko! (na peronie: %d)", tourist_id, on_platform);
 
-    // Zwolnienie pojemności stacji
-
-    if (state->people_in_station > 0) {
-        state->people_in_station--;
+    if (!is_vip) {
+        sem_wait(sem_state_mutex_id, 0);
+        if (state->people_in_station > 0) {
+            state->people_in_station--;
+        }
+        sem_signal(sem_state_mutex_id, 0);
+        sem_signal(sem_station_id, 0);
     }
 
-    // oczekiwanie na krzesełko
-    while (state->is_running && state->busy_chairs >= MAX_BUSY_CHAIRS) {
-        log_event("TURYSTA-%d: Oczekuje na krzesełko (zajęte: %d/%d)...", tourist_id, state->busy_chairs, MAX_BUSY_CHAIRS);
-        sleep(2);
-    }
-
-    if (!state->is_running) {
-        log_event("TURYSTA-%d: koniec - brak krzeseł", tourist_id);
-        exit(0);
-    }
-
-    // Wejście na krzesełko
-
+    // Załadunek
     tickets[tourist_id].rides_count++;
     if (tickets[tourist_id].first_use == 0) {
         tickets[tourist_id].first_use = time(NULL);
     }
 
-    log_event("TURYSTA-%d: Wsiadł na krzesełko (przejazd #%d/%d)", 
-              tourist_id, tickets[tourist_id].rides_count,
-              tickets[tourist_id].rides_limit > 0 ? tickets[tourist_id].rides_limit : 999);
+    // Sygnał do P1: załadowano
+    sem_signal(sem_chair_load_id, 0);
 
+    // Wyjście z wyciągu
+    int exit_route = rand() % EXIT_ROUTES;
+    sem_wait(sem_exit_id, exit_route);
+    register_ticket_usage(tourist_id, exit_route, "WYJSCIE_GORA");
+    sem_signal(sem_exit_id, exit_route);
+    sem_wait(sem_state_mutex_id, 0);
     if (state->people_on_platform > 0) {
         state->people_on_platform--;
     }
-
-    // jazda w góre
-
-    log_event("TURYSTA-%d: Przejazd w górę ...", tourist_id);
-    sleep(4);
-    log_event("TURYSTA-%d: Dotarł na górę", tourist_id);
+    sem_signal(sem_state_mutex_id, 0);
 
     // Wyjście z górnej stacji (2 drogi)
 
-    int exit_route = rand() % EXIT_ROUTES;
-    sem_wait(sem_exit_id, exit_route);
-    log_event("TURYSTA-%d: Wyjście drogą #%d", tourist_id, exit_route+1);
-    sem_signal(sem_exit_id, exit_route);
-
     if (is_biker == 0) {
+        sem_wait(sem_log_id, 0);
         stats->walkers++;
-        log_event("TURYSTA-%d: Pieszy - wejście na szlak pieszy (walkers=%d)", tourist_id, stats->walkers);
-            sleep(rand() % 3 + 2);
-
+        sem_signal(sem_log_id, 0);
+        int walk_time = rand() % 3 + 2;
+        register_ticket_usage(tourist_id, 0, "TRASA_SPACER");
+        log_event("TURYSTA-%d: Spacer trasą (%ds)", tourist_id, walk_time);
     } else {
+        sem_wait(sem_log_id, 0);
         stats->bikers++;
+        sem_signal(sem_log_id, 0);
         int trail_time = (is_biker == 1) ? TRAIL_T1 : (is_biker == 2) ? TRAIL_T2 : TRAIL_T3;
-        log_event("TURYSTA-%d: Rowerzysta - trasa T%d (bikers=%d)", tourist_id, is_biker, stats->bikers);
-        sleep(trail_time);
+        char trail_name[32];
+        sprintf(trail_name, "TRASA_T%d", is_biker);
+        register_ticket_usage(tourist_id, is_biker, trail_name);
+        log_event("TURYSTA-%d: Rower trasą T%d (%ds)", tourist_id, is_biker, trail_time);
     }
 
+    sem_wait(sem_log_id, 0);
     stats->total_rides++;
-    if (is_vip) stats->vip_served++;
-    if (age < 10) stats->children_served++;
+    sem_signal(sem_log_id, 0);
 
-    log_event("TURYSTA-%d: koniec", tourist_id);
+    if (age < 10) {
+        sem_wait(sem_log_id, 0);
+        stats->children_served++;
+        sem_signal(sem_log_id, 0);
+    }
+
+    log_event("TURYSTA-%d: koniec trasy.", tourist_id);
     exit(0);
 }
 
