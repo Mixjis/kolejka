@@ -410,43 +410,64 @@ void kasjer_process(void) {
 void dolny_pracownik_process(void) {
     log_event("PRACOWNIK1: start (PID=%d)", getpid());
     
+    state->worker1_pid = getpid();
     WorkerMessage msg;
     int chair_count = 0;
     
     while (state->is_running) {
         // Odbiór komunikatów
-        if (msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 1, IPC_NOWAIT) != -1) {
+        if (msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long), MSG_TYPE_WORKER_CTRL, IPC_NOWAIT) != -1) {
             if (msg.command == 1) {
-                log_event("PRACOWNIK1: Otrzymano sygnał zatrzymania od PID=%d", msg.sender);
-
+                log_event("PRACOWNIK1: Otrzymano sygnał STOP");
                 WorkerMessage ack;
-                ack.mtype = 2;
+                ack.mtype = MSG_TYPE_WORKER_ACK;
                 ack.command = 3; // ACK
                 ack.sender = getpid();
                 ack.recipient = msg.sender;
-                strcpy(ack.message, "ACK STOP");
+                strcpy(ack.message, "ACK STOP W1");
                 if (msgsnd(msg_queue_id, &ack, sizeof(ack) - sizeof(long), 0) == -1) {
                     perror("msgsnd ACK");
                 }
 
                 // Czekanie na wznowienie
                 while (state->emergency_stop && state->is_running) {
-                    sleep(1);
+                    pause();
                 }
             } else if (msg.command == 2) {
-                log_event("PRACOWNIK1: Otrzymano sygnał START od PID=%d", msg.sender);
+                log_event("PRACOWNIK1: Otrzymano sygnał START");
             }
         }
         
         // Wysyłanie krzesła
-        if (!state->emergency_stop && state->is_running && state->busy_chairs < MAX_BUSY_CHAIRS) {
-            chair_count++;
-            state->busy_chairs++;
-            log_event("PRACOWNIK1: Wysłano krzesełko #%d (zajęte: %d/%d)", 
-                     chair_count, state->busy_chairs, MAX_BUSY_CHAIRS);
-            sleep(3);
-        } else {
-            sleep(1);
+        if (!state->emergency_stop && state->is_running) {
+            sem_wait(sem_state_mutex_id, 0);
+            int can_load = (state->busy_chairs < MAX_BUSY_CHAIRS);
+            sem_signal(sem_state_mutex_id, 0);
+
+            if (can_load) {
+                chair_count++;
+                sem_wait(sem_state_mutex_id, 0);
+                state->busy_chairs++;
+                int current_busy = state->busy_chairs;
+                sem_signal(sem_state_mutex_id, 0);
+
+                // Sygnał CHAIR_READY do P2
+                WorkerMessage ready_msg;
+                ready_msg.mtype = MSG_TYPE_CHAIR_READY;
+                ready_msg.command = 4;
+                ready_msg.sender = getpid();
+                ready_msg.chair_id = chair_count;
+                sprintf(ready_msg.message, "Krzesełko %d Gotowe", chair_count);
+                msgsnd(msg_queue_id, &ready_msg, sizeof(ready_msg) - sizeof(long), 0);
+
+                // Otwórz bramkę peronu
+                int platform_gate = chair_count % PLATFORM_GATES;
+                sem_signal(sem_platform_id, platform_gate);
+                log_event("PRACOWNIK1: Podstawiono krzesełko #%d (busy=%d), otwarto bramkę %d",chair_count, current_busy, platform_gate);
+                // Czekaj na załadunek
+                sem_wait(sem_chair_load_id, 0);
+                log_event("PRACOWNIK1: Krzesełko #%d załadowane, ruszam", chair_count);
+            }
         }
     }
     
@@ -457,45 +478,49 @@ void dolny_pracownik_process(void) {
 // Pracownik na górze kolejki
 void gorny_pracownik_process(void) {
     log_event("PRACOWNIK2: start (PID=%d)", getpid());
-    
+    state->worker2_pid = getpid();
     WorkerMessage msg_in;
-    int tourist_leave = 0;
-    
+    int chairs_received = 0;
+
     while (state->is_running) {
         // Odczytaj komunikaty
-        if (msgrcv(msg_queue_id, &msg_in, sizeof(msg_in) - sizeof(long), 2, IPC_NOWAIT) != -1) {
+        if (msgrcv(msg_queue_id, &msg_in, sizeof(msg_in) - sizeof(long), MSG_TYPE_WORKER_CTRL, IPC_NOWAIT) != -1) {
             if (msg_in.command == 1) {
-                log_event("PRACOWNIK2: Otrzymano STOP od PID=%d: %s", msg_in.sender, msg_in.message);
+                log_event("PRACOWNIK2: Otrzymano sygnał STOP");
 
                 WorkerMessage ack;
-                ack.mtype = 1;
+                ack.mtype = MSG_TYPE_WORKER_ACK;
                 ack.command = 3; // ACK
                 ack.sender = getpid();
                 ack.recipient = msg_in.sender;
-                strcpy(ack.message, "ACK STOP");
+                strcpy(ack.message, "ACK STOP W2");
 
                 if (msgsnd(msg_queue_id, &ack, sizeof(ack) - sizeof(long), 0) == -1) {
                     perror("msgsnd ACK");
                 }
 
                 while (state->emergency_stop && state->is_running) {
-                    sleep(1);
+                    pause();
                 }
             } else if (msg_in.command == 2) {
-                log_event("PRACOWNIK2: Otrzymano RESUME od PID=%d", msg_in.sender);
+                log_event("PRACOWNIK2: Otrzymano sygnał START");
             }
         }
         
-        // wyslanie turysty
-        if (!state->emergency_stop && state->busy_chairs > 0 && state->is_running) {
-            tourist_leave++;
-            state->busy_chairs--;
-            log_event("PRACOWNIK2: Turysta#%d opuścił (zajęte: %d/%d)", 
-                      tourist_leave, state->busy_chairs, MAX_BUSY_CHAIRS);
-            
-            sleep(5);
-        } else {
-            sleep(1);
+        // Rozładunek krzesełek
+        if (!state->emergency_stop && state->is_running) {
+            if (msgrcv(msg_queue_id, &msg_in, sizeof(msg_in) - sizeof(long),
+                MSG_TYPE_CHAIR_READY, IPC_NOWAIT) != -1) {
+                if (msg_in.command == 4) { // CHAIR_READY
+                    chairs_received++;
+                    log_event("PRACOWNIK2: Odebrano krzesełko #%d, rozładunek", msg_in.chair_id);
+                    sem_wait(sem_state_mutex_id, 0);
+                    state->busy_chairs--;
+                    int current_busy = state->busy_chairs;
+                    sem_signal(sem_state_mutex_id, 0);
+                    log_event("PRACOWNIK2: Krzesełko #%d rozładowane (busy=%d)",msg_in.chair_id, current_busy);
+                }
+            }
         }
     }
     
