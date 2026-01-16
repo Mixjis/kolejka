@@ -20,7 +20,7 @@
 #define TOTAL_CHAIRS 72
 #define MAX_BUSY_CHAIRS 36
 #define NUM_TOURISTS 30
-#define SIM_DURATION 60
+#define SIM_DURATION 40
 #define MAX_STATION_CAPACITY 50
 #define ENTRY_GATES 4 
 #define PLATFORM_GATES 3
@@ -696,28 +696,40 @@ void emergency_stop_handler(int sig) {
         log_event("*** ZATRZYMANIE AWARYJNE (SIGUSR1) PID=%d ***", getpid());
         state->emergency_stop = 1;
         state->stop_initiator = getpid();
-        state->waiting_for_ack = 1;
+        state->ack_received_from_w1 = 0;
+        state->ack_received_from_w2 = 0;
 
+        WorkerMessage msg;
+        msg.mtype = MSG_TYPE_WORKER_CTRL;
+        msg.command = 1; // STOP
+        msg.sender = getpid();
+        strcpy(msg.message, "AWARYJNY STOP");
 
-        WorkerMessage msg1, msg2;
-        msg1.mtype = 1;
-        msg1.command = 1;
-        msg1.sender = getpid();
-        strcpy(msg1.message, "AWARYJNY STOP");
+        msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 0);
+        log_event("MAIN: Czekam na ACK od pracowników...");
+        time_t wait_start = time(NULL);
+        WorkerMessage ack;
 
-        msg2.mtype = 2;
-        msg2.command = 1;
-        msg2.sender = getpid();
-        strcpy(msg2.message, "AWARYJNY STOP");
-        
-        if (msgsnd(msg_queue_id, &msg1, sizeof(msg1) - sizeof(long), 0) == -1) {
-            perror("msgsnd emergency stop 1");
+        while ((!state->ack_received_from_w1 || !state->ack_received_from_w2) && (time(NULL) - wait_start) < 5) {
+            if (msgrcv(msg_queue_id, &ack, sizeof(ack) - sizeof(long),
+                MSG_TYPE_WORKER_ACK, IPC_NOWAIT) != -1) {
+                if (ack.command == 3) { // ACK
+                    if (ack.sender == state->worker1_pid) {
+                        state->ack_received_from_w1 = 1;
+                        log_event("MAIN: ACK otrzymany od PRACOWNIK1");
+                    } else if (ack.sender == state->worker2_pid) {
+                        state->ack_received_from_w2 = 1;
+                        log_event("MAIN: ACK otrzymany od PRACOWNIK2");
+                    }
+                }
+            }
         }
-        if (msgsnd(msg_queue_id, &msg2, sizeof(msg2) - sizeof(long), 0) == -1) {
-            perror("msgsnd emergency stop 2");
-        }
 
-        log_event("MAIN: Czekanie na ACK od pracowników...");
+        if (state->ack_received_from_w1 && state->ack_received_from_w2) {
+            log_event("MAIN: Oba ACK otrzymane - system zatrzymany");
+        } else {
+            log_event("MAIN: OSTRZEŻENIE - Nie wszystkie ACK otrzymane w czasie");
+        }
     }
 }
 
@@ -726,31 +738,23 @@ void resume_handler(int sig) {
     if (state->emergency_stop) {
         log_event("*** WZNOWIENIE (SIGUSR2) PID=%d ***", getpid());
         
-        WorkerMessage msg1, msg2;
-
-        msg1.mtype = 1;
-        msg1.command = 2;
-        msg1.sender = getpid();
-        strcpy(msg1.message, "WZNOWIENIE");
-
-        msg2.mtype = 2;
-        msg2.command = 2;
-        msg2.sender = getpid();
-
-        strcpy(msg2.message, "WZNOWIENIE");
+        WorkerMessage msg;
+        msg.mtype = MSG_TYPE_WORKER_CTRL;
+        msg.command = 2; // START
+        msg.sender = getpid();
+        strcpy(msg.message, "WZNOWIENIE");
         
-        if (msgsnd(msg_queue_id, &msg1, sizeof(msg1) - sizeof(long), 0) == -1) {
-            perror("msgsnd resume 1");
-        }
-
-        if (msgsnd(msg_queue_id, &msg2, sizeof(msg2) - sizeof(long), 0) == -1) {
-            perror("msgsnd resume 2");
-        }
+        msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 0);
         
-        sleep(1);
         state->emergency_stop = 0;
-        state->waiting_for_ack = 0;
+        state->ack_received_from_w1 = 0;
+        state->ack_received_from_w2 = 0;
+        log_event("MAIN: System wznowiony");
     }
+}
+
+void sigchld_handler(int sig) {
+    while (waitpid(-1, NULL, WNOHANG) > 0);
 }
 
 //main
@@ -796,7 +800,7 @@ int main(void) {
     }
 
     state = (StationState *)shmat(shm_state_id, NULL, 0);
-    stats = (DailyStats  *)shmat(shm_stats_id,  NULL, 0);
+    stats = (DailyStats *)shmat(shm_stats_id,  NULL, 0);
     tickets = (TicketRegistry *)shmat(shm_tickets_id, NULL, 0);
     usage_logs = (TicketUsageLog *)shmat(shm_usage_log_id, NULL, 0);
 
@@ -821,7 +825,6 @@ int main(void) {
         return 1;
     }
 
-    
     arg.val = 1;
     if (semctl(sem_log_id, 0, SETVAL, arg) == -1) {
         perror("semctl log");
@@ -829,14 +832,7 @@ int main(void) {
         return 1;
     }
 
-    // Semafor pojemnosci
-    key_t key_station = ftok(".", 'P');
-    if (key_station == -1) {
-        perror("ftok station");
-        cleanup_ipc();
-        return 1;
-    }
-    sem_station_id = semget(key_station, 1, IPC_CREAT | 0600);
+    sem_station_id = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
     if (sem_station_id == -1) {
         perror("semget station");
         cleanup_ipc();
@@ -850,13 +846,7 @@ int main(void) {
     }
 
     // Semafor bramek wejściowych (4 bramki)
-    key_t key_entry = ftok(".", 'E');
-    if (key_entry == -1) {
-        perror("ftok entry");
-        cleanup_ipc();
-        return 1;
-    }
-    sem_entry_id = semget(key_entry, ENTRY_GATES, IPC_CREAT | 0600);
+    sem_entry_id = semget(IPC_PRIVATE, ENTRY_GATES, IPC_CREAT | 0600);
     if (sem_entry_id == -1) {
         perror("semget entry");
         cleanup_ipc();
@@ -873,14 +863,7 @@ int main(void) {
 
     // Semafory bramek peronu (3 bramki)
 
-    key_t key_platform = ftok(".", 'L');
-    if (key_platform == -1) {
-        perror("ftok platform");
-        cleanup_ipc();
-        return 1;
-    }
-
-    sem_platform_id = semget(key_platform, PLATFORM_GATES, IPC_CREAT | 0600);
+    sem_platform_id = semget(IPC_PRIVATE, PLATFORM_GATES, IPC_CREAT | 0600);
     if (sem_platform_id == -1) {
         perror("semget platform");
         cleanup_ipc();
@@ -888,7 +871,7 @@ int main(void) {
     }
 
     for (int i = 0; i < PLATFORM_GATES; i++) {
-        arg.val = 1;
+        arg.val = 0;
         if (semctl(sem_platform_id, i, SETVAL, arg) == -1) {
             perror("semctl platform");
             cleanup_ipc();
@@ -898,14 +881,7 @@ int main(void) {
 
     // Semafory wyjść z górnej stacji (2)
 
-    key_t key_exit = ftok(".", 'X');
-    if (key_exit == -1) {
-        perror("ftok exit");
-        cleanup_ipc();
-        return 1;
-    }
-
-    sem_exit_id = semget(key_exit, EXIT_ROUTES, IPC_CREAT | 0600);
+    sem_exit_id = semget(IPC_PRIVATE, EXIT_ROUTES, IPC_CREAT | 0600);
     if (sem_exit_id == -1) {
         perror("semget exit");
         cleanup_ipc();
@@ -920,6 +896,13 @@ int main(void) {
             return 1;
         }
     }
+
+    sem_chair_load_id = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
+    if (sem_chair_load_id == -1) { perror("semget chair_load"); cleanup_ipc(); return 1; }
+    arg.val = 0; semctl(sem_chair_load_id, 0, SETVAL, arg);
+    sem_state_mutex_id = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
+    if (sem_state_mutex_id == -1) { perror("semget state_mutex"); cleanup_ipc(); return 1; }
+    arg.val = 1; semctl(sem_state_mutex_id, 0, SETVAL, arg);
 
     // Kolejka komunikatów
 
@@ -942,7 +925,7 @@ int main(void) {
     printf("Semafory utworzone (log, stacja, bramki: 4+3, wyjścia: 2)\n");
     printf("Kolejka komunikatów ID: %d\n\n utworzona", msg_queue_id);
 
-    // Obsługa sygnału awaryjnego zatrzymania
+    // Obsługa sygnałów
 
     struct sigaction sa_stop, sa_resume;
 
@@ -961,7 +944,7 @@ int main(void) {
     }
 
     log_event("SYSTEM: Handlery SIGUSR1/2 skonfigurowane");
-    printf("Sygnaly: kill -USR1 %d (STOP), kill -USR2 %d (RESUME)\n", getpid(), getpid());
+    //printf("Sygnaly: kill -USR1 %d (STOP), kill -USR2 %d (RESUME)\n", getpid(), getpid());
 
     // Inicjalizacja stanu
     
@@ -969,22 +952,8 @@ int main(void) {
     state->start_time = time(NULL);
     state->end_time = state->start_time + SIM_DURATION;
 
-    // Log początkowy
-    char time_str[32];
-    strftime(time_str, sizeof(time_str), "%H:%M:%S", localtime(&state->start_time));
-    log_event("==========================================");
-    log_event("Rozpoczęcie Symulacji Kolei Linowej");
-    log_event("Czas rozpoczecia: %s", time_str);
-    log_event("Krzeslka:: %d", TOTAL_CHAIRS);
-    log_event("Bramki wejsciowe: %d, bramki peronu: %d", ENTRY_GATES, PLATFORM_GATES);
-    log_event("Czas trwania: %d sekund", SIM_DURATION);
-    log_event("===========================================");
-    
-    printf("Start: %s | Czas: %ds\n", time_str, SIM_DURATION);
-    printf("Krzesełka: %d/%d | Turyści: %d\n\n", MAX_BUSY_CHAIRS, TOTAL_CHAIRS, NUM_TOURISTS);
-    // Tworzenie procesów 
+    // tworzenie procesów
     // proces kasjera
-
     pid_t kasjer_pid = fork();
     if (kasjer_pid == 0) {
         kasjer_process();
@@ -1015,7 +984,6 @@ int main(void) {
     }
 
     //process pracownika na górze kolejki
-
     pid_t pid_pracownik2 = fork();
     if (pid_pracownik2 == 0) {
         gorny_pracownik_process();
@@ -1030,7 +998,6 @@ int main(void) {
     }
 
     //proces turysty
-
     pid_t tourist_pids[NUM_TOURISTS];
 
     for (int i = 1; i <= NUM_TOURISTS; i++) {
@@ -1049,137 +1016,139 @@ int main(void) {
     }
     printf("Procesy turystów uruchomione (%d turystów)\n\n", NUM_TOURISTS);
 
-    log_event("***EMERGENCY TEST: Uruchamiam za 10s ***");
-    sleep(10);
-
-    if (state->is_running) {
-        log_event("*** TEST STOP: SIGUSR1 ***");
-        printf("\n*** TEST EMERGENCY STOP ***\n");
-        kill(getpid(), SIGUSR1);
-        sleep(6);
-        
-        log_event("*** TEST RESUME: SIGUSR2 ***");
-        printf("*** TEST RESUME ***\n");
-        kill(getpid(), SIGUSR2);
-        
-        log_event("*** AUTO-TEST ZAKOŃCZONY ***");
-    }
-
-    printf("Kontynuacja symulacji...\n");
-    printf("Manual test: kill -USR1 %d (STOP) | kill -USR2 %d (RESUME)\n\n", getpid(), getpid());
+    // Log początkowy
+    // char time_str[32];
+    // strftime(time_str, sizeof(time_str), "%H:%M:%S", localtime(&state->start_time));
+    // log_event("==========================================");
+    // log_event("Rozpoczęcie Symulacji Kolei Linowej");
+    // log_event("Czas rozpoczecia: %s", time_str);
+    // log_event("Krzeslka: %d", TOTAL_CHAIRS);
+    // log_event("Bramki wejsciowe: %d, bramki peronu: %d", ENTRY_GATES, PLATFORM_GATES);
+    // log_event("Czas trwania: %d sekund", SIM_DURATION);
+    // log_event("===========================================");
+    
+    // printf("Start: %s | Czas: %ds\n", time_str, SIM_DURATION);
+    // printf("Krzesełka: %d/%d | Turyści: %d\n\n", MAX_BUSY_CHAIRS, TOTAL_CHAIRS, NUM_TOURISTS); 
 
    // Główna pętla symulacji
    
     log_event("START: Główna pętla symulacji %ds", SIM_DURATION);
     time_t start_loop = time(NULL);
+    int test_done = 0;
 
     while (time(NULL) - start_loop < SIM_DURATION) {
-        sleep(5);
-        
         int elapsed = time(NULL) - start_loop;
         int remaining = SIM_DURATION - elapsed;
 
-        if (remaining > 0 && remaining <= 10) {
-            printf("\033[91m %2ds do zamknięcia! \033[0m\r", remaining);
-            fflush(stdout);
-            log_event("COUNTDOWN: %ds!", remaining);
+        if (!test_done && elapsed >= 15 && elapsed < 20) {
+            test_done = 1;
+            log_event("*** AUTO TEST AWARII ***");
+            kill(getpid(), SIGUSR1);
+            sleep(5);
+            kill(getpid(), SIGUSR2);
         }
 
         // Status
-        if ((time(NULL) - start_loop) % 15 < 5) {
-            log_event("STATUS: Stacja %d/%d | Peron %d | Przejść %d | Krzesełka %d/%d", 
-                state->people_in_station, MAX_STATION_CAPACITY,
-                state->people_on_platform,
-                state->total_passes,
-                state->busy_chairs, 
-                MAX_BUSY_CHAIRS);
-
-            printf("Status: Stacja %d/%d | Peron %d | Krzesełka %d/%d | Przejazdy %d\r",
-                state->people_in_station, MAX_STATION_CAPACITY,
-                state->people_on_platform,
-                state->busy_chairs, 
-                MAX_BUSY_CHAIRS,
-                stats->total_rides);
-
+        if (remaining % 10 == 0) {
+            int total_sold = stats->single_sold + stats->tk1_sold + stats->tk2_sold + stats->tk3_sold + stats->daily_sold;
+            printf("Pozostało: %ds | Sprzedano: %d | Przejazdy: %d | Busy: %02d\r", remaining, total_sold, stats->total_rides, state->busy_chairs);
             fflush(stdout);
         }
+        sleep(1);
     }
 
-    // //sleep(SIM_DURATION);
-    log_event("Koniec symulacji");
+    printf("\n");
+
+    // Koniec symulacji
+    log_event("SYSTEM: Koniec symulacji, zamykanie...");
     printf("Koniec symulacji.\n");
 
     state->stop_selling = 1;
+    sleep(2);
     state->is_running = 0;
-    sleep(3);
 
-    int status;
-    if (kasjer_pid > 0) {
-        sleep(2);  
+    //Czyszczenie procesów
+
+    if (kasjer_pid > 0) {  
         log_event("Zamykanie kasjera PID=%d", kasjer_pid);
         kill(kasjer_pid, SIGTERM);
-        waitpid(kasjer_pid, &status, 0);
-        log_event("Kasjer zakończony");
+        waitpid(kasjer_pid, NULL, 0);
         printf("Kasjer zakończony\n");
     }
 
     if (pid_pracownik1 > 0) {
         log_event("Zamykanie pracownika na dole PID=%d", pid_pracownik1);
         kill(pid_pracownik1, SIGTERM);
-        waitpid(pid_pracownik1, &status, 0);
-        log_event("PRACOWNIK1 zakonczony");
+        waitpid(pid_pracownik1, NULL, 0);
         printf("PRACOWNIK1 zakonczony");
     }
 
     if (pid_pracownik2 > 0) { 
         log_event("Zamykanie pracownik na gorze PID=%d", pid_pracownik2);
         kill(pid_pracownik2, SIGTERM);
-        waitpid(pid_pracownik2, &status, 0);
-        log_event("PRACOWNIK2 zakonczony");
+        waitpid(pid_pracownik2, NULL, 0);
         printf("PRACOWNIK2 zakonczony\n");
     }
 
     for (int i = 0; i < NUM_TOURISTS; i++) {
         if (tourist_pids[i] > 0) {
             kill(tourist_pids[i], SIGTERM);
-            waitpid(tourist_pids[i], &status, 0);
+            waitpid(tourist_pids[i],NULL, WNOHANG);
             log_event("TURYSTA-%d zakonczony (PID=%d)", i+1, tourist_pids[i]);
         }
     }
 
+    sleep(1);
+    while (waitpid(-1, NULL, WNOHANG) > 0);
+
     // Podsumowanie
-    int total_tickets_sold = 0;
-    int total_rides = 0;
-    float total_revenue = 0.0f;
-    
-    for (int i = 1; i <= NUM_TOURISTS; i++) {
-        if (tickets[i].ticket_id > 0) {
-            total_tickets_sold++;
-            total_revenue += tickets[i].price_paid;
-        }
-        total_rides += tickets[i].rides_count;
-    }
+    int total_tickets = stats->single_sold + stats->tk1_sold + stats->tk2_sold + stats->tk3_sold + stats->daily_sold;
 
     log_event("==================================");
     log_event("RAPORT KOŃCOWY:");
     log_event("__________________________________");
     log_event("BILETY:");
-    log_event("Bilety sprzedane: %d/%d", total_tickets_sold, NUM_TOURISTS);
-    log_event("Jednorazowe: %d | TK1: %d | TK2: %d | TK3: %d | Dzienne: %d",stats->single_sold, stats->tk1_sold, stats->tk2_sold, stats->tk3_sold, stats->daily_sold);
+    log_event("Bilety sprzedane: %d/%d", total_tickets, NUM_TOURISTS);
+    log_event("  - Jednorazowe: %d", stats->single_sold);
+    log_event("  - TK1: %d", stats->tk1_sold);
+    log_event("  - TK2: %d", stats->tk2_sold);
+    log_event("  - TK3: %d", stats->tk3_sold);
+    log_event("  - Dzienne: %d", stats->daily_sold);
     log_event("__________________________________");
     log_event("PRZEJAZDY:");
-    log_event("Ogółem: %d (średnio %.1f/turysta)", total_rides, total_tickets_sold > 0 ? (float)total_rides / total_tickets_sold : 0);
+    log_event("ogółem: %d", stats->total_rides);
     log_event("Piesi: %d | Rowerzyści: %d", stats->walkers, stats->bikers);
     log_event("__________________________________");
-    log_event("OBSŁUGA:");
-    log_event("  VIP: %d | Dzieci (<10lat): %d", stats->vip_served, stats->children_served);
-    log_event("  Przejść przez bramki: %d", state->total_passes);
-    log_event("__________________________________");
-    log_event("INNE:");
-    log_event("Max osób na stacji: %d/%d", state->people_in_station, MAX_STATION_CAPACITY);
-    log_event("Max krzesełek zajętych: %d/%d", state->busy_chairs, MAX_BUSY_CHAIRS);
-    log_event("═══════════════════════════════════════════════");
+    log_event("OBSŁUŻENI:");
+    log_event("VIP obsłużeni: %d", stats->vip_served);
+    log_event("Dzieci z opiekunem: %d", stats->with_guardian);
+    log_event("Dzieci (<10 lat): %d", stats->children_served);
+    log_event("Rowerzyści: %d", stats->bikers);
+    log_event("Piesi: %d", stats->walkers);
+    printf("==================================");
 
+    printf("\n==================================\n");
+    printf("RAPORT KOŃCOWY:\n");
+    printf("__________________________________\n");
+    printf("BILETY:\n");
+    printf("Bilety sprzedane: %d/%d\n", total_tickets, NUM_TOURISTS);
+    printf("  - Jednorazowe: %d\n", stats->single_sold);
+    printf("  - TK1: %d\n", stats->tk1_sold);
+    printf("  - TK2: %d\n", stats->tk2_sold);
+    printf("  - TK3: %d\n", stats->tk3_sold);
+    printf("  - Dzienne: %d\n", stats->daily_sold);
+    printf("__________________________________\n");
+    printf("PRZEJAZDY:\n");
+    printf("ogółem: %d\n", stats->total_rides);
+    printf("Piesi: %d | Rowerzyści: %d\n", stats->walkers, stats->bikers);
+    printf("__________________________________\n");
+    printf("OBSŁUŻENI:\n");
+    printf("VIP obsłużeni: %d\n", stats->vip_served);
+    printf("Dzieci z opiekunem: %d\n", stats->with_guardian);
+    printf("Dzieci (<10 lat): %d\n", stats->children_served);
+    printf("Rowerzyści: %d\n", stats->bikers);
+    printf("Piesi: %d\n", stats->walkers);
+    printf("==================================\n");
     cleanup_ipc();
 
     return 0;
