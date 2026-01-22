@@ -1,12 +1,32 @@
 CC=gcc
-CFLAGS=-Wall -std=c11 -lrt
-PROGRAM=kolej_linowa
-LOGI=kolej_log.txt
+CFLAGS=-Wall -std=gnu11 -pthread -lrt
+MAIN_EXEC=kolej_linowa 
+TARGETS=main logger cashier worker tourist
 
-kolej_linowa: main.c
-	$(CC) $(CFLAGS) -o $@ $<
+all: $(TARGETS)
+
+main: main.c utils.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+logger: logger.c utils.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+cashier: cashier.c utils.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+worker: worker.c utils.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+tourist: tourist.c utils.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+utils.o: utils.c common.h
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 clean:
-	rm -f $(PROGRAM) $(LOGI)
-run:
-	./$(PROGRAM)
-#test:
+	rm -f $(TARGETS) *.o kolej_log.txt
+
+run: all
+	./main
+
+.PHONY: all clean run
