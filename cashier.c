@@ -44,6 +44,7 @@ int main(void) {
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sigaction(SIGTERM, &sa, NULL);
+    signal(SIGINT, SIG_IGN);  // SIGINT obsluguje main, kasjer czeka na SIGTERM
 
     srand(time(NULL) ^ getpid());
     attach_ipc_resources();

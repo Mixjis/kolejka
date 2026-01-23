@@ -14,6 +14,7 @@ int main(void) {
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sigaction(SIGTERM, &sa, NULL);
+    signal(SIGINT, SIG_IGN);  // SIGINT obsluguje main, logger czeka na SIGTERM
 
     attach_ipc_resources();
 

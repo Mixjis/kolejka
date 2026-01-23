@@ -197,7 +197,7 @@ void graceful_shutdown() {
     printf("SYSTEM: Bramki wejsciowe zamkniete. Karnety nieaktywne.\n");
     printf("SYSTEM: Oczekiwanie na przetransportowanie osob z peronu...\n");
 
-    // Czekaj az peron sie oprozni
+    // Czekaj az kolejka i krzesla sie oproznia (peron pusty)
     int wait_iterations = 0;
     const int MAX_WAIT = 30;
 
@@ -214,8 +214,9 @@ void graceful_shutdown() {
                    pop, busy, MAX_BUSY_CHAIRS, queue_count, on_top);
         }
 
-        if (pop == 0 && busy == 0 && queue_count == 0 && on_top == 0) {
-            printf("SYSTEM: System pusty.\n");
+        // Warunek: kolejka pusta i krzesla wolne = wszyscy z peronu przetransportowani
+        if (busy == 0 && queue_count == 0) {
+            printf("SYSTEM: Peron pusty, wszyscy przetransportowani.\n");
             break;
         }
 
@@ -234,29 +235,68 @@ void graceful_shutdown() {
 
     printf("SYSTEM: Kolej WYLACZONA.\n");
 
-    // Wyslij SIGTERM do procesow pomocniczych (logger, cashier, worker1, worker2)
-    for (int i = 0; i < 4 && i < num_children; i++) {
-        if (child_pids[i] > 0) {
-            kill(child_pids[i], SIGTERM);
-        }
+    // Wyslij SIGTERM do worker1 (stacja dolna) i kasjera - kolej juz nie dziala
+    // child_pids[1] = cashier, child_pids[2] = worker1
+    if (num_children > 1 && child_pids[1] > 0) {
+        kill(child_pids[1], SIGTERM);
+    }
+    if (num_children > 2 && child_pids[2] > 0) {
+        kill(child_pids[2], SIGTERM);
     }
 
-    // Wyslij SIGTERM do turystow
+    // Czekaj az turyści na gorze zjada/zejda (worker2 nadal ich obsluguje)
+    printf("SYSTEM: Oczekiwanie na turystow na gorze...\n");
+    int top_wait = 0;
+    const int MAX_TOP_WAIT = ROUTE_TIME_T3 + RIDE_DURATION + 5; // max czas zjazdu + margines
+
+    while (top_wait < MAX_TOP_WAIT && sigint_count < 2) {
+        sem_wait_op(sem_state_mutex_id, 0);
+        int on_top = state->people_on_top;
+        int pop = state->station_population;
+        sem_signal_op(sem_state_mutex_id, 0);
+
+        if (on_top == 0 && pop == 0) {
+            printf("SYSTEM: Wszyscy turyści opuscili system.\n");
+            break;
+        }
+
+        if (top_wait % 3 == 0) {
+            printf("SYSTEM: Oczekiwanie - Na gorze:%d, Stacja:%d\n", on_top, pop);
+        }
+
+        sleep(1);
+        top_wait++;
+    }
+
+    // Teraz wyslij SIGTERM do worker2 (stacja gorna) - turyści juz zjechali
+    // child_pids[3] = worker2
+    if (num_children > 3 && child_pids[3] > 0) {
+        kill(child_pids[3], SIGTERM);
+    }
+
+    // Wyslij SIGTERM do turystow ktorzy jeszcze zyja (np. czekajacy na kase)
     for (int i = 4; i < num_children; i++) {
         if (child_pids[i] > 0) {
             kill(child_pids[i], SIGTERM);
         }
     }
 
+    // Wyslij SIGTERM do loggera
+    // child_pids[0] = logger
+    if (num_children > 0 && child_pids[0] > 0) {
+        kill(child_pids[0], SIGTERM);
+    }
+
     printf("SYSTEM: Oczekiwanie na zakonczenie procesow...\n");
 
-    int max_wait = 8;
+    // Czekaj na zakonczenie WSZYSTKICH procesow potomnych (blokujace waitpid)
+    int max_wait_sec = MAX_TOP_WAIT + 5;
     int waited = 0;
-    while (waited < max_wait) {
+    while (waited < max_wait_sec * 2) {  // sprawdzaj co 500ms
         int status;
         pid_t finished = waitpid(-1, &status, WNOHANG);
         if (finished <= 0) {
-            if (errno == ECHILD) break;
+            if (errno == ECHILD) break;  // brak procesow potomnych
         }
         usleep(500000);
         waited++;

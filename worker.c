@@ -543,6 +543,7 @@ int main(int argc, char* argv[]) {
     sigaction(SIGUSR2, &sa_usr2, NULL);
 
     signal(SIGALRM, SIG_IGN);
+    signal(SIGINT, SIG_IGN);  // SIGINT obsluguje main, worker1 czeka na SIGTERM
     srand(time(NULL) ^ getpid());
     attach_ipc_resources();
 
