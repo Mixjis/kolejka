@@ -70,8 +70,8 @@ void buy_ticket() {
     log_msg("TURYSTA %d: Podchodze do kasy (VIP:%d, family:%d).",
             tourist_id, is_vip, family_id);
 
-    // Losowy czas dojscia do kasy
-    usleep((rand() % 1500000) + 500000);
+    // Losowy czas dojscia do kasy (skrocony)
+    usleep((rand() % 300000) + 100000);
 
     MsgBuf msg;
     memset(&msg, 0, sizeof(msg));
@@ -84,13 +84,19 @@ void buy_ticket() {
     msg.num_children = num_children;
     msg.family_id = family_id;
 
-    if (msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 0) == -1) {
+    while (msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 0) == -1) {
+        if (errno == EINTR) continue;  // przerwane sygnalem - ponow
+        if (errno == EIDRM || errno == EINVAL) return;  // kolejka usunieta
         perror("TURYSTA: msgsnd to cashier");
         return;
     }
 
-    // Czekaj na bilet
-    sem_wait_op(sem_ticket_bought_id, tourist_id - 1);
+    // Czekaj na bilet (polling - pozwala na przerwanie przez SIGTERM)
+    while (tourist_running) {
+        if (sem_trywait_op(sem_ticket_bought_id, tourist_id - 1) == 0) break;
+        usleep(50000);
+    }
+    if (!tourist_running) return;
 
     // Sprawdz czy kasjer rzeczywiscie sprzedal bilet (mogl odrzucic)
     sem_wait_op(sem_state_mutex_id, 0);
@@ -108,7 +114,7 @@ void buy_ticket() {
         for (int i = 0; i < num_children; i++) {
             sem_signal_op(sem_ticket_bought_id, tourist_id - 1);
         }
-        usleep(300000);
+        usleep(50000);
         log_msg("TURYSTA %d: Rodzina skompletowana, idziemy razem.", tourist_id);
     }
 }
@@ -199,7 +205,7 @@ int enter_through_gates() {
 
     log_msg("TURYSTA %d: Przeszedlem bramke %d (walidacja OK).", tourist_id, gate_num + 1);
 
-    usleep((rand() % 500000) + 200000);
+    usleep((rand() % 100000) + 50000);
     sem_signal_op(sem_entry_id, gate_num);
     return 1;
 }
@@ -235,7 +241,7 @@ void go_to_platform() {
     log_msg("TURYSTA %d: Przeszedlem bramke peronowa %d. Wsiadam na krzeslo.",
             tourist_id, platform_gate + 1);
 
-    usleep((rand() % 300000) + 100000);
+    usleep((rand() % 100000) + 30000);
     sem_signal_op(sem_platform_id, platform_gate);
 }
 
@@ -254,22 +260,28 @@ int wait_for_chair() {
     worker_msg.requires_guardian = (age < CHILD_NEEDS_GUARDIAN_MAX) ? 1 : 0;
     worker_msg.action = ACTION_TOURIST_READY;
 
-    if (msgsnd(msg_queue_id, &worker_msg, sizeof(worker_msg) - sizeof(long), 0) == -1) {
+    while (msgsnd(msg_queue_id, &worker_msg, sizeof(worker_msg) - sizeof(long), 0) == -1) {
+        if (errno == EINTR) continue;
+        if (errno == EIDRM || errno == EINVAL) return 0;
         perror("TURYSTA: msgsnd to worker");
         return 0;
     }
 
     log_msg("TURYSTA %d: Zgloszenie do pracownika, czekam na przydział krzesla.", tourist_id);
 
-    // Czekaj na odpowiedz od pracownika
+    // Czekaj na odpowiedz od pracownika (polling - pozwala na przerwanie)
     MsgBuf go_msg;
-    if (msgrcv(msg_queue_id, &go_msg, sizeof(go_msg) - sizeof(long),
-               getpid(), 0) == -1) {
-        if (errno != EIDRM && errno != EINVAL && errno != EINTR) {
-            perror("TURYSTA: msgrcv wait for chair");
-        }
+    while (tourist_running) {
+        ssize_t r = msgrcv(msg_queue_id, &go_msg, sizeof(go_msg) - sizeof(long),
+                           getpid(), IPC_NOWAIT);
+        if (r >= 0) break;
+        if (errno == ENOMSG) { usleep(50000); continue; }
+        if (errno == EINTR) continue;
+        if (errno == EIDRM || errno == EINVAL) return 0;
+        perror("TURYSTA: msgrcv wait for chair");
         return 0;
     }
+    if (!tourist_running) return 0;
 
     if (go_msg.action == ACTION_REJECTED) {
         log_msg("TURYSTA %d: Odrzucony przez pracownika.", tourist_id);
@@ -296,18 +308,23 @@ void exit_upper_station() {
     arrive_msg.tourist_id = tourist_id;
     arrive_msg.action = ACTION_ARRIVED_TOP;
 
-    if (msgsnd(msg_queue_id, &arrive_msg, sizeof(arrive_msg) - sizeof(long), 0) == -1) {
+    while (msgsnd(msg_queue_id, &arrive_msg, sizeof(arrive_msg) - sizeof(long), 0) == -1) {
+        if (errno == EINTR) continue;
+        if (errno == EIDRM || errno == EINVAL) return;
         perror("TURYSTA: msgsnd to worker2");
         return;
     }
 
-    // Czekaj na potwierdzenie wyjscia od pracownika2
+    // Czekaj na potwierdzenie wyjscia od pracownika2 (polling)
     MsgBuf exit_ack;
-    if (msgrcv(msg_queue_id, &exit_ack, sizeof(exit_ack) - sizeof(long),
-               getpid(), 0) == -1) {
-        if (errno != EIDRM && errno != EINVAL && errno != EINTR) {
-            perror("TURYSTA: msgrcv exit ack");
-        }
+    while (tourist_running) {
+        ssize_t r = msgrcv(msg_queue_id, &exit_ack, sizeof(exit_ack) - sizeof(long),
+                           getpid(), IPC_NOWAIT);
+        if (r >= 0) break;
+        if (errno == ENOMSG) { usleep(50000); continue; }
+        if (errno == EINTR) continue;
+        if (errno == EIDRM || errno == EINVAL) return;
+        perror("TURYSTA: msgrcv exit ack");
         return;
     }
 
@@ -370,8 +387,11 @@ void leave_system() {
     chair_free_msg.action = ACTION_CHAIR_FREE;
     chair_free_msg.pid = getpid();
     chair_free_msg.tourist_id = tourist_id;
-    if (msgsnd(msg_queue_id, &chair_free_msg, sizeof(chair_free_msg) - sizeof(long), 0) == -1) {
+    while (msgsnd(msg_queue_id, &chair_free_msg, sizeof(chair_free_msg) - sizeof(long), 0) == -1) {
+        if (errno == EINTR) continue;
+        if (errno == EIDRM || errno == EINVAL) break;
         perror("TURYSTA: msgsnd chair_free");
+        break;
     }
 
     log_msg("TURYSTA %d: Opuszczam system. Do zobaczenia!", tourist_id);
@@ -423,8 +443,11 @@ void run_tourist() {
     type = (rand() % 2 == 0) ? WALKER : BIKER;
     is_vip = (rand() % 100 < VIP_PROBABILITY) ? 1 : 0;
 
-    // Losowy czas przybycia
-    int arrival_delay = rand() % 20;
+    // Losowy czas przybycia (skalowany z liczba turystow)
+    int max_delay = NUM_TOURISTS / 4;
+    if (max_delay < 20) max_delay = 20;
+    if (max_delay > CLOSING_TIME * 2 / 3) max_delay = CLOSING_TIME * 2 / 3;
+    int arrival_delay = rand() % max_delay;
     if (arrival_delay > 0) {
         sleep(arrival_delay);
     }
@@ -449,14 +472,14 @@ void run_tourist() {
     if (age < CHILD_NEEDS_GUARDIAN_MAX && family_id == 0) {
         log_msg("TURYSTA %d: Dziecko (wiek:%d) bez opiekuna - nie moze korzystac z kolei.",
                 tourist_id, age);
-        sleep(rand() % 3 + 1);
+        usleep((rand() % 300000) + 100000);
         goto cleanup;
     }
 
     // Niektory turyści nie korzystaja z kolei (wg opisu)
     if (rand() % 100 < 10) {
         log_msg("TURYSTA %d: Nie korzystam z kolei, spaceruje.", tourist_id);
-        sleep(rand() % 5 + 1);
+        usleep((rand() % 500000) + 200000);
         goto cleanup;
     }
 
@@ -518,7 +541,7 @@ void run_tourist() {
 
         log_msg("TURYSTA %d: Karnet wazny, ide na kolejny przejazd (#%d).", tourist_id, ride_count + 1);
         // Krotka przerwa przed kolejnym przejazdem
-        usleep((rand() % 2000000) + 1000000);
+        usleep((rand() % 500000) + 200000);
     }
 
     goto cleanup;

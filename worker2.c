@@ -69,7 +69,7 @@ void handle_emergency_stop_worker2() {
 
     // Symulacja rozwiazywania zagrozenia
     log_msg("PRACOWNIK2: Rozwiazywanie zagrozenia...");
-    sleep(2);
+    usleep(500000);
 
     if (worker2_is_running) {
         // Wznowienie (sygnal2)
@@ -201,7 +201,7 @@ void run_worker_up() {
             // Otworz bramke wyjsciowa
             sem_wait_op(sem_exit_id, exit_route);
             log_msg("PRACOWNIK2: Turysta %d wychodzi droga %d.", msg.tourist_id, exit_route + 1);
-            usleep(200000); // czas przejscia
+            usleep(50000); // czas przejscia
             sem_signal_op(sem_exit_id, exit_route);
 
             sem_wait_op(sem_state_mutex_id, 0);

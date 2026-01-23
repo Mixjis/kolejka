@@ -142,7 +142,7 @@ void handle_emergency_stop() {
 
     // Symulacja rozwiazywania zagrozenia
     log_msg("PRACOWNIK1: Rozwiazywanie zagrozenia...");
-    sleep(2);
+    usleep(500000);
 
     if (worker_is_running) {
         // Po otrzymaniu komunikatu zwrotnego - wznowienie (sygnal2)

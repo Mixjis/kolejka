@@ -1,0 +1,1000 @@
+============================================================
+  RAPORT KARNETOW - REJESTRACJA PRZEJSC BRAMKOWYCH
+============================================================
+
+REJESTR PRZEJSC (id karnetu - godzina - nr przejazdu):
+------------------------------------------------------------
+  Karnet#054 (DZIENNY) - 00:44:10 - przejazd #1
+  Karnet#163 (DZIENNY) - 00:44:10 - przejazd #1
+  Karnet#040 (DZIENNY) - 00:44:10 - przejazd #1
+  Karnet#280 (CZASOWY_3H) - 00:44:11 - przejazd #1
+  Karnet#132 (CZASOWY_3H) - 00:44:11 - przejazd #1
+  Karnet#197 (CZASOWY_3H) - 00:44:11 - przejazd #1
+  Karnet#220 (CZASOWY_1H) - 00:44:12 - przejazd #1
+  Karnet#093 (CZASOWY_2H) - 00:44:12 - przejazd #1
+  Karnet#272 (JEDNORAZOWY) - 00:44:12 - przejazd #1
+  Karnet#094 (CZASOWY_3H) - 00:44:12 - przejazd #1
+  Karnet#471 (JEDNORAZOWY) - 00:44:12 - przejazd #1
+  Karnet#221 (CZASOWY_3H) - 00:44:13 - przejazd #1
+  Karnet#388 (CZASOWY_3H) - 00:44:13 - przejazd #1
+  Karnet#081 (JEDNORAZOWY) - 00:44:13 - przejazd #1
+  Karnet#080 (CZASOWY_2H) - 00:44:13 - przejazd #1
+  Karnet#064 (CZASOWY_1H) - 00:44:13 - przejazd #1
+  Karnet#433 (CZASOWY_2H) - 00:44:13 - przejazd #1
+  Karnet#113 (DZIENNY) - 00:44:13 - przejazd #1
+  Karnet#151 (CZASOWY_2H) - 00:44:13 - przejazd #1
+  Karnet#352 (CZASOWY_1H) - 00:44:13 - przejazd #1
+  Karnet#006 (CZASOWY_1H) - 00:44:13 - przejazd #1
+  Karnet#342 (CZASOWY_1H) - 00:44:13 - przejazd #1
+  Karnet#049 (CZASOWY_2H) - 00:44:13 - przejazd #1
+  Karnet#366 (CZASOWY_2H) - 00:44:13 - przejazd #1
+  Karnet#218 (CZASOWY_2H) - 00:44:13 - przejazd #1
+  Karnet#266 (CZASOWY_2H) - 00:44:14 - przejazd #1
+  Karnet#225 (CZASOWY_2H) - 00:44:14 - przejazd #1
+  Karnet#425 (JEDNORAZOWY) - 00:44:14 - przejazd #1
+  Karnet#305 (DZIENNY) - 00:44:14 - przejazd #1
+  Karnet#475 (JEDNORAZOWY) - 00:44:14 - przejazd #1
+  Karnet#054 (DZIENNY) - 00:44:14 - przejazd #2
+  Karnet#300 (DZIENNY) - 00:44:14 - przejazd #1
+  Karnet#339 (JEDNORAZOWY) - 00:44:14 - przejazd #1
+  Karnet#280 (CZASOWY_3H) - 00:44:14 - przejazd #2
+  Karnet#125 (CZASOWY_3H) - 00:44:15 - przejazd #1
+  Karnet#486 (DZIENNY) - 00:44:15 - przejazd #1
+  Karnet#166 (CZASOWY_1H) - 00:44:15 - przejazd #1
+  Karnet#197 (CZASOWY_3H) - 00:44:15 - przejazd #2
+  Karnet#040 (DZIENNY) - 00:44:15 - przejazd #2
+  Karnet#383 (JEDNORAZOWY) - 00:44:16 - przejazd #1
+  Karnet#420 (JEDNORAZOWY) - 00:44:16 - przejazd #1
+  Karnet#444 (JEDNORAZOWY) - 00:44:16 - przejazd #1
+  Karnet#068 (JEDNORAZOWY) - 00:44:16 - przejazd #1
+  Karnet#165 (CZASOWY_1H) - 00:44:16 - przejazd #1
+  Karnet#163 (DZIENNY) - 00:44:16 - przejazd #2
+  Karnet#158 (JEDNORAZOWY) - 00:44:16 - przejazd #1
+  Karnet#249 (CZASOWY_2H) - 00:44:17 - przejazd #1
+  Karnet#033 (CZASOWY_1H) - 00:44:17 - przejazd #1
+  Karnet#113 (DZIENNY) - 00:44:17 - przejazd #2
+  Karnet#215 (DZIENNY) - 00:44:17 - przejazd #1
+  Karnet#293 (CZASOWY_1H) - 00:44:17 - przejazd #1
+  Karnet#132 (CZASOWY_3H) - 00:44:17 - przejazd #2
+  Karnet#093 (CZASOWY_2H) - 00:44:17 - przejazd #2
+  Karnet#210 (DZIENNY) - 00:44:18 - przejazd #1
+  Karnet#028 (JEDNORAZOWY) - 00:44:18 - przejazd #1
+  Karnet#388 (CZASOWY_3H) - 00:44:18 - przejazd #2
+  Karnet#220 (CZASOWY_1H) - 00:44:18 - przejazd #2
+  Karnet#221 (CZASOWY_3H) - 00:44:18 - przejazd #2
+  Karnet#094 (CZASOWY_3H) - 00:44:18 - przejazd #2
+  Karnet#064 (CZASOWY_1H) - 00:44:18 - przejazd #2
+  Karnet#116 (CZASOWY_2H) - 00:44:18 - przejazd #1
+  Karnet#087 (DZIENNY) - 00:44:18 - przejazd #1
+  Karnet#291 (CZASOWY_2H) - 00:44:18 - przejazd #1
+  Karnet#150 (CZASOWY_3H) - 00:44:18 - przejazd #1
+  Karnet#080 (CZASOWY_2H) - 00:44:18 - przejazd #2
+  Karnet#373 (CZASOWY_3H) - 00:44:18 - przejazd #1
+  Karnet#039 (DZIENNY) - 00:44:19 - przejazd #1
+  Karnet#218 (CZASOWY_2H) - 00:44:19 - przejazd #2
+  Karnet#419 (DZIENNY) - 00:44:19 - przejazd #1
+  Karnet#433 (CZASOWY_2H) - 00:44:19 - przejazd #2
+  Karnet#352 (CZASOWY_1H) - 00:44:19 - przejazd #2
+  Karnet#049 (CZASOWY_2H) - 00:44:19 - przejazd #2
+  Karnet#335 (CZASOWY_2H) - 00:44:19 - przejazd #1
+  Karnet#151 (CZASOWY_2H) - 00:44:19 - przejazd #2
+  Karnet#348 (CZASOWY_3H) - 00:44:19 - przejazd #1
+  Karnet#342 (CZASOWY_1H) - 00:44:19 - przejazd #2
+  Karnet#390 (DZIENNY) - 00:44:19 - przejazd #1
+  Karnet#223 (CZASOWY_2H) - 00:44:20 - przejazd #1
+  Karnet#408 (CZASOWY_3H) - 00:44:20 - przejazd #1
+  Karnet#423 (CZASOWY_2H) - 00:44:20 - przejazd #1
+  Karnet#077 (CZASOWY_2H) - 00:44:20 - przejazd #1
+  Karnet#227 (CZASOWY_1H) - 00:44:20 - przejazd #1
+  Karnet#267 (CZASOWY_3H) - 00:44:20 - przejazd #1
+  Karnet#366 (CZASOWY_2H) - 00:44:20 - przejazd #2
+  Karnet#266 (CZASOWY_2H) - 00:44:20 - przejazd #2
+  Karnet#292 (DZIENNY) - 00:44:20 - przejazd #1
+  Karnet#307 (CZASOWY_1H) - 00:44:20 - przejazd #1
+  Karnet#141 (CZASOWY_3H) - 00:44:20 - przejazd #1
+  Karnet#010 (CZASOWY_1H) - 00:44:20 - przejazd #1
+  Karnet#300 (DZIENNY) - 00:44:20 - przejazd #2
+  Karnet#027 (CZASOWY_1H) - 00:44:21 - przejazd #1
+  Karnet#054 (DZIENNY) - 00:44:21 - przejazd #3
+  Karnet#225 (CZASOWY_2H) - 00:44:21 - przejazd #2
+  Karnet#486 (DZIENNY) - 00:44:21 - przejazd #2
+  Karnet#305 (DZIENNY) - 00:44:21 - przejazd #2
+  Karnet#097 (CZASOWY_1H) - 00:44:21 - przejazd #1
+  Karnet#136 (CZASOWY_3H) - 00:44:21 - przejazd #1
+  Karnet#040 (DZIENNY) - 00:44:21 - przejazd #3
+  Karnet#174 (CZASOWY_2H) - 00:44:21 - przejazd #1
+  Karnet#065 (CZASOWY_2H) - 00:44:22 - przejazd #1
+  Karnet#125 (CZASOWY_3H) - 00:44:22 - przejazd #2
+  Karnet#166 (CZASOWY_1H) - 00:44:22 - przejazd #2
+  Karnet#197 (CZASOWY_3H) - 00:44:22 - przejazd #3
+  Karnet#131 (DZIENNY) - 00:44:22 - przejazd #1
+  Karnet#152 (JEDNORAZOWY) - 00:44:22 - przejazd #1
+  Karnet#328 (CZASOWY_2H) - 00:44:22 - przejazd #1
+  Karnet#167 (CZASOWY_2H) - 00:44:22 - przejazd #1
+  Karnet#160 (CZASOWY_2H) - 00:44:22 - przejazd #1
+  Karnet#163 (DZIENNY) - 00:44:22 - przejazd #3
+  Karnet#033 (CZASOWY_1H) - 00:44:22 - przejazd #2
+  Karnet#402 (CZASOWY_2H) - 00:44:22 - przejazd #1
+  Karnet#215 (DZIENNY) - 00:44:23 - przejazd #2
+  Karnet#165 (CZASOWY_1H) - 00:44:23 - przejazd #2
+  Karnet#465 (DZIENNY) - 00:44:23 - przejazd #1
+  Karnet#306 (CZASOWY_3H) - 00:44:23 - przejazd #1
+  Karnet#134 (JEDNORAZOWY) - 00:44:23 - przejazd #1
+  Karnet#093 (CZASOWY_2H) - 00:44:23 - przejazd #3
+  Karnet#363 (CZASOWY_3H) - 00:44:23 - przejazd #1
+  Karnet#396 (CZASOWY_2H) - 00:44:23 - przejazd #1
+  Karnet#192 (CZASOWY_2H) - 00:44:24 - przejazd #1
+  Karnet#023 (JEDNORAZOWY) - 00:44:24 - przejazd #1
+  Karnet#210 (DZIENNY) - 00:44:24 - przejazd #2
+  Karnet#074 (CZASOWY_1H) - 00:44:24 - przejazd #1
+  Karnet#220 (CZASOWY_1H) - 00:44:24 - przejazd #3
+  Karnet#289 (CZASOWY_1H) - 00:44:24 - przejazd #1
+  Karnet#127 (DZIENNY) - 00:44:24 - przejazd #1
+  Karnet#142 (CZASOWY_2H) - 00:44:24 - przejazd #1
+  Karnet#006 (CZASOWY_1H) - 00:44:24 - przejazd #2
+  Karnet#384 (CZASOWY_3H) - 00:44:24 - przejazd #1
+  Karnet#005 (CZASOWY_3H) - 00:44:24 - przejazd #1
+  Karnet#051 (JEDNORAZOWY) - 00:44:24 - przejazd #1
+  Karnet#082 (CZASOWY_3H) - 00:44:25 - przejazd #1
+  Karnet#293 (CZASOWY_1H) - 00:44:25 - przejazd #2
+  Karnet#132 (CZASOWY_3H) - 00:44:25 - przejazd #3
+  Karnet#322 (CZASOWY_2H) - 00:44:25 - przejazd #1
+  Karnet#087 (DZIENNY) - 00:44:25 - przejazd #2
+  Karnet#233 (CZASOWY_1H) - 00:44:25 - przejazd #1
+  Karnet#060 (CZASOWY_2H) - 00:44:25 - przejazd #1
+  Karnet#254 (CZASOWY_1H) - 00:44:26 - przejazd #1
+  Karnet#469 (CZASOWY_2H) - 00:44:26 - przejazd #1
+  Karnet#296 (CZASOWY_1H) - 00:44:26 - przejazd #1
+  Karnet#113 (DZIENNY) - 00:44:26 - przejazd #3
+  Karnet#116 (CZASOWY_2H) - 00:44:26 - przejazd #2
+  Karnet#286 (JEDNORAZOWY) - 00:44:26 - przejazd #1
+  Karnet#121 (JEDNORAZOWY) - 00:44:26 - przejazd #1
+  Karnet#108 (CZASOWY_2H) - 00:44:26 - przejazd #1
+  Karnet#117 (CZASOWY_3H) - 00:44:26 - przejazd #1
+  Karnet#176 (JEDNORAZOWY) - 00:44:26 - przejazd #1
+  Karnet#143 (CZASOWY_3H) - 00:44:26 - przejazd #1
+  Karnet#221 (CZASOWY_3H) - 00:44:26 - przejazd #3
+  Karnet#218 (CZASOWY_2H) - 00:44:26 - przejazd #3
+  Karnet#064 (CZASOWY_1H) - 00:44:26 - przejazd #3
+  Karnet#164 (CZASOWY_1H) - 00:44:26 - przejazd #1
+  Karnet#356 (CZASOWY_2H) - 00:44:26 - przejazd #1
+  Karnet#179 (CZASOWY_1H) - 00:44:26 - przejazd #1
+  Karnet#395 (CZASOWY_2H) - 00:44:26 - przejazd #1
+  Karnet#332 (DZIENNY) - 00:44:27 - przejazd #1
+  Karnet#049 (CZASOWY_2H) - 00:44:27 - przejazd #3
+  Karnet#337 (DZIENNY) - 00:44:27 - przejazd #1
+  Karnet#291 (CZASOWY_2H) - 00:44:27 - przejazd #2
+  Karnet#335 (CZASOWY_2H) - 00:44:28 - przejazd #2
+  Karnet#435 (DZIENNY) - 00:44:28 - przejazd #1
+  Karnet#348 (CZASOWY_3H) - 00:44:28 - przejazd #2
+  Karnet#124 (DZIENNY) - 00:44:28 - przejazd #1
+  Karnet#312 (DZIENNY) - 00:44:28 - przejazd #1
+  Karnet#159 (JEDNORAZOWY) - 00:44:28 - przejazd #1
+  Karnet#317 (CZASOWY_3H) - 00:44:28 - przejazd #1
+  Karnet#319 (CZASOWY_3H) - 00:44:28 - przejazd #1
+  Karnet#352 (CZASOWY_1H) - 00:44:28 - przejazd #3
+  Karnet#280 (CZASOWY_3H) - 00:44:28 - przejazd #3
+  Karnet#419 (DZIENNY) - 00:44:28 - przejazd #2
+  Karnet#045 (JEDNORAZOWY) - 00:44:29 - przejazd #1
+  Karnet#457 (CZASOWY_1H) - 00:44:29 - przejazd #1
+  Karnet#090 (DZIENNY) - 00:44:29 - przejazd #1
+  Karnet#310 (CZASOWY_1H) - 00:44:29 - przejazd #1
+  Karnet#278 (JEDNORAZOWY) - 00:44:29 - przejazd #1
+  Karnet#091 (CZASOWY_2H) - 00:44:29 - przejazd #1
+  Karnet#408 (CZASOWY_3H) - 00:44:29 - przejazd #2
+  Karnet#227 (CZASOWY_1H) - 00:44:29 - przejazd #2
+  Karnet#077 (CZASOWY_2H) - 00:44:29 - przejazd #2
+  Karnet#321 (DZIENNY) - 00:44:29 - przejazd #1
+  Karnet#351 (JEDNORAZOWY) - 00:44:29 - przejazd #1
+  Karnet#014 (JEDNORAZOWY) - 00:44:29 - przejazd #1
+  Karnet#390 (DZIENNY) - 00:44:29 - przejazd #2
+  Karnet#031 (CZASOWY_3H) - 00:44:30 - przejazd #1
+  Karnet#388 (CZASOWY_3H) - 00:44:30 - przejazd #3
+  Karnet#151 (CZASOWY_2H) - 00:44:30 - przejazd #3
+  Karnet#423 (CZASOWY_2H) - 00:44:30 - przejazd #2
+  Karnet#175 (JEDNORAZOWY) - 00:44:30 - przejazd #1
+  Karnet#223 (CZASOWY_2H) - 00:44:30 - przejazd #2
+  Karnet#199 (CZASOWY_1H) - 00:44:30 - przejazd #1
+  Karnet#191 (DZIENNY) - 00:44:31 - przejazd #1
+  Karnet#266 (CZASOWY_2H) - 00:44:31 - przejazd #3
+  Karnet#083 (CZASOWY_2H) - 00:44:31 - przejazd #1
+  Karnet#101 (CZASOWY_3H) - 00:44:31 - przejazd #1
+  Karnet#267 (CZASOWY_3H) - 00:44:31 - przejazd #2
+  Karnet#330 (CZASOWY_3H) - 00:44:31 - przejazd #1
+  Karnet#336 (CZASOWY_2H) - 00:44:31 - przejazd #1
+  Karnet#168 (DZIENNY) - 00:44:31 - przejazd #1
+  Karnet#350 (CZASOWY_1H) - 00:44:31 - przejazd #1
+  Karnet#391 (CZASOWY_1H) - 00:44:31 - przejazd #1
+  Karnet#202 (CZASOWY_1H) - 00:44:32 - przejazd #1
+  Karnet#366 (CZASOWY_2H) - 00:44:32 - przejazd #3
+  Karnet#141 (CZASOWY_3H) - 00:44:32 - przejazd #2
+  Karnet#458 (CZASOWY_3H) - 00:44:32 - przejazd #1
+  Karnet#265 (DZIENNY) - 00:44:32 - przejazd #1
+  Karnet#463 (CZASOWY_2H) - 00:44:32 - przejazd #1
+  Karnet#323 (JEDNORAZOWY) - 00:44:32 - przejazd #1
+  Karnet#161 (CZASOWY_1H) - 00:44:32 - przejazd #1
+  Karnet#153 (JEDNORAZOWY) - 00:44:32 - przejazd #1
+  Karnet#486 (DZIENNY) - 00:44:32 - przejazd #3
+  Karnet#369 (DZIENNY) - 00:44:32 - przejazd #1
+  Karnet#027 (CZASOWY_1H) - 00:44:32 - przejazd #2
+  Karnet#331 (CZASOWY_2H) - 00:44:32 - przejazd #1
+  Karnet#225 (CZASOWY_2H) - 00:44:32 - przejazd #3
+  Karnet#244 (DZIENNY) - 00:44:33 - przejazd #1
+  Karnet#441 (DZIENNY) - 00:44:33 - przejazd #1
+  Karnet#245 (JEDNORAZOWY) - 00:44:33 - przejazd #1
+  Karnet#437 (DZIENNY) - 00:44:33 - przejazd #1
+  Karnet#461 (CZASOWY_1H) - 00:44:33 - przejazd #1
+  Karnet#079 (JEDNORAZOWY) - 00:44:33 - przejazd #1
+  Karnet#490 (CZASOWY_1H) - 00:44:33 - przejazd #1
+  Karnet#144 (JEDNORAZOWY) - 00:44:33 - przejazd #1
+  Karnet#010 (CZASOWY_1H) - 00:44:33 - przejazd #2
+  Karnet#094 (CZASOWY_3H) - 00:44:33 - przejazd #3
+  Karnet#150 (CZASOWY_3H) - 00:44:33 - przejazd #2
+  Karnet#206 (CZASOWY_1H) - 00:44:33 - przejazd #1
+  Karnet#185 (CZASOWY_2H) - 00:44:33 - przejazd #1
+  Karnet#382 (CZASOWY_3H) - 00:44:33 - przejazd #1
+  Karnet#054 (DZIENNY) - 00:44:33 - przejazd #4
+  Karnet#170 (CZASOWY_2H) - 00:44:33 - przejazd #1
+  Karnet#406 (CZASOWY_1H) - 00:44:34 - przejazd #1
+  Karnet#300 (DZIENNY) - 00:44:34 - przejazd #3
+  Karnet#053 (CZASOWY_3H) - 00:44:34 - przejazd #1
+  Karnet#110 (CZASOWY_1H) - 00:44:34 - przejazd #1
+  Karnet#097 (CZASOWY_1H) - 00:44:34 - przejazd #2
+  Karnet#305 (DZIENNY) - 00:44:34 - przejazd #3
+  Karnet#354 (CZASOWY_2H) - 00:44:34 - przejazd #1
+  Karnet#204 (CZASOWY_2H) - 00:44:34 - przejazd #1
+  Karnet#065 (CZASOWY_2H) - 00:44:35 - przejazd #2
+  Karnet#418 (CZASOWY_2H) - 00:44:35 - przejazd #1
+  Karnet#212 (CZASOWY_1H) - 00:44:35 - przejazd #1
+  Karnet#288 (CZASOWY_1H) - 00:44:35 - przejazd #1
+  Karnet#174 (CZASOWY_2H) - 00:44:35 - przejazd #2
+  Karnet#297 (JEDNORAZOWY) - 00:44:35 - przejazd #1
+  Karnet#040 (DZIENNY) - 00:44:35 - przejazd #4
+  Karnet#349 (DZIENNY) - 00:44:35 - przejazd #1
+  Karnet#194 (DZIENNY) - 00:44:35 - przejazd #1
+  Karnet#013 (DZIENNY) - 00:44:35 - przejazd #1
+  Karnet#249 (CZASOWY_2H) - 00:44:35 - przejazd #2
+  Karnet#131 (DZIENNY) - 00:44:35 - przejazd #2
+  Karnet#431 (DZIENNY) - 00:44:36 - przejazd #1
+  Karnet#219 (JEDNORAZOWY) - 00:44:36 - przejazd #1
+  Karnet#417 (JEDNORAZOWY) - 00:44:36 - przejazd #1
+  Karnet#032 (JEDNORAZOWY) - 00:44:36 - przejazd #1
+  Karnet#491 (DZIENNY) - 00:44:36 - przejazd #1
+  Karnet#464 (JEDNORAZOWY) - 00:44:36 - przejazd #1
+  Karnet#318 (DZIENNY) - 00:44:36 - przejazd #1
+  Karnet#166 (CZASOWY_1H) - 00:44:36 - przejazd #3
+  Karnet#295 (CZASOWY_1H) - 00:44:36 - przejazd #1
+  Karnet#328 (CZASOWY_2H) - 00:44:36 - przejazd #2
+  Karnet#416 (CZASOWY_3H) - 00:44:36 - przejazd #1
+  Karnet#160 (CZASOWY_2H) - 00:44:36 - przejazd #2
+  Karnet#030 (CZASOWY_2H) - 00:44:37 - przejazd #1
+  Karnet#043 (CZASOWY_2H) - 00:44:37 - przejazd #1
+  Karnet#073 (CZASOWY_3H) - 00:44:37 - przejazd #1
+  Karnet#479 (CZASOWY_2H) - 00:44:37 - przejazd #1
+  Karnet#125 (CZASOWY_3H) - 00:44:37 - przejazd #3
+  Karnet#171 (JEDNORAZOWY) - 00:44:37 - przejazd #1
+  Karnet#165 (CZASOWY_1H) - 00:44:37 - przejazd #3
+  Karnet#231 (CZASOWY_2H) - 00:44:37 - przejazd #1
+  Karnet#056 (CZASOWY_1H) - 00:44:38 - przejazd #1
+  Karnet#452 (CZASOWY_1H) - 00:44:38 - przejazd #1
+  Karnet#197 (CZASOWY_3H) - 00:44:38 - przejazd #4
+  Karnet#033 (CZASOWY_1H) - 00:44:38 - przejazd #3
+  Karnet#114 (CZASOWY_1H) - 00:44:38 - przejazd #1
+  Karnet#465 (DZIENNY) - 00:44:38 - przejazd #2
+  Karnet#215 (DZIENNY) - 00:44:38 - przejazd #3
+  Karnet#135 (JEDNORAZOWY) - 00:44:38 - przejazd #1
+  Karnet#340 (CZASOWY_3H) - 00:44:38 - przejazd #1
+  Karnet#402 (CZASOWY_2H) - 00:44:38 - przejazd #2
+  Karnet#410 (DZIENNY) - 00:44:39 - przejazd #1
+  Karnet#222 (CZASOWY_1H) - 00:44:39 - przejazd #1
+  Karnet#251 (JEDNORAZOWY) - 00:44:39 - przejazd #1
+  Karnet#434 (CZASOWY_1H) - 00:44:39 - przejazd #1
+  Karnet#163 (DZIENNY) - 00:44:39 - przejazd #4
+  Karnet#283 (CZASOWY_2H) - 00:44:39 - przejazd #1
+  Karnet#106 (CZASOWY_1H) - 00:44:39 - przejazd #1
+  Karnet#396 (CZASOWY_2H) - 00:44:39 - przejazd #2
+  Karnet#345 (JEDNORAZOWY) - 00:44:39 - przejazd #1
+  Karnet#155 (CZASOWY_2H) - 00:44:39 - przejazd #1
+  Karnet#048 (JEDNORAZOWY) - 00:44:40 - przejazd #1
+  Karnet#276 (DZIENNY) - 00:44:40 - przejazd #1
+  Karnet#281 (CZASOWY_2H) - 00:44:40 - przejazd #1
+  Karnet#085 (CZASOWY_1H) - 00:44:40 - przejazd #1
+  Karnet#093 (CZASOWY_2H) - 00:44:40 - przejazd #4
+  Karnet#183 (DZIENNY) - 00:44:40 - przejazd #1
+  Karnet#182 (CZASOWY_3H) - 00:44:40 - przejazd #1
+  Karnet#011 (CZASOWY_1H) - 00:44:40 - przejazd #1
+  Karnet#046 (CZASOWY_2H) - 00:44:40 - przejazd #1
+  Karnet#401 (CZASOWY_2H) - 00:44:40 - przejazd #1
+  Karnet#238 (CZASOWY_3H) - 00:44:40 - przejazd #1
+  Karnet#220 (CZASOWY_1H) - 00:44:41 - przejazd #4
+  Karnet#363 (CZASOWY_3H) - 00:44:41 - przejazd #2
+  Karnet#074 (CZASOWY_1H) - 00:44:41 - przejazd #2
+  Karnet#137 (CZASOWY_2H) - 00:44:41 - przejazd #1
+  Karnet#020 (DZIENNY) - 00:44:41 - przejazd #1
+  Karnet#359 (CZASOWY_1H) - 00:44:41 - przejazd #1
+  Karnet#142 (CZASOWY_2H) - 00:44:41 - przejazd #2
+  Karnet#127 (DZIENNY) - 00:44:42 - przejazd #2
+  Karnet#210 (DZIENNY) - 00:44:42 - przejazd #3
+  Karnet#169 (CZASOWY_3H) - 00:44:42 - przejazd #1
+  Karnet#019 (CZASOWY_2H) - 00:44:42 - przejazd #1
+  Karnet#289 (CZASOWY_1H) - 00:44:43 - przejazd #2
+  Karnet#394 (CZASOWY_1H) - 00:44:43 - przejazd #1
+  Karnet#428 (CZASOWY_1H) - 00:44:43 - przejazd #1
+  Karnet#025 (CZASOWY_3H) - 00:44:43 - przejazd #1
+  Karnet#384 (CZASOWY_3H) - 00:44:43 - przejazd #2
+  Karnet#285 (CZASOWY_3H) - 00:44:43 - przejazd #1
+  Karnet#342 (CZASOWY_1H) - 00:44:43 - przejazd #3
+  Karnet#327 (JEDNORAZOWY) - 00:44:43 - przejazd #1
+  Karnet#386 (JEDNORAZOWY) - 00:44:43 - przejazd #1
+  Karnet#132 (CZASOWY_3H) - 00:44:43 - przejazd #4
+  Karnet#427 (CZASOWY_3H) - 00:44:44 - przejazd #1
+  Karnet#415 (CZASOWY_2H) - 00:44:44 - przejazd #1
+  Karnet#480 (JEDNORAZOWY) - 00:44:44 - przejazd #1
+  Karnet#293 (CZASOWY_1H) - 00:44:44 - przejazd #3
+  Karnet#322 (CZASOWY_2H) - 00:44:44 - przejazd #2
+  Karnet#263 (DZIENNY) - 00:44:44 - przejazd #1
+  Karnet#233 (CZASOWY_1H) - 00:44:44 - przejazd #2
+  Karnet#193 (DZIENNY) - 00:44:45 - przejazd #1
+  Karnet#088 (CZASOWY_3H) - 00:44:45 - przejazd #1
+  Karnet#454 (CZASOWY_1H) - 00:44:45 - przejazd #1
+  Karnet#446 (DZIENNY) - 00:44:45 - przejazd #1
+  Karnet#470 (CZASOWY_3H) - 00:44:45 - przejazd #1
+  Karnet#087 (DZIENNY) - 00:44:45 - przejazd #3
+  Karnet#254 (CZASOWY_1H) - 00:44:45 - przejazd #2
+  Karnet#190 (CZASOWY_1H) - 00:44:45 - przejazd #1
+  Karnet#469 (CZASOWY_2H) - 00:44:45 - przejazd #2
+  Karnet#422 (CZASOWY_2H) - 00:44:46 - przejazd #1
+  Karnet#455 (DZIENNY) - 00:44:46 - przejazd #1
+  Karnet#122 (CZASOWY_1H) - 00:44:46 - przejazd #1
+  Karnet#329 (CZASOWY_2H) - 00:44:46 - przejazd #1
+  Karnet#116 (CZASOWY_2H) - 00:44:46 - przejazd #3
+  Karnet#146 (CZASOWY_3H) - 00:44:46 - przejazd #1
+  Karnet#344 (CZASOWY_3H) - 00:44:46 - przejazd #1
+  Karnet#242 (JEDNORAZOWY) - 00:44:46 - przejazd #1
+  Karnet#067 (DZIENNY) - 00:44:47 - przejazd #1
+  Karnet#257 (CZASOWY_2H) - 00:44:47 - przejazd #1
+  Karnet#273 (CZASOWY_1H) - 00:44:47 - przejazd #1
+  Karnet#481 (CZASOWY_2H) - 00:44:47 - przejazd #1
+  Karnet#060 (CZASOWY_2H) - 00:44:47 - przejazd #2
+  Karnet#314 (JEDNORAZOWY) - 00:44:47 - przejazd #1
+  Karnet#325 (JEDNORAZOWY) - 00:44:47 - przejazd #1
+  Karnet#050 (DZIENNY) - 00:44:47 - przejazd #1
+  Karnet#381 (CZASOWY_2H) - 00:44:48 - przejazd #1
+  Karnet#058 (CZASOWY_1H) - 00:44:48 - przejazd #1
+  Karnet#078 (DZIENNY) - 00:44:48 - przejazd #1
+  Karnet#133 (CZASOWY_3H) - 00:44:48 - przejazd #1
+  Karnet#296 (CZASOWY_1H) - 00:44:48 - przejazd #2
+  Karnet#119 (CZASOWY_1H) - 00:44:48 - przejazd #1
+  Karnet#139 (DZIENNY) - 00:44:48 - przejazd #1
+  Karnet#181 (CZASOWY_1H) - 00:44:48 - przejazd #1
+  Karnet#362 (CZASOWY_1H) - 00:44:48 - przejazd #1
+  Karnet#117 (CZASOWY_3H) - 00:44:48 - przejazd #2
+  Karnet#108 (CZASOWY_2H) - 00:44:48 - przejazd #2
+  Karnet#021 (CZASOWY_1H) - 00:44:48 - przejazd #1
+  Karnet#256 (DZIENNY) - 00:44:49 - przejazd #1
+  Karnet#258 (JEDNORAZOWY) - 00:44:49 - przejazd #1
+  Karnet#035 (CZASOWY_2H) - 00:44:49 - przejazd #1
+  Karnet#221 (CZASOWY_3H) - 00:44:49 - przejazd #4
+  Karnet#311 (CZASOWY_2H) - 00:44:49 - przejazd #1
+  Karnet#143 (CZASOWY_3H) - 00:44:49 - przejazd #2
+  Karnet#064 (CZASOWY_1H) - 00:44:49 - przejazd #4
+  Karnet#440 (CZASOWY_2H) - 00:44:50 - przejazd #1
+  Karnet#066 (CZASOWY_2H) - 00:44:50 - przejazd #1
+  Karnet#492 (DZIENNY) - 00:44:50 - przejazd #1
+  Karnet#120 (JEDNORAZOWY) - 00:44:50 - przejazd #1
+  Karnet#102 (JEDNORAZOWY) - 00:44:50 - przejazd #1
+  Karnet#218 (CZASOWY_2H) - 00:44:50 - przejazd #4
+  Karnet#184 (DZIENNY) - 00:44:50 - przejazd #1
+  Karnet#353 (CZASOWY_1H) - 00:44:50 - przejazd #1
+  Karnet#024 (DZIENNY) - 00:44:50 - przejazd #1
+  Karnet#179 (CZASOWY_1H) - 00:44:50 - przejazd #2
+  Karnet#230 (CZASOWY_2H) - 00:44:51 - przejazd #1
+  Karnet#451 (CZASOWY_2H) - 00:44:51 - przejazd #1
+  Karnet#115 (JEDNORAZOWY) - 00:44:51 - przejazd #1
+  Karnet#309 (JEDNORAZOWY) - 00:44:51 - przejazd #1
+  Karnet#488 (JEDNORAZOWY) - 00:44:51 - przejazd #1
+  Karnet#341 (CZASOWY_2H) - 00:44:51 - przejazd #1
+  Karnet#003 (DZIENNY) - 00:44:51 - przejazd #1
+  Karnet#211 (CZASOWY_2H) - 00:44:52 - przejazd #1
+  Karnet#395 (CZASOWY_2H) - 00:44:52 - przejazd #2
+  Karnet#229 (JEDNORAZOWY) - 00:44:52 - przejazd #1
+  Karnet#307 (CZASOWY_1H) - 00:44:52 - przejazd #2
+  Karnet#164 (CZASOWY_1H) - 00:44:52 - przejazd #2
+  Karnet#398 (CZASOWY_3H) - 00:44:52 - przejazd #1
+  Karnet#291 (CZASOWY_2H) - 00:44:53 - przejazd #3
+  Karnet#459 (CZASOWY_3H) - 00:44:53 - przejazd #1
+  Karnet#268 (CZASOWY_1H) - 00:44:53 - przejazd #1
+  Karnet#049 (CZASOWY_2H) - 00:44:53 - przejazd #4
+  Karnet#302 (CZASOWY_2H) - 00:44:53 - przejazd #1
+  Karnet#495 (CZASOWY_1H) - 00:44:53 - przejazd #1
+  Karnet#500 (JEDNORAZOWY) - 00:44:53 - przejazd #1
+  Karnet#018 (CZASOWY_2H) - 00:44:53 - przejazd #1
+  Karnet#217 (CZASOWY_1H) - 00:44:53 - przejazd #1
+  Karnet#379 (JEDNORAZOWY) - 00:44:53 - przejazd #1
+  Karnet#044 (DZIENNY) - 00:44:54 - przejazd #1
+  Karnet#430 (CZASOWY_2H) - 00:44:54 - przejazd #1
+  Karnet#061 (CZASOWY_1H) - 00:44:54 - przejazd #1
+  Karnet#442 (CZASOWY_2H) - 00:44:54 - przejazd #1
+  Karnet#282 (JEDNORAZOWY) - 00:44:54 - przejazd #1
+  Karnet#103 (CZASOWY_3H) - 00:44:54 - przejazd #1
+  Karnet#348 (CZASOWY_3H) - 00:44:54 - przejazd #3
+  Karnet#335 (CZASOWY_2H) - 00:44:54 - przejazd #3
+  Karnet#186 (CZASOWY_2H) - 00:44:54 - przejazd #1
+  Karnet#364 (CZASOWY_3H) - 00:44:54 - przejazd #1
+  Karnet#200 (JEDNORAZOWY) - 00:44:55 - przejazd #1
+  Karnet#195 (DZIENNY) - 00:44:55 - przejazd #1
+  Karnet#337 (DZIENNY) - 00:44:55 - przejazd #2
+  Karnet#232 (CZASOWY_2H) - 00:44:55 - przejazd #1
+  Karnet#332 (DZIENNY) - 00:44:55 - przejazd #2
+  Karnet#084 (CZASOWY_1H) - 00:44:55 - przejazd #1
+  Karnet#438 (CZASOWY_2H) - 00:44:55 - przejazd #1
+  Karnet#124 (DZIENNY) - 00:44:55 - przejazd #2
+  Karnet#007 (CZASOWY_1H) - 00:44:55 - przejazd #1
+  Karnet#435 (DZIENNY) - 00:44:56 - przejazd #2
+  Karnet#029 (DZIENNY) - 00:44:56 - przejazd #1
+  Karnet#352 (CZASOWY_1H) - 00:44:56 - przejazd #4
+  Karnet#326 (JEDNORAZOWY) - 00:44:56 - przejazd #1
+  Karnet#493 (DZIENNY) - 00:44:56 - przejazd #1
+  Karnet#355 (CZASOWY_1H) - 00:44:56 - przejazd #1
+  Karnet#312 (DZIENNY) - 00:44:56 - przejazd #2
+  Karnet#072 (CZASOWY_2H) - 00:44:57 - przejazd #1
+  Karnet#038 (DZIENNY) - 00:44:57 - przejazd #1
+  Karnet#076 (JEDNORAZOWY) - 00:44:57 - przejazd #1
+  Karnet#303 (CZASOWY_1H) - 00:44:57 - przejazd #1
+  Karnet#104 (DZIENNY) - 00:44:57 - przejazd #1
+  Karnet#317 (CZASOWY_3H) - 00:44:57 - przejazd #2
+  Karnet#301 (CZASOWY_2H) - 00:44:57 - przejazd #1
+  Karnet#487 (DZIENNY) - 00:44:57 - przejazd #1
+  Karnet#130 (CZASOWY_2H) - 00:44:57 - przejazd #1
+  Karnet#365 (CZASOWY_3H) - 00:44:57 - przejazd #1
+  Karnet#338 (CZASOWY_2H) - 00:44:57 - przejazd #1
+  Karnet#378 (CZASOWY_1H) - 00:44:57 - przejazd #1
+  Karnet#449 (DZIENNY) - 00:44:58 - przejazd #1
+  Karnet#235 (DZIENNY) - 00:44:58 - przejazd #1
+  Karnet#070 (CZASOWY_1H) - 00:44:58 - przejazd #1
+  Karnet#419 (DZIENNY) - 00:44:58 - przejazd #3
+  Karnet#319 (CZASOWY_3H) - 00:44:58 - przejazd #2
+  Karnet#156 (JEDNORAZOWY) - 00:44:58 - przejazd #1
+  Karnet#138 (CZASOWY_2H) - 00:44:58 - przejazd #1
+  Karnet#008 (DZIENNY) - 00:44:58 - przejazd #1
+  Karnet#368 (CZASOWY_3H) - 00:44:58 - przejazd #1
+  Karnet#367 (JEDNORAZOWY) - 00:44:59 - przejazd #1
+  Karnet#069 (CZASOWY_1H) - 00:44:59 - przejazd #1
+  Karnet#246 (DZIENNY) - 00:44:59 - przejazd #1
+  Karnet#473 (CZASOWY_3H) - 00:44:59 - przejazd #1
+  Karnet#466 (DZIENNY) - 00:44:59 - przejazd #1
+  Karnet#499 (CZASOWY_2H) - 00:44:59 - przejazd #1
+  Karnet#092 (CZASOWY_2H) - 00:44:59 - przejazd #1
+  Karnet#343 (CZASOWY_1H) - 00:44:59 - przejazd #1
+  Karnet#457 (CZASOWY_1H) - 00:44:59 - przejazd #2
+  Karnet#213 (CZASOWY_3H) - 00:44:59 - przejazd #1
+  Karnet#198 (DZIENNY) - 00:44:59 - przejazd #1
+  Karnet#034 (CZASOWY_3H) - 00:44:59 - przejazd #1
+  Karnet#403 (JEDNORAZOWY) - 00:45:00 - przejazd #1
+  Karnet#467 (JEDNORAZOWY) - 00:45:00 - przejazd #1
+  Karnet#299 (CZASOWY_1H) - 00:45:00 - przejazd #1
+  Karnet#123 (CZASOWY_1H) - 00:45:00 - przejazd #1
+  Karnet#090 (DZIENNY) - 00:45:00 - przejazd #2
+  Karnet#002 (CZASOWY_2H) - 00:45:00 - przejazd #1
+  Karnet#071 (DZIENNY) - 00:45:01 - przejazd #1
+  Karnet#408 (CZASOWY_3H) - 00:45:01 - przejazd #3
+  Karnet#460 (CZASOWY_2H) - 00:45:01 - przejazd #1
+  Karnet#077 (CZASOWY_2H) - 00:45:01 - przejazd #3
+  Karnet#453 (CZASOWY_1H) - 00:45:01 - przejazd #1
+  Karnet#091 (CZASOWY_2H) - 00:45:01 - przejazd #2
+  Karnet#279 (JEDNORAZOWY) - 00:45:01 - przejazd #1
+  Karnet#320 (CZASOWY_2H) - 00:45:01 - przejazd #1
+  Karnet#012 (CZASOWY_3H) - 00:45:01 - przejazd #1
+  Karnet#178 (CZASOWY_2H) - 00:45:01 - przejazd #1
+  Karnet#310 (CZASOWY_1H) - 00:45:01 - przejazd #2
+  Karnet#404 (CZASOWY_2H) - 00:45:02 - przejazd #1
+  Karnet#472 (CZASOWY_2H) - 00:45:02 - przejazd #1
+  Karnet#129 (CZASOWY_1H) - 00:45:02 - przejazd #1
+  Karnet#375 (DZIENNY) - 00:45:02 - przejazd #1
+  Karnet#247 (DZIENNY) - 00:45:03 - przejazd #1
+  Karnet#250 (DZIENNY) - 00:45:03 - przejazd #1
+  Karnet#443 (JEDNORAZOWY) - 00:45:03 - przejazd #1
+  Karnet#261 (DZIENNY) - 00:45:03 - przejazd #1
+  Karnet#145 (CZASOWY_3H) - 00:45:03 - przejazd #1
+  Karnet#227 (CZASOWY_1H) - 00:45:03 - przejazd #3
+  Karnet#333 (CZASOWY_1H) - 00:45:03 - przejazd #1
+  Karnet#253 (DZIENNY) - 00:45:04 - przejazd #1
+  Karnet#393 (DZIENNY) - 00:45:04 - przejazd #1
+  Karnet#236 (CZASOWY_2H) - 00:45:04 - przejazd #1
+  Karnet#316 (CZASOWY_1H) - 00:45:04 - przejazd #1
+  Karnet#423 (CZASOWY_2H) - 00:45:04 - przejazd #3
+  Karnet#203 (JEDNORAZOWY) - 00:45:04 - przejazd #1
+  Karnet#189 (DZIENNY) - 00:45:04 - przejazd #1
+  Karnet#017 (CZASOWY_1H) - 00:45:04 - przejazd #1
+  Karnet#057 (CZASOWY_2H) - 00:45:05 - przejazd #1
+  Karnet#390 (DZIENNY) - 00:45:05 - przejazd #3
+  Karnet#075 (DZIENNY) - 00:45:05 - przejazd #1
+  Karnet#063 (CZASOWY_3H) - 00:45:05 - przejazd #1
+  Karnet#397 (CZASOWY_1H) - 00:45:05 - przejazd #1
+  Karnet#172 (CZASOWY_3H) - 00:45:05 - przejazd #1
+  Karnet#269 (CZASOWY_3H) - 00:45:06 - przejazd #1
+  Karnet#031 (CZASOWY_3H) - 00:45:06 - przejazd #2
+  Karnet#147 (CZASOWY_1H) - 00:45:06 - przejazd #1
+  Karnet#022 (CZASOWY_2H) - 00:45:06 - przejazd #1
+  Karnet#392 (JEDNORAZOWY) - 00:45:07 - przejazd #1
+  Karnet#462 (CZASOWY_1H) - 00:45:07 - przejazd #1
+  Karnet#151 (CZASOWY_2H) - 00:45:07 - przejazd #4
+  Karnet#497 (CZASOWY_2H) - 00:45:07 - przejazd #1
+  Karnet#483 (CZASOWY_3H) - 00:45:07 - przejazd #1
+  Karnet#357 (CZASOWY_3H) - 00:45:07 - przejazd #1
+  Karnet#346 (DZIENNY) - 00:45:07 - przejazd #1
+  Karnet#377 (DZIENNY) - 00:45:07 - przejazd #1
+  Karnet#042 (JEDNORAZOWY) - 00:45:07 - przejazd #1
+  Karnet#205 (CZASOWY_3H) - 00:45:07 - przejazd #1
+  Karnet#252 (JEDNORAZOWY) - 00:45:08 - przejazd #1
+  Karnet#255 (CZASOWY_3H) - 00:45:08 - przejazd #1
+  Karnet#080 (CZASOWY_2H) - 00:45:08 - przejazd #3
+  Karnet#304 (JEDNORAZOWY) - 00:45:08 - przejazd #1
+  Karnet#191 (DZIENNY) - 00:45:08 - przejazd #2
+  Karnet#157 (JEDNORAZOWY) - 00:45:08 - przejazd #1
+  Karnet#180 (CZASOWY_3H) - 00:45:08 - przejazd #1
+  Karnet#361 (CZASOWY_3H) - 00:45:08 - przejazd #1
+  Karnet#162 (JEDNORAZOWY) - 00:45:08 - przejazd #1
+  Karnet#376 (CZASOWY_3H) - 00:45:08 - przejazd #1
+  Karnet#411 (CZASOWY_3H) - 00:45:09 - przejazd #1
+  Karnet#199 (CZASOWY_1H) - 00:45:09 - przejazd #2
+  Karnet#468 (CZASOWY_3H) - 00:45:09 - przejazd #1
+  Karnet#107 (CZASOWY_3H) - 00:45:09 - przejazd #1
+  Karnet#474 (CZASOWY_3H) - 00:45:09 - przejazd #1
+  Karnet#126 (CZASOWY_2H) - 00:45:09 - przejazd #1
+  Karnet#223 (CZASOWY_2H) - 00:45:09 - przejazd #3
+  Karnet#334 (CZASOWY_2H) - 00:45:10 - przejazd #1
+  Karnet#439 (CZASOWY_3H) - 00:45:11 - przejazd #1
+  Karnet#494 (CZASOWY_3H) - 00:45:11 - przejazd #1
+  Karnet#330 (CZASOWY_3H) - 00:45:11 - przejazd #2
+  Karnet#168 (DZIENNY) - 00:45:11 - przejazd #2
+  Karnet#266 (CZASOWY_2H) - 00:45:12 - przejazd #4
+  Karnet#083 (CZASOWY_2H) - 00:45:12 - przejazd #2
+  Karnet#336 (CZASOWY_2H) - 00:45:13 - przejazd #2
+  Karnet#391 (CZASOWY_1H) - 00:45:13 - przejazd #2
+  Karnet#267 (CZASOWY_3H) - 00:45:13 - przejazd #3
+  Karnet#101 (CZASOWY_3H) - 00:45:13 - przejazd #2
+  Karnet#350 (CZASOWY_1H) - 00:45:15 - przejazd #2
+  Karnet#202 (CZASOWY_1H) - 00:45:15 - przejazd #2
+  Karnet#373 (CZASOWY_3H) - 00:45:15 - przejazd #2
+  Karnet#366 (CZASOWY_2H) - 00:45:16 - przejazd #4
+  Karnet#458 (CZASOWY_3H) - 00:45:16 - przejazd #2
+  Karnet#265 (DZIENNY) - 00:45:17 - przejazd #2
+  Karnet#463 (CZASOWY_2H) - 00:45:18 - przejazd #2
+  Karnet#141 (CZASOWY_3H) - 00:45:18 - przejazd #3
+  Karnet#369 (DZIENNY) - 00:45:20 - przejazd #2
+  Karnet#331 (CZASOWY_2H) - 00:45:20 - przejazd #2
+  Karnet#225 (CZASOWY_2H) - 00:45:20 - przejazd #4
+  Karnet#486 (DZIENNY) - 00:45:21 - przejazd #4
+  Karnet#027 (CZASOWY_1H) - 00:45:21 - przejazd #3
+  Karnet#244 (DZIENNY) - 00:45:21 - przejazd #2
+  Karnet#441 (DZIENNY) - 00:45:23 - przejazd #2
+  Karnet#437 (DZIENNY) - 00:45:24 - przejazd #2
+  Karnet#461 (CZASOWY_1H) - 00:45:24 - przejazd #2
+  Karnet#039 (DZIENNY) - 00:45:25 - przejazd #2
+  Karnet#167 (CZASOWY_2H) - 00:45:25 - przejazd #2
+  Karnet#490 (CZASOWY_1H) - 00:45:25 - przejazd #2
+  Karnet#010 (CZASOWY_1H) - 00:45:28 - przejazd #3
+  Karnet#300 (DZIENNY) - 00:45:29 - przejazd #4
+  Karnet#185 (CZASOWY_2H) - 00:45:29 - przejazd #2
+  Karnet#382 (CZASOWY_3H) - 00:45:29 - przejazd #2
+  Karnet#054 (DZIENNY) - 00:45:29 - przejazd #5
+  Karnet#406 (CZASOWY_1H) - 00:45:30 - przejazd #2
+  Karnet#053 (CZASOWY_3H) - 00:45:30 - przejazd #2
+  Karnet#170 (CZASOWY_2H) - 00:45:31 - przejazd #2
+  Karnet#097 (CZASOWY_1H) - 00:45:32 - przejazd #3
+  Karnet#354 (CZASOWY_2H) - 00:45:32 - przejazd #2
+  Karnet#306 (CZASOWY_3H) - 00:45:32 - przejazd #2
+  Karnet#110 (CZASOWY_1H) - 00:45:33 - przejazd #2
+  Karnet#204 (CZASOWY_2H) - 00:45:33 - przejazd #2
+  Karnet#305 (DZIENNY) - 00:45:33 - przejazd #4
+  Karnet#418 (CZASOWY_2H) - 00:45:34 - przejazd #2
+  Karnet#433 (CZASOWY_2H) - 00:45:35 - przejazd #3
+  Karnet#065 (CZASOWY_2H) - 00:45:36 - przejazd #3
+  Karnet#040 (DZIENNY) - 00:45:36 - przejazd #5
+  Karnet#174 (CZASOWY_2H) - 00:45:36 - przejazd #3
+  Karnet#288 (CZASOWY_1H) - 00:45:37 - przejazd #2
+  Karnet#194 (DZIENNY) - 00:45:38 - przejazd #2
+  Karnet#013 (DZIENNY) - 00:45:39 - przejazd #2
+  Karnet#131 (DZIENNY) - 00:45:40 - przejazd #3
+  Karnet#192 (CZASOWY_2H) - 00:45:40 - przejazd #2
+  Karnet#431 (DZIENNY) - 00:45:40 - przejazd #2
+
+============================================================
+  PODSUMOWANIE ZJAZDOW PER TURYSTA/KARNET
+============================================================
+  ID       TYP KARNETU    PRZEJAZDY  STATUS
+------------------------------------------------------------
+  2        CZASOWY_2H     1          AKTYWNY
+  3        DZIENNY        1          AKTYWNY
+  5        CZASOWY_3H     1          AKTYWNY
+  6        CZASOWY_1H     2          AKTYWNY
+  7        CZASOWY_1H     1          AKTYWNY
+  8        DZIENNY        1          AKTYWNY
+  10       CZASOWY_1H     3          AKTYWNY
+  11       CZASOWY_1H     1          AKTYWNY
+  12       CZASOWY_3H     1          AKTYWNY
+  13       DZIENNY        2          AKTYWNY
+  14       JEDNORAZOWY    1          AKTYWNY
+  17       CZASOWY_1H     1          AKTYWNY
+  18       CZASOWY_2H     1          AKTYWNY
+  19       CZASOWY_2H     1          AKTYWNY
+  20       DZIENNY        1          AKTYWNY
+  21       CZASOWY_1H     1          AKTYWNY
+  22       CZASOWY_2H     1          AKTYWNY
+  23       JEDNORAZOWY    1          AKTYWNY
+  24       DZIENNY        1          AKTYWNY
+  25       CZASOWY_3H     1          AKTYWNY
+  27       CZASOWY_1H     3          AKTYWNY
+  28       JEDNORAZOWY    1          AKTYWNY
+  29       DZIENNY        1          AKTYWNY
+  30       CZASOWY_2H     1          AKTYWNY
+  31       CZASOWY_3H     2          AKTYWNY
+  32       JEDNORAZOWY    1          AKTYWNY
+  33       CZASOWY_1H     3          AKTYWNY
+  34       CZASOWY_3H     1          AKTYWNY
+  35       CZASOWY_2H     1          AKTYWNY
+  38       DZIENNY        1          AKTYWNY
+  39       DZIENNY        2          AKTYWNY
+  40       DZIENNY        5          AKTYWNY
+  42       JEDNORAZOWY    1          AKTYWNY
+  43       CZASOWY_2H     1          AKTYWNY
+  44       DZIENNY        1          AKTYWNY
+  45       JEDNORAZOWY    1          AKTYWNY
+  46       CZASOWY_2H     1          AKTYWNY
+  48       JEDNORAZOWY    1          AKTYWNY
+  49       CZASOWY_2H     4          AKTYWNY
+  50       DZIENNY        1          AKTYWNY
+  51       JEDNORAZOWY    1          AKTYWNY
+  53       CZASOWY_3H     2          AKTYWNY
+  54       DZIENNY        5          AKTYWNY
+  56       CZASOWY_1H     1          AKTYWNY
+  57       CZASOWY_2H     1          AKTYWNY
+  58       CZASOWY_1H     1          AKTYWNY
+  60       CZASOWY_2H     2          AKTYWNY
+  61       CZASOWY_1H     1          AKTYWNY
+  63       CZASOWY_3H     1          AKTYWNY
+  64       CZASOWY_1H     4          AKTYWNY
+  65       CZASOWY_2H     3          AKTYWNY
+  66       CZASOWY_2H     1          AKTYWNY
+  67       DZIENNY        1          AKTYWNY
+  68       JEDNORAZOWY    1          AKTYWNY
+  69       CZASOWY_1H     1          AKTYWNY
+  70       CZASOWY_1H     1          AKTYWNY
+  71       DZIENNY        1          AKTYWNY
+  72       CZASOWY_2H     1          AKTYWNY
+  73       CZASOWY_3H     1          AKTYWNY
+  74       CZASOWY_1H     2          AKTYWNY
+  75       DZIENNY        1          AKTYWNY
+  76       JEDNORAZOWY    1          AKTYWNY
+  77       CZASOWY_2H     3          AKTYWNY
+  78       DZIENNY        1          AKTYWNY
+  79       JEDNORAZOWY    1          AKTYWNY
+  80       CZASOWY_2H     3          AKTYWNY
+  81       JEDNORAZOWY    1          AKTYWNY
+  82       CZASOWY_3H     1          AKTYWNY
+  83       CZASOWY_2H     2          AKTYWNY
+  84       CZASOWY_1H     1          AKTYWNY
+  85       CZASOWY_1H     1          AKTYWNY
+  87       DZIENNY        3          AKTYWNY
+  88       CZASOWY_3H     1          AKTYWNY
+  90       DZIENNY        2          AKTYWNY
+  91       CZASOWY_2H     2          AKTYWNY
+  92       CZASOWY_2H     1          AKTYWNY
+  93       CZASOWY_2H     4          AKTYWNY
+  94       CZASOWY_3H     3          AKTYWNY
+  97       CZASOWY_1H     3          AKTYWNY
+  101      CZASOWY_3H     2          AKTYWNY
+  102      JEDNORAZOWY    1          AKTYWNY
+  103      CZASOWY_3H     1          AKTYWNY
+  104      DZIENNY        1          AKTYWNY
+  106      CZASOWY_1H     1          AKTYWNY
+  107      CZASOWY_3H     1          AKTYWNY
+  108      CZASOWY_2H     2          AKTYWNY
+  110      CZASOWY_1H     2          AKTYWNY
+  113      DZIENNY        3          AKTYWNY
+  114      CZASOWY_1H     1          AKTYWNY
+  115      JEDNORAZOWY    1          AKTYWNY
+  116      CZASOWY_2H     3          AKTYWNY
+  117      CZASOWY_3H     2          AKTYWNY
+  119      CZASOWY_1H     1          AKTYWNY
+  120      JEDNORAZOWY    1          AKTYWNY
+  121      JEDNORAZOWY    1          AKTYWNY
+  122      CZASOWY_1H     1          AKTYWNY
+  123      CZASOWY_1H     1          AKTYWNY
+  124      DZIENNY        2          AKTYWNY
+  125      CZASOWY_3H     3          AKTYWNY
+  126      CZASOWY_2H     1          AKTYWNY
+  127      DZIENNY        2          AKTYWNY
+  129      CZASOWY_1H     1          AKTYWNY
+  130      CZASOWY_2H     1          AKTYWNY
+  131      DZIENNY        3          AKTYWNY
+  132      CZASOWY_3H     4          AKTYWNY
+  133      CZASOWY_3H     1          AKTYWNY
+  134      JEDNORAZOWY    1          AKTYWNY
+  135      JEDNORAZOWY    1          AKTYWNY
+  136      CZASOWY_3H     1          AKTYWNY
+  137      CZASOWY_2H     1          AKTYWNY
+  138      CZASOWY_2H     1          AKTYWNY
+  139      DZIENNY        1          AKTYWNY
+  141      CZASOWY_3H     3          AKTYWNY
+  142      CZASOWY_2H     2          AKTYWNY
+  143      CZASOWY_3H     2          AKTYWNY
+  144      JEDNORAZOWY    1          AKTYWNY
+  145      CZASOWY_3H     1          AKTYWNY
+  146      CZASOWY_3H     1          AKTYWNY
+  147      CZASOWY_1H     1          AKTYWNY
+  150      CZASOWY_3H     2          AKTYWNY
+  151      CZASOWY_2H     4          AKTYWNY
+  152      JEDNORAZOWY    1          AKTYWNY
+  153      JEDNORAZOWY    1          AKTYWNY
+  155      CZASOWY_2H     1          AKTYWNY
+  156      JEDNORAZOWY    1          AKTYWNY
+  157      JEDNORAZOWY    1          AKTYWNY
+  158      JEDNORAZOWY    1          AKTYWNY
+  159      JEDNORAZOWY    1          AKTYWNY
+  160      CZASOWY_2H     2          AKTYWNY
+  161      CZASOWY_1H     1          AKTYWNY
+  162      JEDNORAZOWY    1          AKTYWNY
+  163      DZIENNY        4          AKTYWNY
+  164      CZASOWY_1H     2          AKTYWNY
+  165      CZASOWY_1H     3          AKTYWNY
+  166      CZASOWY_1H     3          AKTYWNY
+  167      CZASOWY_2H     2          AKTYWNY
+  168      DZIENNY        2          AKTYWNY
+  169      CZASOWY_3H     1          AKTYWNY
+  170      CZASOWY_2H     2          AKTYWNY
+  171      JEDNORAZOWY    1          AKTYWNY
+  172      CZASOWY_3H     1          AKTYWNY
+  174      CZASOWY_2H     3          AKTYWNY
+  175      JEDNORAZOWY    1          AKTYWNY
+  176      JEDNORAZOWY    1          AKTYWNY
+  178      CZASOWY_2H     1          AKTYWNY
+  179      CZASOWY_1H     2          AKTYWNY
+  180      CZASOWY_3H     1          AKTYWNY
+  181      CZASOWY_1H     1          AKTYWNY
+  182      CZASOWY_3H     1          AKTYWNY
+  183      DZIENNY        1          AKTYWNY
+  184      DZIENNY        1          AKTYWNY
+  185      CZASOWY_2H     2          AKTYWNY
+  186      CZASOWY_2H     1          AKTYWNY
+  189      DZIENNY        1          AKTYWNY
+  190      CZASOWY_1H     1          AKTYWNY
+  191      DZIENNY        2          AKTYWNY
+  192      CZASOWY_2H     2          AKTYWNY
+  193      DZIENNY        1          AKTYWNY
+  194      DZIENNY        2          AKTYWNY
+  195      DZIENNY        1          AKTYWNY
+  197      CZASOWY_3H     4          AKTYWNY
+  198      DZIENNY        1          AKTYWNY
+  199      CZASOWY_1H     2          AKTYWNY
+  200      JEDNORAZOWY    1          AKTYWNY
+  202      CZASOWY_1H     2          AKTYWNY
+  203      JEDNORAZOWY    1          AKTYWNY
+  204      CZASOWY_2H     2          AKTYWNY
+  205      CZASOWY_3H     1          AKTYWNY
+  206      CZASOWY_1H     1          AKTYWNY
+  210      DZIENNY        3          AKTYWNY
+  211      CZASOWY_2H     1          AKTYWNY
+  212      CZASOWY_1H     1          AKTYWNY
+  213      CZASOWY_3H     1          AKTYWNY
+  215      DZIENNY        3          AKTYWNY
+  217      CZASOWY_1H     1          AKTYWNY
+  218      CZASOWY_2H     4          AKTYWNY
+  219      JEDNORAZOWY    1          AKTYWNY
+  220      CZASOWY_1H     4          AKTYWNY
+  221      CZASOWY_3H     4          AKTYWNY
+  222      CZASOWY_1H     1          AKTYWNY
+  223      CZASOWY_2H     3          AKTYWNY
+  225      CZASOWY_2H     4          AKTYWNY
+  227      CZASOWY_1H     3          AKTYWNY
+  229      JEDNORAZOWY    1          AKTYWNY
+  230      CZASOWY_2H     1          AKTYWNY
+  231      CZASOWY_2H     1          AKTYWNY
+  232      CZASOWY_2H     1          AKTYWNY
+  233      CZASOWY_1H     2          AKTYWNY
+  235      DZIENNY        1          AKTYWNY
+  236      CZASOWY_2H     1          AKTYWNY
+  238      CZASOWY_3H     1          AKTYWNY
+  242      JEDNORAZOWY    1          AKTYWNY
+  244      DZIENNY        2          AKTYWNY
+  245      JEDNORAZOWY    1          AKTYWNY
+  246      DZIENNY        1          AKTYWNY
+  247      DZIENNY        1          AKTYWNY
+  249      CZASOWY_2H     2          AKTYWNY
+  250      DZIENNY        1          AKTYWNY
+  251      JEDNORAZOWY    1          AKTYWNY
+  252      JEDNORAZOWY    1          AKTYWNY
+  253      DZIENNY        1          AKTYWNY
+  254      CZASOWY_1H     2          AKTYWNY
+  255      CZASOWY_3H     1          AKTYWNY
+  256      DZIENNY        1          AKTYWNY
+  257      CZASOWY_2H     1          AKTYWNY
+  258      JEDNORAZOWY    1          AKTYWNY
+  261      DZIENNY        1          AKTYWNY
+  263      DZIENNY        1          AKTYWNY
+  265      DZIENNY        2          AKTYWNY
+  266      CZASOWY_2H     4          AKTYWNY
+  267      CZASOWY_3H     3          AKTYWNY
+  268      CZASOWY_1H     1          AKTYWNY
+  269      CZASOWY_3H     1          AKTYWNY
+  272      JEDNORAZOWY    1          AKTYWNY
+  273      CZASOWY_1H     1          AKTYWNY
+  276      DZIENNY        1          AKTYWNY
+  278      JEDNORAZOWY    1          AKTYWNY
+  279      JEDNORAZOWY    1          AKTYWNY
+  280      CZASOWY_3H     3          AKTYWNY
+  281      CZASOWY_2H     1          AKTYWNY
+  282      JEDNORAZOWY    1          AKTYWNY
+  283      CZASOWY_2H     1          AKTYWNY
+  285      CZASOWY_3H     1          AKTYWNY
+  286      JEDNORAZOWY    1          AKTYWNY
+  288      CZASOWY_1H     2          AKTYWNY
+  289      CZASOWY_1H     2          AKTYWNY
+  291      CZASOWY_2H     3          AKTYWNY
+  292      DZIENNY        1          AKTYWNY
+  293      CZASOWY_1H     3          AKTYWNY
+  295      CZASOWY_1H     1          AKTYWNY
+  296      CZASOWY_1H     2          AKTYWNY
+  297      JEDNORAZOWY    1          AKTYWNY
+  299      CZASOWY_1H     1          AKTYWNY
+  300      DZIENNY        4          AKTYWNY
+  301      CZASOWY_2H     1          AKTYWNY
+  302      CZASOWY_2H     1          AKTYWNY
+  303      CZASOWY_1H     1          AKTYWNY
+  304      JEDNORAZOWY    1          AKTYWNY
+  305      DZIENNY        4          AKTYWNY
+  306      CZASOWY_3H     2          AKTYWNY
+  307      CZASOWY_1H     2          AKTYWNY
+  309      JEDNORAZOWY    1          AKTYWNY
+  310      CZASOWY_1H     2          AKTYWNY
+  311      CZASOWY_2H     1          AKTYWNY
+  312      DZIENNY        2          AKTYWNY
+  314      JEDNORAZOWY    1          AKTYWNY
+  316      CZASOWY_1H     1          AKTYWNY
+  317      CZASOWY_3H     2          AKTYWNY
+  318      DZIENNY        1          AKTYWNY
+  319      CZASOWY_3H     2          AKTYWNY
+  320      CZASOWY_2H     1          AKTYWNY
+  321      DZIENNY        1          AKTYWNY
+  322      CZASOWY_2H     2          AKTYWNY
+  323      JEDNORAZOWY    1          AKTYWNY
+  325      JEDNORAZOWY    1          AKTYWNY
+  326      JEDNORAZOWY    1          AKTYWNY
+  327      JEDNORAZOWY    1          AKTYWNY
+  328      CZASOWY_2H     2          AKTYWNY
+  329      CZASOWY_2H     1          AKTYWNY
+  330      CZASOWY_3H     2          AKTYWNY
+  331      CZASOWY_2H     2          AKTYWNY
+  332      DZIENNY        2          AKTYWNY
+  333      CZASOWY_1H     1          AKTYWNY
+  334      CZASOWY_2H     1          AKTYWNY
+  335      CZASOWY_2H     3          AKTYWNY
+  336      CZASOWY_2H     2          AKTYWNY
+  337      DZIENNY        2          AKTYWNY
+  338      CZASOWY_2H     1          AKTYWNY
+  339      JEDNORAZOWY    1          AKTYWNY
+  340      CZASOWY_3H     1          AKTYWNY
+  341      CZASOWY_2H     1          AKTYWNY
+  342      CZASOWY_1H     3          AKTYWNY
+  343      CZASOWY_1H     1          AKTYWNY
+  344      CZASOWY_3H     1          AKTYWNY
+  345      JEDNORAZOWY    1          AKTYWNY
+  346      DZIENNY        1          AKTYWNY
+  348      CZASOWY_3H     3          AKTYWNY
+  349      DZIENNY        1          AKTYWNY
+  350      CZASOWY_1H     2          AKTYWNY
+  351      JEDNORAZOWY    1          AKTYWNY
+  352      CZASOWY_1H     4          AKTYWNY
+  353      CZASOWY_1H     1          AKTYWNY
+  354      CZASOWY_2H     2          AKTYWNY
+  355      CZASOWY_1H     1          AKTYWNY
+  356      CZASOWY_2H     1          AKTYWNY
+  357      CZASOWY_3H     1          AKTYWNY
+  359      CZASOWY_1H     1          AKTYWNY
+  361      CZASOWY_3H     1          AKTYWNY
+  362      CZASOWY_1H     1          AKTYWNY
+  363      CZASOWY_3H     2          AKTYWNY
+  364      CZASOWY_3H     1          AKTYWNY
+  365      CZASOWY_3H     1          AKTYWNY
+  366      CZASOWY_2H     4          AKTYWNY
+  367      JEDNORAZOWY    1          AKTYWNY
+  368      CZASOWY_3H     1          AKTYWNY
+  369      DZIENNY        2          AKTYWNY
+  373      CZASOWY_3H     2          AKTYWNY
+  375      DZIENNY        1          AKTYWNY
+  376      CZASOWY_3H     1          AKTYWNY
+  377      DZIENNY        1          AKTYWNY
+  378      CZASOWY_1H     1          AKTYWNY
+  379      JEDNORAZOWY    1          AKTYWNY
+  381      CZASOWY_2H     1          AKTYWNY
+  382      CZASOWY_3H     2          AKTYWNY
+  383      JEDNORAZOWY    1          AKTYWNY
+  384      CZASOWY_3H     2          AKTYWNY
+  386      JEDNORAZOWY    1          AKTYWNY
+  388      CZASOWY_3H     3          AKTYWNY
+  390      DZIENNY        3          AKTYWNY
+  391      CZASOWY_1H     2          AKTYWNY
+  392      JEDNORAZOWY    1          AKTYWNY
+  393      DZIENNY        1          AKTYWNY
+  394      CZASOWY_1H     1          AKTYWNY
+  395      CZASOWY_2H     2          AKTYWNY
+  396      CZASOWY_2H     2          AKTYWNY
+  397      CZASOWY_1H     1          AKTYWNY
+  398      CZASOWY_3H     1          AKTYWNY
+  401      CZASOWY_2H     1          AKTYWNY
+  402      CZASOWY_2H     2          AKTYWNY
+  403      JEDNORAZOWY    1          AKTYWNY
+  404      CZASOWY_2H     1          AKTYWNY
+  406      CZASOWY_1H     2          AKTYWNY
+  408      CZASOWY_3H     3          AKTYWNY
+  410      DZIENNY        1          AKTYWNY
+  411      CZASOWY_3H     1          AKTYWNY
+  415      CZASOWY_2H     1          AKTYWNY
+  416      CZASOWY_3H     1          AKTYWNY
+  417      JEDNORAZOWY    1          AKTYWNY
+  418      CZASOWY_2H     2          AKTYWNY
+  419      DZIENNY        3          AKTYWNY
+  420      JEDNORAZOWY    1          AKTYWNY
+  422      CZASOWY_2H     1          AKTYWNY
+  423      CZASOWY_2H     3          AKTYWNY
+  425      JEDNORAZOWY    1          AKTYWNY
+  427      CZASOWY_3H     1          AKTYWNY
+  428      CZASOWY_1H     1          AKTYWNY
+  430      CZASOWY_2H     1          AKTYWNY
+  431      DZIENNY        2          AKTYWNY
+  433      CZASOWY_2H     3          AKTYWNY
+  434      CZASOWY_1H     1          AKTYWNY
+  435      DZIENNY        2          AKTYWNY
+  437      DZIENNY        2          AKTYWNY
+  438      CZASOWY_2H     1          AKTYWNY
+  439      CZASOWY_3H     1          AKTYWNY
+  440      CZASOWY_2H     1          AKTYWNY
+  441      DZIENNY        2          AKTYWNY
+  442      CZASOWY_2H     1          AKTYWNY
+  443      JEDNORAZOWY    1          AKTYWNY
+  444      JEDNORAZOWY    1          AKTYWNY
+  446      DZIENNY        1          AKTYWNY
+  449      DZIENNY        1          AKTYWNY
+  451      CZASOWY_2H     1          AKTYWNY
+  452      CZASOWY_1H     1          AKTYWNY
+  453      CZASOWY_1H     1          AKTYWNY
+  454      CZASOWY_1H     1          AKTYWNY
+  455      DZIENNY        1          AKTYWNY
+  457      CZASOWY_1H     2          AKTYWNY
+  458      CZASOWY_3H     2          AKTYWNY
+  459      CZASOWY_3H     1          AKTYWNY
+  460      CZASOWY_2H     1          AKTYWNY
+  461      CZASOWY_1H     2          AKTYWNY
+  462      CZASOWY_1H     1          AKTYWNY
+  463      CZASOWY_2H     2          AKTYWNY
+  464      JEDNORAZOWY    1          AKTYWNY
+  465      DZIENNY        2          AKTYWNY
+  466      DZIENNY        1          AKTYWNY
+  467      JEDNORAZOWY    1          AKTYWNY
+  468      CZASOWY_3H     1          AKTYWNY
+  469      CZASOWY_2H     2          AKTYWNY
+  470      CZASOWY_3H     1          AKTYWNY
+  471      JEDNORAZOWY    1          AKTYWNY
+  472      CZASOWY_2H     1          AKTYWNY
+  473      CZASOWY_3H     1          AKTYWNY
+  474      CZASOWY_3H     1          AKTYWNY
+  475      JEDNORAZOWY    1          AKTYWNY
+  479      CZASOWY_2H     1          AKTYWNY
+  480      JEDNORAZOWY    1          AKTYWNY
+  481      CZASOWY_2H     1          AKTYWNY
+  483      CZASOWY_3H     1          AKTYWNY
+  486      DZIENNY        4          AKTYWNY
+  487      DZIENNY        1          AKTYWNY
+  488      JEDNORAZOWY    1          AKTYWNY
+  490      CZASOWY_1H     2          AKTYWNY
+  491      DZIENNY        1          AKTYWNY
+  492      DZIENNY        1          AKTYWNY
+  493      DZIENNY        1          AKTYWNY
+  494      CZASOWY_3H     1          AKTYWNY
+  495      CZASOWY_1H     1          AKTYWNY
+  497      CZASOWY_2H     1          AKTYWNY
+  499      CZASOWY_2H     1          AKTYWNY
+  500      JEDNORAZOWY    1          AKTYWNY
+
+============================================================

@@ -24,9 +24,8 @@ int main(void) {
     signal(SIGUSR2, SIG_IGN);
     signal(SIGCHLD, SIG_IGN);
 
-    // Wyczysc pliki logow
+    // Wyczysc plik logu
     fclose(fopen("kolej_log.txt", "w"));
-    fclose(fopen("rides_log.txt", "w"));
 
     // Utworz FIFO do komunikacji miedzy pracownikami
     unlink(FIFO_WORKER_PATH);
@@ -141,9 +140,9 @@ int main(void) {
             }
         }
 
-        // Co 10 turystow - mala pauza
+        // Co 10 turystow - pauza (skalowana z liczba turystow)
         if (i % 10 == 0) {
-            usleep(5000);
+            usleep(NUM_TOURISTS > 100 ? 50000 : 10000);
         }
     }
 
@@ -225,8 +224,8 @@ void graceful_shutdown() {
     }
 
     // Wg opisu: po 3 sekundach kolej ma zostac wylaczona
-    printf("SYSTEM: Odliczanie 3 sekundy przed wylaczeniem kolei...\n");
-    sleep(3);
+    printf("SYSTEM: Odliczanie przed wylaczeniem kolei...\n");
+    sleep(1);
 
     // Zatrzymaj kolej
     sem_wait_op(sem_state_mutex_id, 0);
@@ -305,25 +304,24 @@ void graceful_shutdown() {
     printf("SYSTEM: Procesy zakonczone.\n");
 }
 
-// Generowanie raportu koncowego (zapis do pliku)
+// Generowanie raportu koncowego (zapis do kolej_log.txt)
 void generate_daily_report() {
     sem_wait_op(sem_state_mutex_id, 0);
+
+    int total_sold = stats->single_sold + stats->tk1_sold + stats->tk2_sold +
+                     stats->tk3_sold + stats->daily_sold;
 
     // Raport na ekran
     printf("\n============================================================\n");
     printf("         RAPORT KONCOWY SYMULACJI KOLEI LINOWEJ\n");
     printf("============================================================\n");
-
     printf("\n1. SPRZEDAZ BILETOW:\n");
     printf("   Jednorazowe (SINGLE):     %d szt.\n", stats->single_sold);
     printf("   Czasowe TK1 (1h):         %d szt.\n", stats->tk1_sold);
     printf("   Czasowe TK2 (2h):         %d szt.\n", stats->tk2_sold);
     printf("   Czasowe TK3 (3h):         %d szt.\n", stats->tk3_sold);
     printf("   Dzienne (DAILY):          %d szt.\n", stats->daily_sold);
-    int total_sold = stats->single_sold + stats->tk1_sold + stats->tk2_sold +
-                     stats->tk3_sold + stats->daily_sold;
     printf("   RAZEM:                    %d szt.\n", total_sold);
-
     printf("\n2. STATYSTYKI PRZEJAZDOW:\n");
     printf("   Odjazdy krzeselek:        %d\n", stats->total_rides);
     printf("   Przewiezione osoby:       %d\n", stats->total_people);
@@ -333,43 +331,22 @@ void generate_daily_report() {
         printf("   Sr. osob/krzeslo:         %.2f\n",
                (float)stats->total_people / stats->total_rides);
     }
-
     printf("\n3. KATEGORIE SPECJALNE:\n");
     printf("   VIP obsluzeni:            %d\n", stats->vip_served);
     printf("   Dzieci z opiekunem:       %d\n", stats->with_guardian);
     printf("   Odrzuceni (wygasly):      %d\n", stats->rejected_expired);
-
     printf("\n4. TRASY ZJAZDOWE:\n");
     printf("   T1 (latwa, %ds):          %d turystow\n", ROUTE_TIME_T1, stats->route_t1);
     printf("   T2 (srednia, %ds):        %d turystow\n", ROUTE_TIME_T2, stats->route_t2);
     printf("   T3 (trudna, %ds):         %d turystow\n", ROUTE_TIME_T3, stats->route_t3);
-
     printf("\n5. REJESTRACJA PRZEJSC BRAMKOWYCH:\n");
     printf("   Zarejestrowanych przejsc: %d\n", state->pass_log_count);
-
-    printf("\n6. PODSUMOWANIE ZJAZDOW PER TURYSTA/KARNET:\n");
-    for (int i = 1; i <= NUM_TOURISTS; i++) {
-        if (tickets[i].is_valid || tickets[i].validation_count > 0) {
-            const char *tname;
-            switch (tickets[i].type) {
-                case SINGLE: tname = "JEDNORAZOWY"; break;
-                case TK1:    tname = "CZASOWY_1H"; break;
-                case TK2:    tname = "CZASOWY_2H"; break;
-                case TK3:    tname = "CZASOWY_3H"; break;
-                case DAILY:  tname = "DZIENNY"; break;
-                default:     tname = "?"; break;
-            }
-            printf("   Turysta %3d (%s): %d przejazd(ow)\n",
-                   i, tname, tickets[i].validation_count);
-        }
-    }
-
     printf("\n============================================================\n\n");
 
-    // Zapis raportu do pliku
-    FILE *report = fopen("rides_log.txt", "w");
+    // Zapis raportu do kolej_log.txt (dopisanie na koniec)
+    FILE *report = fopen("kolej_log.txt", "a");
     if (report) {
-        fprintf(report, "============================================================\n");
+        fprintf(report, "\n============================================================\n");
         fprintf(report, "    RAPORT DZIENNY KOLEI LINOWEJ\n");
         fprintf(report, "============================================================\n\n");
 
@@ -392,7 +369,6 @@ void generate_daily_report() {
         fprintf(report, "  T2 (srednia): %d\n", stats->route_t2);
         fprintf(report, "  T3 (trudna):  %d\n\n", stats->route_t3);
 
-        // Rejestracja przejsc bramkowych (id karnetu - godzina)
         fprintf(report, "REJESTR PRZEJSC BRAMKOWYCH (id_karnetu - godzina - nr_przejazdu):\n");
         fprintf(report, "------------------------------------------------------------\n");
         for (int i = 0; i < state->pass_log_count && i < MAX_PASS_LOG; i++) {
@@ -412,30 +388,69 @@ void generate_daily_report() {
                     e->tourist_id, type_name, time_str, e->ride_number);
         }
 
-        // Podsumowanie zjazdow per turysta/karnet (wg opisu)
-        fprintf(report, "\nPODSUMOWANIE ZJAZDOW PER TURYSTA/KARNET:\n");
-        fprintf(report, "------------------------------------------------------------\n");
+        fprintf(report, "\n============================================================\n");
+        fclose(report);
+        printf("SYSTEM: Raport dopisany do pliku 'kolej_log.txt'.\n");
+    } else {
+        perror("fopen kolej_log.txt");
+    }
+
+    // === RAPORT KARNETOW (osobny plik - wymog: rejestracja przejsc + podsumowanie zjazdow) ===
+    FILE *karnet_report = fopen("raport_karnetow.txt", "w");
+    if (karnet_report) {
+        fprintf(karnet_report, "============================================================\n");
+        fprintf(karnet_report, "  RAPORT KARNETOW - REJESTRACJA PRZEJSC BRAMKOWYCH\n");
+        fprintf(karnet_report, "============================================================\n\n");
+
+        fprintf(karnet_report, "REJESTR PRZEJSC (id karnetu - godzina - nr przejazdu):\n");
+        fprintf(karnet_report, "------------------------------------------------------------\n");
+        for (int i = 0; i < state->pass_log_count && i < MAX_PASS_LOG; i++) {
+            PassLogEntry *e = &state->pass_log[i];
+            char time_str[20];
+            strftime(time_str, sizeof(time_str), "%H:%M:%S", localtime(&e->timestamp));
+            const char *type_name;
+            switch (e->ticket_type) {
+                case SINGLE: type_name = "JEDNORAZOWY"; break;
+                case TK1:    type_name = "CZASOWY_1H"; break;
+                case TK2:    type_name = "CZASOWY_2H"; break;
+                case TK3:    type_name = "CZASOWY_3H"; break;
+                case DAILY:  type_name = "DZIENNY"; break;
+                default:     type_name = "?"; break;
+            }
+            fprintf(karnet_report, "  Karnet#%03d (%s) - %s - przejazd #%d\n",
+                    e->tourist_id, type_name, time_str, e->ride_number);
+        }
+
+        // Podsumowanie liczby zjazdow per turysta/karnet
+        fprintf(karnet_report, "\n============================================================\n");
+        fprintf(karnet_report, "  PODSUMOWANIE ZJAZDOW PER TURYSTA/KARNET\n");
+        fprintf(karnet_report, "============================================================\n");
+        fprintf(karnet_report, "  %-8s %-14s %-10s %s\n", "ID", "TYP KARNETU", "PRZEJAZDY", "STATUS");
+        fprintf(karnet_report, "------------------------------------------------------------\n");
+
         for (int i = 1; i <= NUM_TOURISTS; i++) {
-            if (tickets[i].is_valid || tickets[i].validation_count > 0) {
-                const char *tname;
-                switch (tickets[i].type) {
-                    case SINGLE: tname = "JEDNORAZOWY"; break;
-                    case TK1:    tname = "CZASOWY_1H"; break;
-                    case TK2:    tname = "CZASOWY_2H"; break;
-                    case TK3:    tname = "CZASOWY_3H"; break;
-                    case DAILY:  tname = "DZIENNY"; break;
-                    default:     tname = "?"; break;
+            Ticket *t = &tickets[i];
+            if (t->validation_count > 0) {
+                const char *type_name;
+                switch (t->type) {
+                    case SINGLE: type_name = "JEDNORAZOWY"; break;
+                    case TK1:    type_name = "CZASOWY_1H"; break;
+                    case TK2:    type_name = "CZASOWY_2H"; break;
+                    case TK3:    type_name = "CZASOWY_3H"; break;
+                    case DAILY:  type_name = "DZIENNY"; break;
+                    default:     type_name = "?"; break;
                 }
-                fprintf(report, "  Turysta %3d (%s): %d przejazd(ow)\n",
-                        i, tname, tickets[i].validation_count);
+                const char *status = t->is_valid ? "AKTYWNY" : "NIEAKTYWNY";
+                fprintf(karnet_report, "  %-8d %-14s %-10d %s\n",
+                        i, type_name, t->validation_count, status);
             }
         }
 
-        fprintf(report, "\n============================================================\n");
-        fclose(report);
-        printf("SYSTEM: Raport zapisany do pliku 'rides_log.txt'.\n");
+        fprintf(karnet_report, "\n============================================================\n");
+        fclose(karnet_report);
+        printf("SYSTEM: Raport karnetow zapisany do 'raport_karnetow.txt'.\n");
     } else {
-        perror("fopen rides_log.txt");
+        perror("fopen raport_karnetow.txt");
     }
 
     sem_signal_op(sem_state_mutex_id, 0);

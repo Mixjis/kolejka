@@ -20,7 +20,7 @@
 #include <pthread.h>
 
 // ============ KONFIGURACJA SYMULACJI ============
-#define NUM_TOURISTS 200
+#define NUM_TOURISTS 500
 #define SIM_DURATION 120
 #define CLOSING_TIME 90
 #define VIP_PROBABILITY 1       // ~1% szansa na VIP (wg opisu: ok. 1%)
@@ -34,7 +34,7 @@
 #define PLATFORM_GATES 3        // 3 bramki peronowe (kontrola grupy, otwiera pracownik1)
 #define EXIT_ROUTES 2           // 2 drogi wyjscia ze stacji gornej
 #define MAX_STATION_CAPACITY 30 // max N osob na terenie stacji dolnej
-#define RIDE_DURATION 5         // czas przejazdu w gore
+#define RIDE_DURATION 2         // czas przejazdu w gore (skrocony)
 
 // ============ KONFIGURACJA OSOB ============
 #define AGE_MIN 4
@@ -46,12 +46,9 @@
 #define MAX_CHILDREN_PER_GUARDIAN 2  // max 2 dzieci pod opieka jednego doroslego
 
 // ============ TRASY ZJAZDOWE ============
-#define ROUTE_TIME_T1 3     // trasa latwa (T1 < T2 < T3)
-#define ROUTE_TIME_T2 5     // trasa srednia
-#define ROUTE_TIME_T3 7     // trasa trudna
-
-// ============ BATCH PROCESOW ============
-#define BATCH_SIZE 100
+#define ROUTE_TIME_T1 1     // trasa latwa (T1 < T2 < T3)
+#define ROUTE_TIME_T2 2     // trasa srednia
+#define ROUTE_TIME_T3 3     // trasa trudna
 
 // ============ FIFO DO KOMUNIKACJI MIEDZY PRACOWNIKAMI ============
 #define FIFO_WORKER_PATH "/tmp/kolej_worker_fifo"
@@ -94,7 +91,7 @@ typedef struct {
 } SharedQueue;
 
 // ============ REJESTRACJA PRZEJSC BRAMKOWYCH ============
-#define MAX_PASS_LOG 1024
+#define MAX_PASS_LOG 4096
 
 typedef struct {
     int tourist_id;

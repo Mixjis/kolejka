@@ -80,8 +80,14 @@ int main(void) {
             continue;
         }
 
-        // Czas obslugi (symulacja)
-        usleep((rand() % 1000000) + 500000);
+        // Czas obslugi (symulacja) - skalowany z liczba turystow
+        {
+            int svc_max = 200000 * 50 / NUM_TOURISTS;
+            int svc_min = 100000 * 50 / NUM_TOURISTS;
+            if (svc_max < 10000) svc_max = 10000;
+            if (svc_min < 5000) svc_min = 5000;
+            usleep((rand() % svc_max) + svc_min);
+        }
 
         // Sprawdz ponownie po obsludze
         sem_wait_op(sem_state_mutex_id, 0);
