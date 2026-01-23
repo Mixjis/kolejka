@@ -1,0 +1,486 @@
+=== LOGGER URUCHOMIONY (PID:3545) ===
+[21:14:28] [PID:3547] PRACOWNIK1: Proces pracownika stacji dolnej uruchomiony (PID:3547).
+[21:14:28] [PID:3548] PRACOWNIK2: Proces pracownika stacji gornej uruchomiony (PID:3548).
+[21:14:28] [PID:3546] KASJER: Proces kasjera uruchomiony (PID:3546).
+[21:14:28] [PID:3586] TURYSTA 38: Start (wiek:19, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3586] TURYSTA 38: Podchodze do kasy (VIP:0, family:0).
+[21:14:28] [PID:3583] TURYSTA 35: Start (wiek:77, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3583] TURYSTA 35: Nie korzystam z kolei, spaceruje.
+[21:14:28] [PID:3580] TURYSTA 32: OPIEKUN (wiek:27, family:1) z 1 dziecmi
+[21:14:28] [PID:3580] TURYSTA 32: Start (wiek:27, Rowerzysta, VIP:0, family:1, dzieci:1, wymaga_opiekuna:0)
+[21:14:28] [PID:3580] TURYSTA 32: Podchodze do kasy (VIP:0, family:1).
+[21:14:28] [PID:3580] DZIECKO 1 (family:1, wiek:4): Watek uruchomiony, pod opieka.
+[21:14:28] [PID:3615] TURYSTA 67: Start (wiek:51, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3615] TURYSTA 67: Podchodze do kasy (VIP:0, family:0).
+[21:14:28] [PID:3626] TURYSTA 78: Start (wiek:71, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3626] TURYSTA 78: Podchodze do kasy (VIP:0, family:0).
+[21:14:28] [PID:3646] TURYSTA 98: Start (wiek:26, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3646] TURYSTA 98: Podchodze do kasy (VIP:0, family:0).
+[21:14:28] [PID:3653] TURYSTA 105: Start (wiek:57, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3653] TURYSTA 105: Podchodze do kasy (VIP:0, family:0).
+[21:14:28] [PID:3658] TURYSTA 110: Start (wiek:10, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3658] TURYSTA 110: Podchodze do kasy (VIP:0, family:0).
+[21:14:28] [PID:3652] TURYSTA 104: OPIEKUN (wiek:20, family:2) z 1 dziecmi
+[21:14:28] [PID:3652] TURYSTA 104: Start (wiek:20, Rowerzysta, VIP:0, family:2, dzieci:1, wymaga_opiekuna:0)
+[21:14:28] [PID:3652] TURYSTA 104: Podchodze do kasy (VIP:0, family:2).
+[21:14:28] [PID:3652] DZIECKO 1 (family:2, wiek:4): Watek uruchomiony, pod opieka.
+[21:14:28] [PID:3683] TURYSTA 134: Start (wiek:11, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3683] TURYSTA 134: Nie korzystam z kolei, spaceruje.
+[21:14:28] [PID:3690] TURYSTA 141: Start (wiek:55, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3690] TURYSTA 141: Nie korzystam z kolei, spaceruje.
+[21:14:28] [PID:3706] TURYSTA 157: OPIEKUN (wiek:61, family:3) z 1 dziecmi
+[21:14:28] [PID:3706] DZIECKO 1 (family:3, wiek:9): Watek uruchomiony, pod opieka.
+[21:14:28] [PID:3706] TURYSTA 157: Start (wiek:61, Rowerzysta, VIP:0, family:3, dzieci:1, wymaga_opiekuna:0)
+[21:14:28] [PID:3706] TURYSTA 157: Podchodze do kasy (VIP:0, family:3).
+[21:14:28] [PID:3739] TURYSTA 190: Start (wiek:14, Pieszy, VIP:1, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:28] [PID:3739] TURYSTA 190: Podchodze do kasy (VIP:1, family:0).
+[21:14:28] [PID:3735] TURYSTA 186: Start (wiek:8, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:1)
+[21:14:28] [PID:3735] TURYSTA 186: Dziecko (wiek:8) bez opiekuna - nie moze korzystac z kolei.
+[21:14:29] [PID:3568] TURYSTA 20: Start (wiek:36, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:29] [PID:3568] TURYSTA 20: Podchodze do kasy (VIP:0, family:0).
+[21:14:29] [PID:3570] TURYSTA 22: Start (wiek:58, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:29] [PID:3570] TURYSTA 22: Podchodze do kasy (VIP:0, family:0).
+[21:14:29] [PID:3602] TURYSTA 54: OPIEKUN (wiek:41, family:4) z 2 dziecmi
+[21:14:29] [PID:3602] DZIECKO 1 (family:4, wiek:8): Watek uruchomiony, pod opieka.
+[21:14:29] [PID:3602] TURYSTA 54: Start (wiek:41, Rowerzysta, VIP:0, family:4, dzieci:2, wymaga_opiekuna:0)
+[21:14:29] [PID:3602] TURYSTA 54: Podchodze do kasy (VIP:0, family:4).
+[21:14:29] [PID:3602] DZIECKO 2 (family:4, wiek:5): Watek uruchomiony, pod opieka.
+[21:14:29] [PID:3627] TURYSTA 79: Start (wiek:61, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:29] [PID:3627] TURYSTA 79: Podchodze do kasy (VIP:0, family:0).
+[21:14:29] [PID:3628] TURYSTA 80: Start (wiek:27, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:29] [PID:3628] TURYSTA 80: Podchodze do kasy (VIP:0, family:0).
+[21:14:29] [PID:3662] TURYSTA 114: Start (wiek:8, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:1)
+[21:14:29] [PID:3662] TURYSTA 114: Dziecko (wiek:8) bez opiekuna - nie moze korzystac z kolei.
+[21:14:29] [PID:3673] TURYSTA 124: Start (wiek:64, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:29] [PID:3673] TURYSTA 124: Podchodze do kasy (VIP:0, family:0).
+[21:14:29] [PID:3701] TURYSTA 152: OPIEKUN (wiek:57, family:5) z 1 dziecmi
+[21:14:29] [PID:3701] TURYSTA 152: Start (wiek:57, Pieszy, VIP:0, family:5, dzieci:1, wymaga_opiekuna:0)
+[21:14:29] [PID:3701] TURYSTA 152: Podchodze do kasy (VIP:0, family:5).
+[21:14:29] [PID:3701] DZIECKO 1 (family:5, wiek:8): Watek uruchomiony, pod opieka.
+[21:14:29] [PID:3698] TURYSTA 149: Start (wiek:80, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:29] [PID:3698] TURYSTA 149: Podchodze do kasy (VIP:0, family:0).
+[21:14:29] [PID:3724] TURYSTA 175: Start (wiek:46, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:29] [PID:3724] TURYSTA 175: Podchodze do kasy (VIP:0, family:0).
+[21:14:29] [PID:3729] TURYSTA 180: Start (wiek:54, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:29] [PID:3729] TURYSTA 180: Podchodze do kasy (VIP:0, family:0).
+[21:14:29] [PID:3740] TURYSTA 191: OPIEKUN (wiek:77, family:6) z 1 dziecmi
+[21:14:29] [PID:3740] TURYSTA 191: Start (wiek:77, Rowerzysta, VIP:0, family:6, dzieci:1, wymaga_opiekuna:0)
+[21:14:29] [PID:3744] TURYSTA 195: Start (wiek:71, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:29] [PID:3740] TURYSTA 191: Podchodze do kasy (VIP:0, family:6).
+[21:14:29] [PID:3744] TURYSTA 195: Podchodze do kasy (VIP:0, family:0).
+[21:14:29] [PID:3740] DZIECKO 1 (family:6, wiek:5): Watek uruchomiony, pod opieka.
+[21:14:29] [PID:3546] KASJER: Sprzedano CZASOWY_3H turyscie 190 (wiek:14) za 70.00 PLN
+[21:14:29] [PID:3739] TURYSTA 190: Bilet kupiony (family:0).
+[21:14:29] [PID:3739] TURYSTA 190: VIP - priorytetowe wejscie (bramka 3).
+[21:14:29] [PID:3739] TURYSTA 190: Karnet zwalidowany (uzycie #1).
+[21:14:29] [PID:3739] TURYSTA 190: Przeszedlem bramke 3 (walidacja OK).
+[21:14:30] [PID:3739] TURYSTA 190: Czekam na miejsce na stacji (1 osob).
+[21:14:30] [PID:3739] TURYSTA 190: Wszedlem na stacje. Populacja: 1/30
+[21:14:30] [PID:3739] TURYSTA 190: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:30] [PID:3547] PRACOWNIK1: VIP turysta 190 dodany na poczatek kolejki!
+[21:14:30] [PID:3574] TURYSTA 26: OPIEKUN (wiek:58, family:7) z 2 dziecmi
+[21:14:30] [PID:3571] TURYSTA 23: Start (wiek:64, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:30] [PID:3574] DZIECKO 1 (family:7, wiek:9): Watek uruchomiony, pod opieka.
+[21:14:30] [PID:3571] TURYSTA 23: Podchodze do kasy (VIP:0, family:0).
+[21:14:30] [PID:3574] DZIECKO 2 (family:7, wiek:7): Watek uruchomiony, pod opieka.
+[21:14:30] [PID:3574] TURYSTA 26: Start (wiek:58, Rowerzysta, VIP:0, family:7, dzieci:2, wymaga_opiekuna:0)
+[21:14:30] [PID:3574] TURYSTA 26: Podchodze do kasy (VIP:0, family:7).
+[21:14:30] [PID:3601] TURYSTA 53: Start (wiek:40, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:30] [PID:3601] TURYSTA 53: Podchodze do kasy (VIP:0, family:0).
+[21:14:30] [PID:3613] TURYSTA 65: Start (wiek:31, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:30] [PID:3613] TURYSTA 65: Podchodze do kasy (VIP:0, family:0).
+[21:14:30] [PID:3611] TURYSTA 63: Start (wiek:58, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:30] [PID:3611] TURYSTA 63: Podchodze do kasy (VIP:0, family:0).
+[21:14:30] [PID:3629] TURYSTA 81: Start (wiek:58, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:30] [PID:3629] TURYSTA 81: Podchodze do kasy (VIP:0, family:0).
+[21:14:30] [PID:3639] TURYSTA 91: Start (wiek:29, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:30] [PID:3639] TURYSTA 91: Podchodze do kasy (VIP:0, family:0).
+[21:14:30] [PID:3678] TURYSTA 129: Start (wiek:55, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:30] [PID:3678] TURYSTA 129: Podchodze do kasy (VIP:0, family:0).
+[21:14:30] [PID:3672] TURYSTA 123: Start (wiek:21, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:30] [PID:3672] TURYSTA 123: Podchodze do kasy (VIP:0, family:0).
+[21:14:30] [PID:3695] TURYSTA 146: Start (wiek:5, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:1)
+[21:14:30] [PID:3695] TURYSTA 146: Dziecko (wiek:5) bez opiekuna - nie moze korzystac z kolei.
+[21:14:30] [PID:3709] TURYSTA 160: Start (wiek:68, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:30] [PID:3709] TURYSTA 160: Podchodze do kasy (VIP:0, family:0).
+[21:14:30] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:30] [PID:3547] PRACOWNIK1: POJEDYNCZY (brak pary, osoby:1) -> krzeslo 1/36
+[21:14:30] [PID:3739] TURYSTA 190: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:30] [PID:3739] TURYSTA 190: Pracownik1 otworzyl bramke peronowa 3 - przechodze na peron.
+[21:14:30] [PID:3739] TURYSTA 190: Przeszedlem bramke peronowa 3. Wsiadam na krzeslo.
+[21:14:31] [PID:3546] KASJER: Sprzedano CZASOWY_3H turyscie 38 (wiek:19) za 70.00 PLN
+[21:14:31] [PID:3586] TURYSTA 38: Bilet kupiony (family:0).
+[21:14:31] [PID:3586] TURYSTA 38: Czekam na wejscie (bramka 1).
+[21:14:31] [PID:3586] TURYSTA 38: Karnet zwalidowany (uzycie #1).
+[21:14:31] [PID:3586] TURYSTA 38: Przeszedlem bramke 1 (walidacja OK).
+[21:14:31] [PID:3552] TURYSTA 4: Start (wiek:42, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:31] [PID:3552] TURYSTA 4: Podchodze do kasy (VIP:0, family:0).
+[21:14:31] [PID:3592] TURYSTA 44: Start (wiek:74, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:31] [PID:3592] TURYSTA 44: Podchodze do kasy (VIP:0, family:0).
+[21:14:31] [PID:3630] TURYSTA 82: Start (wiek:32, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:31] [PID:3630] TURYSTA 82: Podchodze do kasy (VIP:0, family:0).
+[21:14:31] [PID:3644] TURYSTA 96: Start (wiek:23, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:31] [PID:3644] TURYSTA 96: Podchodze do kasy (VIP:0, family:0).
+[21:14:31] [PID:3677] TURYSTA 128: Start (wiek:49, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:31] [PID:3677] TURYSTA 128: Podchodze do kasy (VIP:0, family:0).
+[21:14:31] [PID:3692] TURYSTA 143: Start (wiek:19, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:31] [PID:3692] TURYSTA 143: Podchodze do kasy (VIP:0, family:0).
+[21:14:31] [PID:3713] TURYSTA 164: OPIEKUN (wiek:52, family:8) z 2 dziecmi
+[21:14:31] [PID:3713] TURYSTA 164: Start (wiek:52, Pieszy, VIP:0, family:8, dzieci:2, wymaga_opiekuna:0)
+[21:14:31] [PID:3713] DZIECKO 1 (family:8, wiek:6): Watek uruchomiony, pod opieka.
+[21:14:31] [PID:3713] TURYSTA 164: Podchodze do kasy (VIP:0, family:8).
+[21:14:31] [PID:3713] DZIECKO 2 (family:8, wiek:8): Watek uruchomiony, pod opieka.
+[21:14:31] [PID:3734] TURYSTA 185: Start (wiek:46, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:31] [PID:3734] TURYSTA 185: Nie korzystam z kolei, spaceruje.
+[21:14:31] [PID:3730] TURYSTA 181: Start (wiek:75, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:31] [PID:3730] TURYSTA 181: Podchodze do kasy (VIP:0, family:0).
+[21:14:31] [PID:3737] TURYSTA 188: Start (wiek:9, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:31] [PID:3737] TURYSTA 188: Podchodze do kasy (VIP:0, family:0).
+[21:14:31] [PID:3586] TURYSTA 38: Czekam na miejsce na stacji (1 osob).
+[21:14:31] [PID:3586] TURYSTA 38: Wszedlem na stacje. Populacja: 2/30
+[21:14:31] [PID:3586] TURYSTA 38: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:32] [PID:3546] KASJER: Sprzedano CZASOWY_3H turyscie 110 (wiek:10) za 70.00 PLN
+[21:14:32] [PID:3658] TURYSTA 110: Bilet kupiony (family:0).
+[21:14:32] [PID:3658] TURYSTA 110: Czekam na wejscie (bramka 4).
+[21:14:32] [PID:3658] TURYSTA 110: Karnet zwalidowany (uzycie #1).
+[21:14:32] [PID:3658] TURYSTA 110: Przeszedlem bramke 4 (walidacja OK).
+[21:14:32] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:32] [PID:3547] PRACOWNIK1: POJEDYNCZY (brak pary, osoby:1) -> krzeslo 2/36
+[21:14:32] [PID:3586] TURYSTA 38: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:32] [PID:3586] TURYSTA 38: Pracownik1 otworzyl bramke peronowa 3 - przechodze na peron.
+[21:14:32] [PID:3586] TURYSTA 38: Przeszedlem bramke peronowa 3. Wsiadam na krzeslo.
+[21:14:32] [PID:3551] TURYSTA 3: Start (wiek:10, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:32] [PID:3551] TURYSTA 3: Podchodze do kasy (VIP:0, family:0).
+[21:14:32] [PID:3658] TURYSTA 110: Czekam na miejsce na stacji (1 osob).
+[21:14:32] [PID:3658] TURYSTA 110: Wszedlem na stacje. Populacja: 3/30
+[21:14:32] [PID:3658] TURYSTA 110: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:32] [PID:3596] TURYSTA 48: OPIEKUN (wiek:36, family:9) z 1 dziecmi
+[21:14:32] [PID:3596] TURYSTA 48: Start (wiek:36, Pieszy, VIP:0, family:9, dzieci:1, wymaga_opiekuna:0)
+[21:14:32] [PID:3596] TURYSTA 48: Podchodze do kasy (VIP:0, family:9).
+[21:14:32] [PID:3596] DZIECKO 1 (family:9, wiek:5): Watek uruchomiony, pod opieka.
+[21:14:32] [PID:3636] TURYSTA 88: Start (wiek:30, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:32] [PID:3636] TURYSTA 88: Podchodze do kasy (VIP:0, family:0).
+[21:14:32] [PID:3712] TURYSTA 163: Start (wiek:25, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:32] [PID:3712] TURYSTA 163: Podchodze do kasy (VIP:0, family:0).
+[21:14:33] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:33] [PID:3547] PRACOWNIK1: POJEDYNCZY (brak pary, osoby:1) -> krzeslo 3/36
+[21:14:33] [PID:3658] TURYSTA 110: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:33] [PID:3658] TURYSTA 110: Pracownik1 otworzyl bramke peronowa 3 - przechodze na peron.
+[21:14:33] [PID:3658] TURYSTA 110: Przeszedlem bramke peronowa 3. Wsiadam na krzeslo.
+[21:14:33] [PID:3546] KASJER: Sprzedano JEDNORAZOWY turyscie 78 (wiek:71, ZNIZKA 25%) za 7.50 PLN
+[21:14:33] [PID:3626] TURYSTA 78: Bilet kupiony (family:0).
+[21:14:33] [PID:3626] TURYSTA 78: Czekam na wejscie (bramka 1).
+[21:14:33] [PID:3626] TURYSTA 78: Karnet zwalidowany (uzycie #1).
+[21:14:33] [PID:3626] TURYSTA 78: Przeszedlem bramke 1 (walidacja OK).
+[21:14:33] [PID:3626] TURYSTA 78: Czekam na miejsce na stacji (1 osob).
+[21:14:33] [PID:3626] TURYSTA 78: Wszedlem na stacje. Populacja: 4/30
+[21:14:33] [PID:3626] TURYSTA 78: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:33] [PID:3550] TURYSTA 2: Start (wiek:5, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:1)
+[21:14:33] [PID:3550] TURYSTA 2: Dziecko (wiek:5) bez opiekuna - nie moze korzystac z kolei.
+[21:14:33] [PID:3555] TURYSTA 7: Start (wiek:53, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:33] [PID:3555] TURYSTA 7: Podchodze do kasy (VIP:0, family:0).
+[21:14:33] [PID:3581] TURYSTA 33: Start (wiek:12, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:33] [PID:3581] TURYSTA 33: Podchodze do kasy (VIP:0, family:0).
+[21:14:33] [PID:3606] TURYSTA 58: Start (wiek:63, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:33] [PID:3606] TURYSTA 58: Podchodze do kasy (VIP:0, family:0).
+[21:14:33] [PID:3616] TURYSTA 68: Start (wiek:34, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:33] [PID:3616] TURYSTA 68: Podchodze do kasy (VIP:0, family:0).
+[21:14:33] [PID:3599] TURYSTA 51: Start (wiek:12, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:33] [PID:3599] TURYSTA 51: Podchodze do kasy (VIP:0, family:0).
+[21:14:33] [PID:3719] TURYSTA 170: Start (wiek:70, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:33] [PID:3719] TURYSTA 170: Podchodze do kasy (VIP:0, family:0).
+[21:14:33] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:33] [PID:3547] PRACOWNIK1: POJEDYNCZY (brak pary, osoby:1) -> krzeslo 4/36
+[21:14:33] [PID:3626] TURYSTA 78: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:33] [PID:3626] TURYSTA 78: Pracownik1 otworzyl bramke peronowa 1 - przechodze na peron.
+[21:14:33] [PID:3626] TURYSTA 78: Przeszedlem bramke peronowa 1. Wsiadam na krzeslo.
+[21:14:34] [PID:3546] KASJER: Sprzedano DZIENNY turyscie 32 (wiek:27) za 100.00 PLN
+[21:14:34] [PID:3580] TURYSTA 32: Bilet kupiony (family:1).
+[21:14:34] [PID:3580] DZIECKO 1 (family:1): Rodzina gotowa, podazam za opiekunem.
+[21:14:34] [PID:3554] TURYSTA 6: Start (wiek:18, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:34] [PID:3554] TURYSTA 6: Podchodze do kasy (VIP:0, family:0).
+[21:14:34] [PID:3561] TURYSTA 13: Start (wiek:55, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:34] [PID:3561] TURYSTA 13: Podchodze do kasy (VIP:0, family:0).
+[21:14:34] [PID:3637] TURYSTA 89: Start (wiek:69, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:34] [PID:3637] TURYSTA 89: Podchodze do kasy (VIP:0, family:0).
+[21:14:34] [PID:3689] TURYSTA 140: OPIEKUN (wiek:60, family:10) z 1 dziecmi
+[21:14:34] [PID:3689] TURYSTA 140: Start (wiek:60, Pieszy, VIP:0, family:10, dzieci:1, wymaga_opiekuna:0)
+[21:14:34] [PID:3689] DZIECKO 1 (family:10, wiek:8): Watek uruchomiony, pod opieka.
+[21:14:34] [PID:3689] TURYSTA 140: Podchodze do kasy (VIP:0, family:10).
+[21:14:34] [PID:3696] TURYSTA 147: Start (wiek:12, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:34] [PID:3696] TURYSTA 147: Podchodze do kasy (VIP:0, family:0).
+[21:14:34] [PID:3736] TURYSTA 187: Start (wiek:45, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:34] [PID:3736] TURYSTA 187: Podchodze do kasy (VIP:0, family:0).
+[21:14:34] [PID:3580] TURYSTA 32: Rodzina skompletowana, idziemy razem.
+[21:14:34] [PID:3580] TURYSTA 32: Czekam na wejscie (bramka 3).
+[21:14:34] [PID:3580] TURYSTA 32: Karnet zwalidowany (uzycie #1).
+[21:14:34] [PID:3580] TURYSTA 32: Przeszedlem bramke 3 (walidacja OK).
+[21:14:35] [PID:3580] TURYSTA 32: Czekam na miejsce na stacji (2 osob).
+[21:14:35] [PID:3580] TURYSTA 32: Wszedlem na stacje. Populacja: 6/30
+[21:14:35] [PID:3580] TURYSTA 32: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:35] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:35] [PID:3547] PRACOWNIK1: RODZINA (opiekun+1 dzieci, +0 dod.) -> krzeslo 5/36
+[21:14:35] [PID:3580] TURYSTA 32: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:35] [PID:3580] TURYSTA 32: Pracownik1 otworzyl bramke peronowa 3 - przechodze na peron.
+[21:14:35] [PID:3580] TURYSTA 32: Przeszedlem bramke peronowa 3. Wsiadam na krzeslo.
+[21:14:35] [PID:3563] TURYSTA 15: Start (wiek:80, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:35] [PID:3563] TURYSTA 15: Podchodze do kasy (VIP:0, family:0).
+[21:14:35] [PID:3631] TURYSTA 83: Start (wiek:27, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:35] [PID:3631] TURYSTA 83: Podchodze do kasy (VIP:0, family:0).
+[21:14:35] [PID:3635] TURYSTA 87: Start (wiek:19, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:35] [PID:3635] TURYSTA 87: Nie korzystam z kolei, spaceruje.
+[21:14:35] [PID:3685] TURYSTA 136: Start (wiek:35, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:35] [PID:3685] TURYSTA 136: Podchodze do kasy (VIP:0, family:0).
+[21:14:35] [PID:3711] TURYSTA 162: Start (wiek:13, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:35] [PID:3711] TURYSTA 162: Podchodze do kasy (VIP:0, family:0).
+[21:14:35] [PID:3546] KASJER: Sprzedano CZASOWY_1H turyscie 98 (wiek:26) za 30.00 PLN
+[21:14:35] [PID:3646] TURYSTA 98: Bilet kupiony (family:0).
+[21:14:35] [PID:3646] TURYSTA 98: Czekam na wejscie (bramka 4).
+[21:14:35] [PID:3646] TURYSTA 98: Karnet zwalidowany (uzycie #1).
+[21:14:35] [PID:3646] TURYSTA 98: Przeszedlem bramke 4 (walidacja OK).
+[21:14:36] [PID:3646] TURYSTA 98: Czekam na miejsce na stacji (1 osob).
+[21:14:36] [PID:3646] TURYSTA 98: Wszedlem na stacje. Populacja: 7/30
+[21:14:36] [PID:3646] TURYSTA 98: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:36] [PID:3739] TURYSTA 190: Dojechalem na GORE. Wysiadam.
+[21:14:36] [PID:3548] PRACOWNIK2: Turysta 190 dotarl na gore. Osoby na gorze: 1
+[21:14:36] [PID:3548] PRACOWNIK2: Turysta 190 wychodzi droga 1.
+[21:14:36] [PID:3546] KASJER: Sprzedano CZASOWY_1H turyscie 157 (wiek:61) za 30.00 PLN
+[21:14:36] [PID:3706] TURYSTA 157: Bilet kupiony (family:3).
+[21:14:36] [PID:3706] DZIECKO 1 (family:3): Rodzina gotowa, podazam za opiekunem.
+[21:14:36] [PID:3739] TURYSTA 190: Opuscilem stacje gorna.
+[21:14:36] [PID:3739] TURYSTA 190: PIESZY schodzi trasa T1 (latwa) (3s).
+[21:14:36] [PID:3562] TURYSTA 14: OPIEKUN (wiek:40, family:11) z 2 dziecmi
+[21:14:36] [PID:3562] DZIECKO 1 (family:11, wiek:8): Watek uruchomiony, pod opieka.
+[21:14:36] [PID:3562] DZIECKO 2 (family:11, wiek:5): Watek uruchomiony, pod opieka.
+[21:14:36] [PID:3562] TURYSTA 14: Start (wiek:40, Pieszy, VIP:0, family:11, dzieci:2, wymaga_opiekuna:0)
+[21:14:36] [PID:3562] TURYSTA 14: Podchodze do kasy (VIP:0, family:11).
+[21:14:36] [PID:3585] TURYSTA 37: Start (wiek:54, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:36] [PID:3585] TURYSTA 37: Podchodze do kasy (VIP:0, family:0).
+[21:14:36] [PID:3706] TURYSTA 157: Rodzina skompletowana, idziemy razem.
+[21:14:36] [PID:3706] TURYSTA 157: Czekam na wejscie (bramka 1).
+[21:14:36] [PID:3706] TURYSTA 157: Karnet zwalidowany (uzycie #1).
+[21:14:36] [PID:3706] TURYSTA 157: Przeszedlem bramke 1 (walidacja OK).
+[21:14:36] [PID:3618] TURYSTA 70: Start (wiek:40, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:36] [PID:3618] TURYSTA 70: Podchodze do kasy (VIP:0, family:0).
+[21:14:36] [PID:3623] TURYSTA 75: Start (wiek:63, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:36] [PID:3623] TURYSTA 75: Podchodze do kasy (VIP:0, family:0).
+[21:14:36] [PID:3634] TURYSTA 86: Start (wiek:63, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:36] [PID:3634] TURYSTA 86: Podchodze do kasy (VIP:0, family:0).
+[21:14:36] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:36] [PID:3547] PRACOWNIK1: POJEDYNCZY (brak pary, osoby:1) -> krzeslo 6/36
+[21:14:36] [PID:3646] TURYSTA 98: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:36] [PID:3646] TURYSTA 98: Pracownik1 otworzyl bramke peronowa 2 - przechodze na peron.
+[21:14:36] [PID:3646] TURYSTA 98: Przeszedlem bramke peronowa 2. Wsiadam na krzeslo.
+[21:14:36] [PID:3656] TURYSTA 108: Start (wiek:51, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:36] [PID:3656] TURYSTA 108: Podchodze do kasy (VIP:0, family:0).
+[21:14:36] [PID:3674] TURYSTA 125: Start (wiek:51, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:36] [PID:3674] TURYSTA 125: Podchodze do kasy (VIP:0, family:0).
+[21:14:36] [PID:3675] TURYSTA 126: Start (wiek:47, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:36] [PID:3675] TURYSTA 126: Podchodze do kasy (VIP:0, family:0).
+[21:14:36] [PID:3726] TURYSTA 177: Start (wiek:40, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:36] [PID:3726] TURYSTA 177: Podchodze do kasy (VIP:0, family:0).
+[21:14:36] [PID:3747] TURYSTA 198: Start (wiek:48, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:36] [PID:3747] TURYSTA 198: Podchodze do kasy (VIP:0, family:0).
+[21:14:36] [PID:3732] TURYSTA 183: OPIEKUN (wiek:59, family:12) z 1 dziecmi
+[21:14:36] [PID:3732] TURYSTA 183: Start (wiek:59, Rowerzysta, VIP:0, family:12, dzieci:1, wymaga_opiekuna:0)
+[21:14:36] [PID:3732] DZIECKO 1 (family:12, wiek:8): Watek uruchomiony, pod opieka.
+[21:14:36] [PID:3732] TURYSTA 183: Podchodze do kasy (VIP:0, family:12).
+[21:14:37] [PID:3706] TURYSTA 157: Czekam na miejsce na stacji (2 osob).
+[21:14:37] [PID:3706] TURYSTA 157: Wszedlem na stacje. Populacja: 9/30
+[21:14:37] [PID:3706] TURYSTA 157: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:37] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:37] [PID:3547] PRACOWNIK1: RODZINA (opiekun+1 dzieci, +0 dod.) -> krzeslo 7/36
+[21:14:37] [PID:3706] TURYSTA 157: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:37] [PID:3706] TURYSTA 157: Pracownik1 otworzyl bramke peronowa 3 - przechodze na peron.
+[21:14:37] [PID:3706] TURYSTA 157: Przeszedlem bramke peronowa 3. Wsiadam na krzeslo.
+[21:14:37] [PID:3586] TURYSTA 38: Dojechalem na GORE. Wysiadam.
+[21:14:37] [PID:3559] TURYSTA 11: Start (wiek:10, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3573] TURYSTA 25: Start (wiek:66, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3573] TURYSTA 25: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3559] TURYSTA 11: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3548] PRACOWNIK2: Turysta 38 dotarl na gore. Osoby na gorze: 1
+[21:14:37] [PID:3548] PRACOWNIK2: Turysta 38 wychodzi droga 1.
+[21:14:37] [PID:3595] TURYSTA 47: Start (wiek:9, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3595] TURYSTA 47: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3591] TURYSTA 43: OPIEKUN (wiek:38, family:13) z 2 dziecmi
+[21:14:37] [PID:3591] DZIECKO 2 (family:13, wiek:4): Watek uruchomiony, pod opieka.
+[21:14:37] [PID:3591] DZIECKO 1 (family:13, wiek:7): Watek uruchomiony, pod opieka.
+[21:14:37] [PID:3591] TURYSTA 43: Start (wiek:38, Pieszy, VIP:0, family:13, dzieci:2, wymaga_opiekuna:0)
+[21:14:37] [PID:3591] TURYSTA 43: Podchodze do kasy (VIP:0, family:13).
+[21:14:37] [PID:3605] TURYSTA 57: Start (wiek:68, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3605] TURYSTA 57: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3647] TURYSTA 99: Start (wiek:54, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3647] TURYSTA 99: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3660] TURYSTA 112: Start (wiek:61, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3660] TURYSTA 112: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3659] TURYSTA 111: Start (wiek:16, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3659] TURYSTA 111: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3663] TURYSTA 115: OPIEKUN (wiek:65, family:14) z 2 dziecmi
+[21:14:37] [PID:3663] DZIECKO 1 (family:14, wiek:5): Watek uruchomiony, pod opieka.
+[21:14:37] [PID:3663] DZIECKO 2 (family:14, wiek:5): Watek uruchomiony, pod opieka.
+[21:14:37] [PID:3663] TURYSTA 115: Start (wiek:65, Rowerzysta, VIP:0, family:14, dzieci:2, wymaga_opiekuna:0)
+[21:14:37] [PID:3663] TURYSTA 115: Podchodze do kasy (VIP:0, family:14).
+[21:14:37] [PID:3546] KASJER: Sprzedano CZASOWY_3H turyscie 104 (wiek:20) za 70.00 PLN
+[21:14:37] [PID:3686] TURYSTA 137: Start (wiek:16, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3686] TURYSTA 137: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3652] TURYSTA 104: Bilet kupiony (family:2).
+[21:14:37] [PID:3723] TURYSTA 174: Start (wiek:13, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3723] TURYSTA 174: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3745] TURYSTA 196: Start (wiek:79, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:37] [PID:3745] TURYSTA 196: Podchodze do kasy (VIP:0, family:0).
+[21:14:37] [PID:3586] TURYSTA 38: Opuscilem stacje gorna.
+[21:14:37] [PID:3586] TURYSTA 38: ROWERZYSTA zjezdza trasa T1 (latwa) (3s).
+[21:14:37] [PID:3652] DZIECKO 1 (family:2): Rodzina gotowa, podazam za opiekunem.
+[21:14:38] [PID:3652] TURYSTA 104: Rodzina skompletowana, idziemy razem.
+[21:14:38] [PID:3652] TURYSTA 104: Czekam na wejscie (bramka 2).
+[21:14:38] [PID:3652] TURYSTA 104: Karnet zwalidowany (uzycie #1).
+[21:14:38] [PID:3652] TURYSTA 104: Przeszedlem bramke 2 (walidacja OK).
+[21:14:38] [PID:3652] TURYSTA 104: Czekam na miejsce na stacji (2 osob).
+[21:14:38] [PID:3652] TURYSTA 104: Wszedlem na stacje. Populacja: 11/30
+[21:14:38] [PID:3652] TURYSTA 104: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:38] [PID:3658] TURYSTA 110: Dojechalem na GORE. Wysiadam.
+[21:14:38] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:38] [PID:3547] PRACOWNIK1: RODZINA (opiekun+1 dzieci, +0 dod.) -> krzeslo 8/36
+[21:14:38] [PID:3652] TURYSTA 104: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:38] [PID:3652] TURYSTA 104: Pracownik1 otworzyl bramke peronowa 2 - przechodze na peron.
+[21:14:38] [PID:3652] TURYSTA 104: Przeszedlem bramke peronowa 2. Wsiadam na krzeslo.
+[21:14:38] [PID:3548] PRACOWNIK2: Turysta 110 dotarl na gore. Osoby na gorze: 1
+[21:14:38] [PID:3548] PRACOWNIK2: Turysta 110 wychodzi droga 1.
+[21:14:38] [PID:3577] TURYSTA 29: Start (wiek:78, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:38] [PID:3577] TURYSTA 29: Podchodze do kasy (VIP:0, family:0).
+[21:14:38] [PID:3609] TURYSTA 61: Start (wiek:18, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:38] [PID:3609] TURYSTA 61: Podchodze do kasy (VIP:0, family:0).
+[21:14:38] [PID:3657] TURYSTA 109: Start (wiek:25, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:38] [PID:3657] TURYSTA 109: Podchodze do kasy (VIP:0, family:0).
+[21:14:38] [PID:3664] TURYSTA 116: Start (wiek:34, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:38] [PID:3664] TURYSTA 116: Podchodze do kasy (VIP:0, family:0).
+[21:14:38] [PID:3658] TURYSTA 110: Opuscilem stacje gorna.
+[21:14:38] [PID:3658] TURYSTA 110: ROWERZYSTA zjezdza trasa T3 (trudna) (7s).
+[21:14:38] [PID:3728] TURYSTA 179: OPIEKUN (wiek:23, family:15) z 1 dziecmi
+[21:14:38] [PID:3728] TURYSTA 179: Start (wiek:23, Pieszy, VIP:0, family:15, dzieci:1, wymaga_opiekuna:0)
+[21:14:38] [PID:3728] DZIECKO 1 (family:15, wiek:7): Watek uruchomiony, pod opieka.
+[21:14:38] [PID:3728] TURYSTA 179: Podchodze do kasy (VIP:0, family:15).
+[21:14:38] [PID:3738] TURYSTA 189: Start (wiek:22, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:38] [PID:3738] TURYSTA 189: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3626] TURYSTA 78: Dojechalem na GORE. Wysiadam.
+[21:14:39] [PID:3546] KASJER: Sprzedano CZASOWY_3H turyscie 79 (wiek:61) za 70.00 PLN
+[21:14:39] [PID:3627] TURYSTA 79: Bilet kupiony (family:0).
+[21:14:39] [PID:3627] TURYSTA 79: Czekam na wejscie (bramka 1).
+[21:14:39] [PID:3627] TURYSTA 79: Karnet zwalidowany (uzycie #1).
+[21:14:39] [PID:3627] TURYSTA 79: Przeszedlem bramke 1 (walidacja OK).
+[21:14:39] [PID:3548] PRACOWNIK2: Turysta 78 dotarl na gore. Osoby na gorze: 1
+[21:14:39] [PID:3548] PRACOWNIK2: Turysta 78 wychodzi droga 1.
+[21:14:39] [PID:3626] TURYSTA 78: Opuscilem stacje gorna.
+[21:14:39] [PID:3626] TURYSTA 78: PIESZY schodzi trasa T3 (trudna) (7s).
+[21:14:39] [PID:3627] TURYSTA 79: Czekam na miejsce na stacji (1 osob).
+[21:14:39] [PID:3627] TURYSTA 79: Wszedlem na stacje. Populacja: 12/30
+[21:14:39] [PID:3627] TURYSTA 79: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:39] [PID:3739] TURYSTA 190: Zakonczylem zjazd/zejscie.
+[21:14:39] [PID:3739] TURYSTA 190: Opuszczam system. Do zobaczenia!
+[21:14:39] [PID:3739] TURYSTA 190: Karnet wazny, ide na kolejny przejazd (#2).
+[21:14:39] [PID:3565] TURYSTA 17: Start (wiek:66, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3565] TURYSTA 17: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3572] TURYSTA 24: Start (wiek:77, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3572] TURYSTA 24: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3598] TURYSTA 50: Start (wiek:24, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3598] TURYSTA 50: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3557] TURYSTA 9: Start (wiek:8, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:1)
+[21:14:39] [PID:3557] TURYSTA 9: Dziecko (wiek:8) bez opiekuna - nie moze korzystac z kolei.
+[21:14:39] [PID:3582] TURYSTA 34: OPIEKUN (wiek:60, family:16) z 2 dziecmi
+[21:14:39] [PID:3582] DZIECKO 1 (family:16, wiek:8): Watek uruchomiony, pod opieka.
+[21:14:39] [PID:3582] TURYSTA 34: Start (wiek:60, Rowerzysta, VIP:0, family:16, dzieci:2, wymaga_opiekuna:0)
+[21:14:39] [PID:3582] DZIECKO 2 (family:16, wiek:4): Watek uruchomiony, pod opieka.
+[21:14:39] [PID:3582] TURYSTA 34: Podchodze do kasy (VIP:0, family:16).
+[21:14:39] [PID:3587] TURYSTA 39: OPIEKUN (wiek:70, family:17) z 1 dziecmi
+[21:14:39] [PID:3587] TURYSTA 39: Start (wiek:70, Pieszy, VIP:0, family:17, dzieci:1, wymaga_opiekuna:0)
+[21:14:39] [PID:3587] DZIECKO 1 (family:17, wiek:9): Watek uruchomiony, pod opieka.
+[21:14:39] [PID:3587] TURYSTA 39: Podchodze do kasy (VIP:0, family:17).
+[21:14:39] [PID:3575] TURYSTA 27: Start (wiek:61, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3575] TURYSTA 27: Nie korzystam z kolei, spaceruje.
+[21:14:39] [PID:3640] TURYSTA 92: Start (wiek:13, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3640] TURYSTA 92: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3654] TURYSTA 106: Start (wiek:21, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3654] TURYSTA 106: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3668] TURYSTA 120: Start (wiek:55, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3668] TURYSTA 120: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3676] TURYSTA 127: Start (wiek:34, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3676] TURYSTA 127: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3684] TURYSTA 135: Start (wiek:66, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3684] TURYSTA 135: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3702] TURYSTA 153: Start (wiek:69, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3702] TURYSTA 153: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3718] TURYSTA 169: Start (wiek:58, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3718] TURYSTA 169: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3731] TURYSTA 182: Start (wiek:46, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3731] TURYSTA 182: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3741] TURYSTA 192: Start (wiek:75, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3749] TURYSTA 200: Start (wiek:17, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:39] [PID:3741] TURYSTA 192: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3749] TURYSTA 200: Podchodze do kasy (VIP:0, family:0).
+[21:14:39] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:39] [PID:3547] PRACOWNIK1: POJEDYNCZY (brak pary, osoby:1) -> krzeslo 8/36
+[21:14:39] [PID:3627] TURYSTA 79: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:39] [PID:3627] TURYSTA 79: Pracownik1 otworzyl bramke peronowa 2 - przechodze na peron.
+[21:14:39] [PID:3627] TURYSTA 79: Przeszedlem bramke peronowa 2. Wsiadam na krzeslo.
+[21:14:40] [PID:3546] KASJER: Sprzedano JEDNORAZOWY turyscie 67 (wiek:51) za 10.00 PLN
+[21:14:40] [PID:3615] TURYSTA 67: Bilet kupiony (family:0).
+[21:14:40] [PID:3615] TURYSTA 67: Czekam na wejscie (bramka 4).
+[21:14:40] [PID:3615] TURYSTA 67: Karnet zwalidowany (uzycie #1).
+[21:14:40] [PID:3615] TURYSTA 67: Przeszedlem bramke 4 (walidacja OK).
+[21:14:40] [PID:3580] TURYSTA 32: Dojechalem na GORE. Wysiadam.
+[21:14:40] [PID:3548] PRACOWNIK2: Turysta 32 dotarl na gore. Osoby na gorze: 1
+[21:14:40] [PID:3548] PRACOWNIK2: Turysta 32 wychodzi droga 1.
+[21:14:40] [PID:3560] TURYSTA 12: OPIEKUN (wiek:63, family:18) z 1 dziecmi
+[21:14:40] [PID:3560] TURYSTA 12: Start (wiek:63, Rowerzysta, VIP:0, family:18, dzieci:1, wymaga_opiekuna:0)
+[21:14:40] [PID:3560] TURYSTA 12: Podchodze do kasy (VIP:0, family:18).
+[21:14:40] [PID:3560] DZIECKO 1 (family:18, wiek:6): Watek uruchomiony, pod opieka.
+[21:14:40] [PID:3589] TURYSTA 41: OPIEKUN (wiek:73, family:19) z 1 dziecmi
+[21:14:40] [PID:3589] TURYSTA 41: Start (wiek:73, Pieszy, VIP:0, family:19, dzieci:1, wymaga_opiekuna:0)
+[21:14:40] [PID:3589] TURYSTA 41: Podchodze do kasy (VIP:0, family:19).
+[21:14:40] [PID:3589] DZIECKO 1 (family:19, wiek:7): Watek uruchomiony, pod opieka.
+[21:14:40] [PID:3648] TURYSTA 100: Start (wiek:26, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:40] [PID:3648] TURYSTA 100: Podchodze do kasy (VIP:0, family:0).
+[21:14:40] [PID:3643] TURYSTA 95: Start (wiek:57, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:40] [PID:3643] TURYSTA 95: Podchodze do kasy (VIP:0, family:0).
+[21:14:40] [PID:3615] TURYSTA 67: Czekam na miejsce na stacji (1 osob).
+[21:14:40] [PID:3615] TURYSTA 67: Wszedlem na stacje. Populacja: 12/30
+[21:14:40] [PID:3615] TURYSTA 67: Zgloszenie do pracownika, czekam na przydział krzesla.
+[21:14:40] [PID:3580] TURYSTA 32: Opuscilem stacje gorna.
+[21:14:40] [PID:3580] TURYSTA 32: ROWERZYSTA zjezdza trasa T2 (srednia) (5s).
+[21:14:40] [PID:3666] TURYSTA 118: OPIEKUN (wiek:28, family:20) z 1 dziecmi
+[21:14:40] [PID:3666] TURYSTA 118: Start (wiek:28, Rowerzysta, VIP:0, family:20, dzieci:1, wymaga_opiekuna:0)
+[21:14:40] [PID:3666] DZIECKO 1 (family:20, wiek:4): Watek uruchomiony, pod opieka.
+[21:14:40] [PID:3666] TURYSTA 118: Podchodze do kasy (VIP:0, family:20).
+[21:14:40] [PID:3748] TURYSTA 199: Start (wiek:41, Rowerzysta, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:40] [PID:3748] TURYSTA 199: Podchodze do kasy (VIP:0, family:0).
+[21:14:40] [PID:3586] TURYSTA 38: Zakonczylem zjazd/zejscie.
+[21:14:40] [PID:3586] TURYSTA 38: Opuszczam system. Do zobaczenia!
+[21:14:40] [PID:3586] TURYSTA 38: Karnet wazny, ide na kolejny przejazd (#2).
+[21:14:41] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 1 osob.
+[21:14:41] [PID:3547] PRACOWNIK1: POJEDYNCZY (brak pary, osoby:1) -> krzeslo 8/36
+[21:14:41] [PID:3615] TURYSTA 67: Pracownik1 przydzielil krzeslo - ide na peron.
+[21:14:41] [PID:3615] TURYSTA 67: Pracownik1 otworzyl bramke peronowa 1 - przechodze na peron.
+[21:14:41] [PID:3615] TURYSTA 67: Przeszedlem bramke peronowa 1. Wsiadam na krzeslo.
+[21:14:41] [PID:3739] TURYSTA 190: VIP - priorytetowe wejscie (bramka 2).
+[21:14:41] [PID:3739] TURYSTA 190: Karnet zwalidowany (uzycie #2).
+[21:14:41] [PID:3739] TURYSTA 190: Przeszedlem bramke 2 (walidacja OK).
+[21:14:41] [PID:3546] KASJER: Sprzedano DZIENNY turyscie 20 (wiek:36) za 100.00 PLN
+[21:14:41] [PID:3568] TURYSTA 20: Bilet kupiony (family:0).
+[21:14:41] [PID:3568] TURYSTA 20: Czekam na wejscie (bramka 2).
+[21:14:41] [PID:3556] TURYSTA 8: OPIEKUN (wiek:75, family:21) z 1 dziecmi
+[21:14:41] [PID:3556] TURYSTA 8: Start (wiek:75, Rowerzysta, VIP:0, family:21, dzieci:1, wymaga_opiekuna:0)
+[21:14:41] [PID:3556] TURYSTA 8: Podchodze do kasy (VIP:0, family:21).
+[21:14:41] [PID:3569] TURYSTA 21: Start (wiek:6, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:1)
+[21:14:41] [PID:3569] TURYSTA 21: Dziecko (wiek:6) bez opiekuna - nie moze korzystac z kolei.
+[21:14:41] [PID:3739] TURYSTA 190: Czekam na miejsce na stacji (1 osob).
+[21:14:41] [PID:3547] PRACOWNIK1: VIP turysta 190 dodany na poczatek kolejki!
+[21:14:41] [PID:3633] TURYSTA 85: OPIEKUN (wiek:45, family:24) z 2 dziecmi
+[21:14:41] [PID:3633] DZIECKO 1 (family:24, wiek:6): Watek uruchomiony, pod opieka.
+[21:14:41] [PID:3665] TURYSTA 117: Start (wiek:11, Pieszy, VIP:0, family:0, dzieci:0, wymaga_opiekuna:0)
+[21:14:41] [PID:3665] TURYSTA 117: Podchodze do kasy (VIP:0, family:0).
+[21:14:41] [PID:3568] TURYSTA 20: Czekam na miejsce na stacji (1 osob).
+[21:14:41] [PID:3568] TURYSTA 20: Wszedlem na stacje. Populacja: 13/30
+[21:14:41] [PID:3547] PRACOWNIK1: Otwieram bramke peronowa dla grupy 2 osob.
+[21:14:41] [PID:3547] PRACOWNIK1: 2 PIESZYCH -> krzeslo 9/36
+[21:14:42] [PID:3646] TURYSTA 98: Dojechalem na GORE. Wysiadam.
+[21:14:42] [PID:3548] PRACOWNIK2: Turysta 98 dotarl na gore. Osoby na gorze: 1

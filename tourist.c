@@ -223,18 +223,19 @@ void enter_station() {
             tourist_id, pop, MAX_STATION_CAPACITY);
 }
 
-// Przejscie na peron (3 bramki peronowe - kontrola grupy przez pracownika1)
+// Przejscie na peron (3 bramki peronowe - otwierane przez pracownika1 po kontroli grupy)
 void go_to_platform() {
     int platform_gate = rand() % PLATFORM_GATES;
 
-    log_msg("TURYSTA %d: Czekam na bramke peronowa %d.", tourist_id, platform_gate + 1);
+    log_msg("TURYSTA %d: Pracownik1 otworzyl bramke peronowa %d - przechodze na peron.",
+            tourist_id, platform_gate + 1);
 
     sem_wait_op(sem_platform_id, platform_gate);
 
-    log_msg("TURYSTA %d: Przeszedlem bramke peronowa %d. Czekam na krzeslo.",
+    log_msg("TURYSTA %d: Przeszedlem bramke peronowa %d. Wsiadam na krzeslo.",
             tourist_id, platform_gate + 1);
 
-    usleep((rand() % 500000) + 200000);
+    usleep((rand() % 300000) + 100000);
     sem_signal_op(sem_platform_id, platform_gate);
 }
 
@@ -275,7 +276,7 @@ int wait_for_chair() {
         return 0;
     }
 
-    log_msg("TURYSTA %d: Wsiadam na krzeslo! Jade W GORE.", tourist_id);
+    log_msg("TURYSTA %d: Pracownik1 przydzielil krzeslo - ide na peron.", tourist_id);
     return 1;
 }
 
@@ -376,6 +377,43 @@ void leave_system() {
     log_msg("TURYSTA %d: Opuszczam system. Do zobaczenia!", tourist_id);
 }
 
+// Sprawdz czy bilet pozwala na kolejny przejazd
+int can_ride_again() {
+    sem_wait_op(sem_state_mutex_id, 0);
+    Ticket *t = &tickets[tourist_id];
+
+    // Bramki zamkniete - koniec
+    if (state->is_closing) {
+        sem_signal_op(sem_state_mutex_id, 0);
+        return 0;
+    }
+
+    if (!t->is_valid) {
+        sem_signal_op(sem_state_mutex_id, 0);
+        return 0;
+    }
+
+    // Jednorazowy - tylko 1 przejazd
+    if (t->type == SINGLE) {
+        sem_signal_op(sem_state_mutex_id, 0);
+        return 0;
+    }
+
+    // Karnety czasowe - sprawdz waznosc
+    if (t->type == TK1 || t->type == TK2 || t->type == TK3) {
+        time_t now = time(NULL);
+        if (t->valid_until > 0 && now > t->valid_until) {
+            sem_signal_op(sem_state_mutex_id, 0);
+            log_msg("TURYSTA %d: Karnet czasowy wygasl, koncze przejazdy.", tourist_id);
+            return 0;
+        }
+    }
+
+    // DAILY lub wazny czasowy - mozna jechac ponownie
+    sem_signal_op(sem_state_mutex_id, 0);
+    return 1;
+}
+
 // Glowna procedura turysty
 void run_tourist() {
     tourist_id = atoi(getenv("TOURIST_ID"));
@@ -407,7 +445,7 @@ void run_tourist() {
             tourist_id, age, type == BIKER ? "Rowerzysta" : "Pieszy",
             is_vip, family_id, num_children, requires_guardian);
 
-    // Dzieci < 8 lat musza miec opiekuna - samotne dziecko nie moze korzystac z kolei
+    // Dzieci <= 8 lat musza miec opiekuna - samotne dziecko nie moze korzystac z kolei
     if (age < CHILD_NEEDS_GUARDIAN_MAX && family_id == 0) {
         log_msg("TURYSTA %d: Dziecko (wiek:%d) bez opiekuna - nie moze korzystac z kolei.",
                 tourist_id, age);
@@ -435,37 +473,54 @@ void run_tourist() {
         goto cleanup;
     }
 
-    // 2. Przejscie przez bramki wejsciowe (walidacja biletu)
-    if (!enter_through_gates()) {
-        goto cleanup;
+    // === PETLA WIELOKROTNYCH PRZEJAZDOW ===
+    int ride_count = 0;
+    while (tourist_running) {
+        ride_count++;
+
+        // 2. Przejscie przez bramki wejsciowe (walidacja biletu)
+        if (!enter_through_gates()) {
+            break;
+        }
+        if (!tourist_running) break;
+
+        // 3. Wejscie na teren stacji dolnej
+        enter_station();
+        if (!tourist_running) goto leave_station;
+
+        // 4. Oczekiwanie na krzeslo - zgloszenie do pracownika1
+        //    (Pracownik1 kontroluje grupe i otwiera bramke peronowa)
+        if (!wait_for_chair()) {
+            goto leave_station;
+        }
+        if (!tourist_running) goto leave_station;
+
+        // 5. Przejscie przez bramke peronowa (otwarta przez pracownika1)
+        go_to_platform();
+
+        // 6. Przejazd w gore
+        ride_up();
+
+        // 7. Wyjscie ze stacji gornej (2 drogi)
+        exit_upper_station();
+
+        // 8. Zjazd/zejscie trasa
+        descend();
+
+        // 9. Zwolnij krzeslo i miejsce na stacji
+        leave_system();
+
+        // Sprawdz czy mozna jechac ponownie
+        if (!can_ride_again()) {
+            log_msg("TURYSTA %d: Zakonczylem przejazdy (laczna liczba: %d).", tourist_id, ride_count);
+            break;
+        }
+
+        log_msg("TURYSTA %d: Karnet wazny, ide na kolejny przejazd (#%d).", tourist_id, ride_count + 1);
+        // Krotka przerwa przed kolejnym przejazdem
+        usleep((rand() % 2000000) + 1000000);
     }
-    if (!tourist_running) goto cleanup;
 
-    // 3. Wejscie na teren stacji dolnej
-    enter_station();
-    if (!tourist_running) goto leave_station;
-
-    // 4. Przejscie na peron
-    go_to_platform();
-    if (!tourist_running) goto leave_station;
-
-    // 5. Oczekiwanie na krzeslo
-    if (!wait_for_chair()) {
-        goto leave_station;
-    }
-    if (!tourist_running) goto leave_station;
-
-    // 6. Przejazd w gore
-    ride_up();
-
-    // 7. Wyjscie ze stacji gornej (2 drogi)
-    exit_upper_station();
-
-    // 8. Zjazd/zejscie trasa
-    descend();
-
-    // 9. Opuszczenie systemu
-    leave_system();
     goto cleanup;
 
 leave_station:

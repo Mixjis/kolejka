@@ -21,12 +21,21 @@ void worker2_sigusr2_handler(int sig) {
 }
 
 // Obsluga zatrzymania kolei inicjowanego przez pracownika2
+// Wg opisu: pracownik zatrzymuje kolej (sygnal1), komunikuje sie z drugim pracownikiem,
+// po otrzymaniu komunikatu zwrotnego o gotowosci kolej jest uruchamiana ponownie (sygnal2).
 void handle_emergency_stop_worker2() {
-    log_msg("PRACOWNIK2: ZAGROZENIE! Zatrzymuje kolej (SIGUSR1).");
+    log_msg("PRACOWNIK2: ZAGROZENIE! Zatrzymuje kolej (sygnal1 - SIGUSR1).");
 
     sem_wait_op(sem_state_mutex_id, 0);
     state->is_paused = 1;
+    pid_t worker1_pid = state->worker_down_pid;
     sem_signal_op(sem_state_mutex_id, 0);
+
+    // Wyslij sygnal SIGUSR1 do pracownika1 (zatrzymaj go tez)
+    if (worker1_pid > 0) {
+        kill(worker1_pid, SIGUSR1);
+        log_msg("PRACOWNIK2: Wyslano SIGUSR1 do pracownika1 (PID:%d).", worker1_pid);
+    }
 
     // Powiadom pracownika1 przez FIFO
     if (fifo_fd_2 >= 0) {
@@ -39,45 +48,66 @@ void handle_emergency_stop_worker2() {
         log_msg("PRACOWNIK2: Wyslano PAUSE_REQ do pracownika1 przez FIFO.");
     }
 
-    // Wyslij sygnal SIGUSR1 do pracownika1
-    sem_wait_op(sem_state_mutex_id, 0);
-    pid_t worker1_pid = state->worker_down_pid;
-    sem_signal_op(sem_state_mutex_id, 0);
-
-    if (worker1_pid > 0) {
-        kill(worker1_pid, SIGUSR1);
-        log_msg("PRACOWNIK2: Wyslano SIGUSR1 do pracownika1 (PID:%d).", worker1_pid);
+    // Czekaj na potwierdzenie gotowosci od pracownika1
+    log_msg("PRACOWNIK2: Kolej ZATRZYMANA. Czekam na potwierdzenie od pracownika1...");
+    int got_ack = 0;
+    int wait_count = 0;
+    while (!got_ack && worker2_is_running && wait_count < 50) {
+        if (fifo_fd_2 >= 0) {
+            FifoMsg ack;
+            ssize_t r = read(fifo_fd_2, &ack, sizeof(ack));
+            if (r > 0 && ack.type == FIFO_PAUSE_ACK) {
+                log_msg("PRACOWNIK2: Otrzymano PAUSE_ACK od pracownika1.");
+                got_ack = 1;
+            }
+        }
+        if (!got_ack) {
+            usleep(100000);
+            wait_count++;
+        }
     }
 
-    log_msg("PRACOWNIK2: Kolej ZATRZYMANA. Czekam na SIGUSR2...");
-
-    while (emergency_stop_2 && worker2_is_running) {
-        usleep(100000);
-    }
+    // Symulacja rozwiazywania zagrozenia
+    log_msg("PRACOWNIK2: Rozwiazywanie zagrozenia...");
+    sleep(2);
 
     if (worker2_is_running) {
-        log_msg("PRACOWNIK2: Otrzymano SIGUSR2 - wznawiam.");
+        // Wznowienie (sygnal2)
+        log_msg("PRACOWNIK2: Zagrozenie usuniete. Wysylam RESUME_REQ (sygnal2).");
 
-        // Wyslij potwierdzenie wznowienia
         if (fifo_fd_2 >= 0) {
             FifoMsg fmsg;
-            fmsg.type = FIFO_RESUME_ACK;
+            fmsg.type = FIFO_RESUME_REQ;
             fmsg.sender_pid = getpid();
             if (write(fifo_fd_2, &fmsg, sizeof(fmsg)) == -1) {
-                perror("PRACOWNIK2: write FIFO_RESUME_ACK");
+                perror("PRACOWNIK2: write FIFO_RESUME_REQ");
             }
         }
 
-        // Wyslij SIGUSR2 do pracownika1
-        if (worker1_pid > 0) {
-            kill(worker1_pid, SIGUSR2);
+        // Czekaj na RESUME_ACK
+        int got_resume_ack = 0;
+        wait_count = 0;
+        while (!got_resume_ack && worker2_is_running && wait_count < 30) {
+            if (fifo_fd_2 >= 0) {
+                FifoMsg ack;
+                ssize_t r = read(fifo_fd_2, &ack, sizeof(ack));
+                if (r > 0 && ack.type == FIFO_RESUME_ACK) {
+                    log_msg("PRACOWNIK2: Otrzymano RESUME_ACK od pracownika1.");
+                    got_resume_ack = 1;
+                }
+            }
+            if (!got_resume_ack) {
+                usleep(100000);
+                wait_count++;
+            }
         }
 
+        emergency_stop_2 = 0;
         sem_wait_op(sem_state_mutex_id, 0);
         state->is_paused = 0;
         sem_signal_op(sem_state_mutex_id, 0);
 
-        log_msg("PRACOWNIK2: Kolej WZNOWIONA.");
+        log_msg("PRACOWNIK2: Kolej WZNOWIONA (sygnal2).");
     }
 }
 

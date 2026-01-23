@@ -20,10 +20,10 @@
 #include <pthread.h>
 
 // ============ KONFIGURACJA SYMULACJI ============
-#define NUM_TOURISTS 50
+#define NUM_TOURISTS 200
 #define SIM_DURATION 120
 #define CLOSING_TIME 90
-#define VIP_PROBABILITY 5       // ~5% szansa na VIP (opis: ok. 1%, zwiekszone dla testow)
+#define VIP_PROBABILITY 1       // ~1% szansa na VIP (wg opisu: ok. 1%)
 
 // ============ KONFIGURACJA KOLEI ============
 #define TOTAL_CHAIRS 72
@@ -39,9 +39,9 @@
 // ============ KONFIGURACJA OSOB ============
 #define AGE_MIN 4
 #define AGE_MAX 80
-#define CHILD_NEEDS_GUARDIAN_MAX 8   // dzieci < 8 lat pod opieka doroslego
+#define CHILD_NEEDS_GUARDIAN_MAX 9   // dzieci <= 8 lat pod opieka doroslego (wg opisu: od 4 do 8 lat)
 #define CHILD_DISCOUNT_MAX 10        // dzieci < 10 lat maja znizke
-#define SENIOR_AGE_LIMIT 65          // seniorzy >= 65 lat maja znizke
+#define SENIOR_AGE_LIMIT 66          // seniorzy powyzej 65. roku zycia (>65, tj. od 66 lat)
 #define GUARDIAN_AGE_MIN 18          // opiekun musi miec min 18 lat
 #define MAX_CHILDREN_PER_GUARDIAN 2  // max 2 dzieci pod opieka jednego doroslego
 

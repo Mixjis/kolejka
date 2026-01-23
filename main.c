@@ -347,6 +347,23 @@ void generate_daily_report() {
     printf("\n5. REJESTRACJA PRZEJSC BRAMKOWYCH:\n");
     printf("   Zarejestrowanych przejsc: %d\n", state->pass_log_count);
 
+    printf("\n6. PODSUMOWANIE ZJAZDOW PER TURYSTA/KARNET:\n");
+    for (int i = 1; i <= NUM_TOURISTS; i++) {
+        if (tickets[i].is_valid || tickets[i].validation_count > 0) {
+            const char *tname;
+            switch (tickets[i].type) {
+                case SINGLE: tname = "JEDNORAZOWY"; break;
+                case TK1:    tname = "CZASOWY_1H"; break;
+                case TK2:    tname = "CZASOWY_2H"; break;
+                case TK3:    tname = "CZASOWY_3H"; break;
+                case DAILY:  tname = "DZIENNY"; break;
+                default:     tname = "?"; break;
+            }
+            printf("   Turysta %3d (%s): %d przejazd(ow)\n",
+                   i, tname, tickets[i].validation_count);
+        }
+    }
+
     printf("\n============================================================\n\n");
 
     // Zapis raportu do pliku
@@ -393,6 +410,25 @@ void generate_daily_report() {
             }
             fprintf(report, "  Karnet#%03d (%s) - %s - przejazd #%d\n",
                     e->tourist_id, type_name, time_str, e->ride_number);
+        }
+
+        // Podsumowanie zjazdow per turysta/karnet (wg opisu)
+        fprintf(report, "\nPODSUMOWANIE ZJAZDOW PER TURYSTA/KARNET:\n");
+        fprintf(report, "------------------------------------------------------------\n");
+        for (int i = 1; i <= NUM_TOURISTS; i++) {
+            if (tickets[i].is_valid || tickets[i].validation_count > 0) {
+                const char *tname;
+                switch (tickets[i].type) {
+                    case SINGLE: tname = "JEDNORAZOWY"; break;
+                    case TK1:    tname = "CZASOWY_1H"; break;
+                    case TK2:    tname = "CZASOWY_2H"; break;
+                    case TK3:    tname = "CZASOWY_3H"; break;
+                    case DAILY:  tname = "DZIENNY"; break;
+                    default:     tname = "?"; break;
+                }
+                fprintf(report, "  Turysta %3d (%s): %d przejazd(ow)\n",
+                        i, tname, tickets[i].validation_count);
+            }
         }
 
         fprintf(report, "\n============================================================\n");

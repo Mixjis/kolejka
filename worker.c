@@ -85,8 +85,10 @@ void shared_q_push_back(SharedQueue *q, QueuedTourist t) {
     q->count++;
 }
 
-// === WYSLIJ TURYSTOM SYGNAL ODJAZDU ===
+// === WYSLIJ TURYSTOM SYGNAL ODJAZDU (pracownik1 otwiera bramke peronowa) ===
 void send_tourists_go(QueuedTourist group[], int size) {
+    log_msg("PRACOWNIK1: Otwieram bramke peronowa dla grupy %d osob.", size);
+
     for (int i = 0; i < size; i++) {
         MsgBuf go_msg;
         memset(&go_msg, 0, sizeof(go_msg));
@@ -99,8 +101,10 @@ void send_tourists_go(QueuedTourist group[], int size) {
 }
 
 // === ZATRZYMANIE/WZNOWIENIE KOLEI (FIFO) ===
+// Wg opisu: pracownik zatrzymuje kolej (sygnal1), komunikuje sie z drugim pracownikiem,
+// po otrzymaniu komunikatu zwrotnego o gotowosci kolej jest uruchamiana ponownie (sygnal2).
 void handle_emergency_stop() {
-    log_msg("PRACOWNIK1: ZAGROZENIE! Zatrzymuje kolej (SIGUSR1).");
+    log_msg("PRACOWNIK1: ZAGROZENIE! Zatrzymuje kolej (sygnal1 - SIGUSR1).");
 
     sem_wait_op(sem_state_mutex_id, 0);
     state->is_paused = 1;
@@ -117,25 +121,32 @@ void handle_emergency_stop() {
         log_msg("PRACOWNIK1: Wyslano PAUSE_REQ do pracownika2 przez FIFO.");
     }
 
-    // Czekaj na potwierdzenie od pracownika2
-    log_msg("PRACOWNIK1: Czekam na potwierdzenie od pracownika2...");
-    if (fifo_fd >= 0) {
-        FifoMsg ack;
-        ssize_t r = read(fifo_fd, &ack, sizeof(ack));
-        if (r > 0 && ack.type == FIFO_PAUSE_ACK) {
-            log_msg("PRACOWNIK1: Otrzymano PAUSE_ACK od pracownika2.");
+    // Czekaj na potwierdzenie gotowosci od pracownika2 (polling FIFO non-blocking)
+    log_msg("PRACOWNIK1: Kolej ZATRZYMANA. Czekam na potwierdzenie gotowosci od pracownika2...");
+    int got_ack = 0;
+    int wait_count = 0;
+    while (!got_ack && worker_is_running && wait_count < 50) {
+        if (fifo_fd >= 0) {
+            FifoMsg ack;
+            ssize_t r = read(fifo_fd, &ack, sizeof(ack));
+            if (r > 0 && ack.type == FIFO_PAUSE_ACK) {
+                log_msg("PRACOWNIK1: Otrzymano PAUSE_ACK od pracownika2.");
+                got_ack = 1;
+            }
+        }
+        if (!got_ack) {
+            usleep(100000);
+            wait_count++;
         }
     }
 
-    log_msg("PRACOWNIK1: Kolej ZATRZYMANA. Oczekiwanie na sygnal wznowienia (SIGUSR2)...");
-
-    // Czekaj az emergency_stop zostanie wyzerowane przez SIGUSR2
-    while (emergency_stop && worker_is_running) {
-        usleep(100000);
-    }
+    // Symulacja rozwiazywania zagrozenia
+    log_msg("PRACOWNIK1: Rozwiazywanie zagrozenia...");
+    sleep(2);
 
     if (worker_is_running) {
-        log_msg("PRACOWNIK1: Otrzymano SIGUSR2 - wznawiam kolej.");
+        // Po otrzymaniu komunikatu zwrotnego - wznowienie (sygnal2)
+        log_msg("PRACOWNIK1: Zagrozenie usuniete. Wysylam RESUME_REQ (sygnal2).");
 
         // Wyslij wznowienie do pracownika2
         if (fifo_fd >= 0) {
@@ -147,11 +158,30 @@ void handle_emergency_stop() {
             }
         }
 
+        // Czekaj na RESUME_ACK od pracownika2
+        int got_resume_ack = 0;
+        wait_count = 0;
+        while (!got_resume_ack && worker_is_running && wait_count < 30) {
+            if (fifo_fd >= 0) {
+                FifoMsg ack;
+                ssize_t r = read(fifo_fd, &ack, sizeof(ack));
+                if (r > 0 && ack.type == FIFO_RESUME_ACK) {
+                    log_msg("PRACOWNIK1: Otrzymano RESUME_ACK od pracownika2.");
+                    got_resume_ack = 1;
+                }
+            }
+            if (!got_resume_ack) {
+                usleep(100000);
+                wait_count++;
+            }
+        }
+
+        emergency_stop = 0;
         sem_wait_op(sem_state_mutex_id, 0);
         state->is_paused = 0;
         sem_signal_op(sem_state_mutex_id, 0);
 
-        log_msg("PRACOWNIK1: Kolej WZNOWIONA.");
+        log_msg("PRACOWNIK1: Kolej WZNOWIONA (sygnal2).");
     }
 }
 
@@ -161,6 +191,9 @@ void handle_emergency_stop() {
 // - 1 rowerzysta + max 2 pieszych
 // - max 4 pieszych
 // - dziecko 4-8 lat z opiekunem (dorosly max 2 dzieci)
+
+static int no_dispatch_counter = 0;  // licznik prob bez wyslania (anty-starvation)
+#define STARVATION_THRESHOLD 10      // po tylu probach bez wyslania - wyslij pojedynczo
 
 void try_to_dispatch_groups(SharedQueue *queue) {
     static int operation_counter = 0;
@@ -374,8 +407,9 @@ void try_to_dispatch_groups(SharedQueue *queue) {
             }
         }
 
-        // === PROBA 4: POJEDYNCZY (przy zamykaniu - wysylaj WSZYSTKICH) ===
-        if (!state->is_running || state->is_closing) {
+        // === PROBA 4: POJEDYNCZY (anti-starvation lub zamykanie) ===
+        // Jesli turysta czeka zbyt dlugo bez pary - wyslij go samego
+        if (no_dispatch_counter >= STARVATION_THRESHOLD || !state->is_running || state->is_closing) {
             for (int i = 0; i < queue->count; i++) {
                 int idx = (queue->head + i) % MAX_Q_SIZE;
                 if (!queue->items[idx].is_removed) {
@@ -399,8 +433,10 @@ void try_to_dispatch_groups(SharedQueue *queue) {
                     }
                     dispatched_in_pass = 1;
 
-                    log_msg("PRACOWNIK1: POJEDYNCZY (zamykanie, osoby:%d) -> krzeslo %d/%d",
+                    log_msg("PRACOWNIK1: POJEDYNCZY (%s, osoby:%d) -> krzeslo %d/%d",
+                        (state->is_closing || !state->is_running) ? "zamykanie" : "brak pary",
                         people, state->busy_chairs, MAX_BUSY_CHAIRS);
+                    no_dispatch_counter = 0;
                     break;
                 }
             }
@@ -408,7 +444,50 @@ void try_to_dispatch_groups(SharedQueue *queue) {
 
     } while (dispatched_in_pass && state->busy_chairs < MAX_BUSY_CHAIRS);
 
+    // Aktualizacja licznika anti-starvation
+    if (!dispatched_in_pass && !shared_q_is_empty(queue)) {
+        no_dispatch_counter++;
+    } else {
+        no_dispatch_counter = 0;
+    }
+
     sem_signal_op(sem_state_mutex_id, 0);
+}
+
+// Obsluga FIFO - odpowiedz na zadania od pracownika2
+void check_fifo_messages_worker1() {
+    if (fifo_fd < 0) return;
+
+    FifoMsg fmsg;
+    ssize_t r = read(fifo_fd, &fmsg, sizeof(fmsg));
+    if (r <= 0) return;
+
+    switch (fmsg.type) {
+        case FIFO_PAUSE_REQ:
+            log_msg("PRACOWNIK1: Otrzymano PAUSE_REQ od pracownika2. Potwierdzam.");
+            {
+                FifoMsg ack;
+                ack.type = FIFO_PAUSE_ACK;
+                ack.sender_pid = getpid();
+                if (write(fifo_fd, &ack, sizeof(ack)) == -1) {
+                    perror("PRACOWNIK1: write FIFO_PAUSE_ACK");
+                }
+            }
+            break;
+        case FIFO_RESUME_REQ:
+            log_msg("PRACOWNIK1: Otrzymano RESUME_REQ od pracownika2. Potwierdzam.");
+            {
+                FifoMsg ack;
+                ack.type = FIFO_RESUME_ACK;
+                ack.sender_pid = getpid();
+                if (write(fifo_fd, &ack, sizeof(ack)) == -1) {
+                    perror("PRACOWNIK1: write FIFO_RESUME_ACK");
+                }
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 // === GLOWNA PETLA PRACOWNIKA1 ===
@@ -434,6 +513,9 @@ void run_worker_down() {
             handle_emergency_stop();
             if (!worker_is_running) break;
         }
+
+        // Sprawdz wiadomosci FIFO od pracownika2
+        check_fifo_messages_worker1();
 
         ssize_t result = msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long),
                                 MSG_TYPE_WORKER_DOWN, IPC_NOWAIT);
