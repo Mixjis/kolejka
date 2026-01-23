@@ -1,12 +1,35 @@
 CC=gcc
-CFLAGS=-Wall -std=c11 -lrt
-PROGRAM=kolej_linowa
-LOGI=kolej_log.txt
+CFLAGS=-Wall -Wextra -std=gnu11 -pthread
+LDFLAGS=-pthread -lrt
+TARGETS=main logger cashier worker worker2 tourist
 
-kolej_linowa: main.c
-	$(CC) $(CFLAGS) -o $@ $<
+all: $(TARGETS)
+
+main: main.c utils.o common.h
+	$(CC) $(CFLAGS) -o $@ main.c utils.o $(LDFLAGS)
+
+logger: logger.c utils.o common.h
+	$(CC) $(CFLAGS) -o $@ logger.c utils.o $(LDFLAGS)
+
+cashier: cashier.c utils.o common.h
+	$(CC) $(CFLAGS) -o $@ cashier.c utils.o $(LDFLAGS)
+
+worker: worker.c utils.o common.h
+	$(CC) $(CFLAGS) -o $@ worker.c utils.o $(LDFLAGS)
+
+worker2: worker2.c utils.o common.h
+	$(CC) $(CFLAGS) -o $@ worker2.c utils.o $(LDFLAGS)
+
+tourist: tourist.c utils.o common.h
+	$(CC) $(CFLAGS) -o $@ tourist.c utils.o $(LDFLAGS)
+
+utils.o: utils.c common.h
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 clean:
-	rm -f $(PROGRAM) $(LOGI)
-run:
-	./$(PROGRAM)
-#test:
+	rm -f $(TARGETS) *.o kolej_log.txt rides_log.txt /tmp/kolej_worker_fifo
+
+run: all
+	./main
+
+.PHONY: all clean run

@@ -151,6 +151,7 @@ int main(void) {
     printf("SYSTEM: Symulacja uruchomiona. Czas zamkniecia bramek: %d s, calkowity: %d s.\n",
            CLOSING_TIME, SIM_DURATION);
 
+    // Ustaw alarm na czas zamkniecia bramek
     alarm(CLOSING_TIME);
 
     while (is_sim_running) {
@@ -159,7 +160,7 @@ int main(void) {
 
     graceful_shutdown();
     fflush(stdout);
-    usleep(500000);
+    usleep(500000); // poczekaj az wszystkie procesy potomne zakoncza wypisywanie
     generate_daily_report();
 
     free(child_pids);
@@ -188,6 +189,7 @@ void main_signal_handler(int sig) {
 void graceful_shutdown() {
     printf("\nSYSTEM: Rozpoczynam zamykanie kolei...\n");
 
+    // Zamknij bramki - karnety przestaja dzialac
     sem_wait_op(sem_state_mutex_id, 0);
     state->is_closing = 1;
     sem_signal_op(sem_state_mutex_id, 0);
@@ -195,6 +197,7 @@ void graceful_shutdown() {
     printf("SYSTEM: Bramki wejsciowe zamkniete. Karnety nieaktywne.\n");
     printf("SYSTEM: Oczekiwanie na przetransportowanie osob z peronu...\n");
 
+    // Czekaj az peron sie oprozni
     int wait_iterations = 0;
     const int MAX_WAIT = 30;
 
@@ -220,7 +223,7 @@ void graceful_shutdown() {
         wait_iterations++;
     }
 
-    //po 3 sekundach kolej ma zostac wylaczona
+    // Wg opisu: po 3 sekundach kolej ma zostac wylaczona
     printf("SYSTEM: Odliczanie 3 sekundy przed wylaczeniem kolei...\n");
     sleep(3);
 
@@ -262,9 +265,11 @@ void graceful_shutdown() {
     printf("SYSTEM: Procesy zakonczone.\n");
 }
 
+// Generowanie raportu koncowego (zapis do pliku)
 void generate_daily_report() {
     sem_wait_op(sem_state_mutex_id, 0);
 
+    // Raport na ekran
     printf("\n============================================================\n");
     printf("         RAPORT KONCOWY SYMULACJI KOLEI LINOWEJ\n");
     printf("============================================================\n");
@@ -304,6 +309,7 @@ void generate_daily_report() {
 
     printf("\n============================================================\n\n");
 
+    // Zapis raportu do pliku
     FILE *report = fopen("rides_log.txt", "w");
     if (report) {
         fprintf(report, "============================================================\n");

@@ -3,6 +3,7 @@
 volatile sig_atomic_t cashier_running = 1;
 
 // Obliczanie ceny biletu z uwzglednieniem znizek
+// Dzieci < 10 lat i seniorzy >= 65 lat maja 25% znizki
 float calculate_ticket_price(TicketType type, int age) {
     float base_price = 0;
     switch (type) {
@@ -73,6 +74,7 @@ int main(void) {
 
         if (gates_closed) {
             log_msg("KASJER: Bramki zamkniete - odrzucam turystę %d.", msg.tourist_id);
+            // Odblokuj turystę zeby nie czekal w nieskonczonosc
             sem_signal_op(sem_ticket_bought_id, msg.tourist_id - 1);
             continue;
         }
@@ -80,6 +82,7 @@ int main(void) {
         // Czas obslugi (symulacja)
         usleep((rand() % 1000000) + 500000);
 
+        // Sprawdz ponownie po obsludze
         sem_wait_op(sem_state_mutex_id, 0);
         gates_closed = state->is_closing;
         if (gates_closed) {
@@ -89,7 +92,7 @@ int main(void) {
             continue;
         }
 
-        // Wybór typu biletu
+        // Wybierz typ biletu (losowo, ale sensownie)
         int tourist_idx = msg.tourist_id;
         if (tourist_idx < 1 || tourist_idx > NUM_TOURISTS) {
             sem_signal_op(sem_state_mutex_id, 0);

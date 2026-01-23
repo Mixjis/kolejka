@@ -23,32 +23,32 @@
 #define NUM_TOURISTS 50
 #define SIM_DURATION 120
 #define CLOSING_TIME 90
-#define VIP_PROBABILITY 1       
+#define VIP_PROBABILITY 5       // ~5% szansa na VIP (opis: ok. 1%, zwiekszone dla testow)
 
 // ============ KONFIGURACJA KOLEI ============
 #define TOTAL_CHAIRS 72
-#define MAX_BUSY_CHAIRS 36
-#define CHAIR_CAPACITY 4
-#define MAX_BIKERS_PER_CHAIR 2
-#define ENTRY_GATES 4
-#define PLATFORM_GATES 3
-#define EXIT_ROUTES 2
-#define MAX_STATION_CAPACITY 30 
-#define RIDE_DURATION 5
+#define MAX_BUSY_CHAIRS 36      // jednoczesnie moze byc zajetych 36 krzeselek
+#define CHAIR_CAPACITY 4        // max 4 osoby na krzesle
+#define MAX_BIKERS_PER_CHAIR 2  // max 2 rowerzystow na krzesle
+#define ENTRY_GATES 4           // 4 bramki wejsciowe (sprawdzanie biletu)
+#define PLATFORM_GATES 3        // 3 bramki peronowe (kontrola grupy, otwiera pracownik1)
+#define EXIT_ROUTES 2           // 2 drogi wyjscia ze stacji gornej
+#define MAX_STATION_CAPACITY 30 // max N osob na terenie stacji dolnej
+#define RIDE_DURATION 5         // czas przejazdu w gore
 
 // ============ KONFIGURACJA OSOB ============
 #define AGE_MIN 4
 #define AGE_MAX 80
-#define CHILD_NEEDS_GUARDIAN_MAX 8
-#define CHILD_DISCOUNT_MAX 10
-#define SENIOR_AGE_LIMIT 65
-#define GUARDIAN_AGE_MIN 18
-#define MAX_CHILDREN_PER_GUARDIAN 2
+#define CHILD_NEEDS_GUARDIAN_MAX 8   // dzieci < 8 lat pod opieka doroslego
+#define CHILD_DISCOUNT_MAX 10        // dzieci < 10 lat maja znizke
+#define SENIOR_AGE_LIMIT 65          // seniorzy >= 65 lat maja znizke
+#define GUARDIAN_AGE_MIN 18          // opiekun musi miec min 18 lat
+#define MAX_CHILDREN_PER_GUARDIAN 2  // max 2 dzieci pod opieka jednego doroslego
 
 // ============ TRASY ZJAZDOWE ============
-#define ROUTE_TIME_T1 3
-#define ROUTE_TIME_T2 5
-#define ROUTE_TIME_T3 7
+#define ROUTE_TIME_T1 3     // trasa latwa (T1 < T2 < T3)
+#define ROUTE_TIME_T2 5     // trasa srednia
+#define ROUTE_TIME_T3 7     // trasa trudna
 
 // ============ BATCH PROCESOW ============
 #define BATCH_SIZE 100
@@ -100,7 +100,7 @@ typedef struct {
     int tourist_id;
     TicketType ticket_type;
     time_t timestamp;
-    int ride_number;
+    int ride_number;    // ktory przejazd z kolei
 } PassLogEntry;
 
 // ============ STAN STACJI (PAMIEC DZIELONA) ============
@@ -110,14 +110,16 @@ typedef struct {
     volatile int is_paused;         // kolej zatrzymana przez pracownika
     time_t start_time;
     time_t end_time;
-    int busy_chairs;
-    int station_population;
-    pid_t worker_down_pid;
-    pid_t worker_up_pid;
-    SharedQueue waiting_tourists_down;
+    int busy_chairs;                // liczba zajetych KRZESELEK (nie osob!)
+    int station_population;         // ile osob na terenie stacji dolnej
+    pid_t worker_down_pid;          // PID pracownika1 (stacja dolna)
+    pid_t worker_up_pid;            // PID pracownika2 (stacja gorna)
+    SharedQueue waiting_tourists_down;  // kolejka oczekujacych na dole
     int next_family_id;
+    // Rejestracja przejsc bramkowych
     PassLogEntry pass_log[MAX_PASS_LOG];
     int pass_log_count;
+    // Statystyki osob na gorze (czekajacych na wyjscie)
     int people_on_top;
 } StationState;
 
@@ -125,10 +127,10 @@ typedef struct {
 typedef struct {
     pid_t owner_pid;
     TicketType type;
-    int validation_count;
+    int validation_count;       // ile razy uzyty
     time_t valid_until;         // -1 = bez limitu czasowego
     int family_id;
-    int is_valid;
+    int is_valid;               // czy bilet aktywny
 } Ticket;
 
 // ============ STATYSTYKI DZIENNE ============
@@ -138,8 +140,8 @@ typedef struct {
     int tk2_sold;
     int tk3_sold;
     int daily_sold;
-    int total_rides;
-    int total_people;
+    int total_rides;        // laczna liczba odjazdow krzeselek
+    int total_people;       // laczna liczba przewiezionych osob
     int bikers;
     int walkers;
     int vip_served;
@@ -147,7 +149,7 @@ typedef struct {
     int route_t1;
     int route_t2;
     int route_t3;
-    int rejected_expired;
+    int rejected_expired;   // odrzuceni z powodu wygasniecia karnetu
 } DailyStats;
 
 // ============ KOMUNIKATY (KOLEJKA KOMUNIKATOW) ============
@@ -159,7 +161,7 @@ typedef struct {
 typedef enum {
     ACTION_TOURIST_READY,
     ACTION_CHAIR_FREE,
-    ACTION_ARRIVED_TOP,
+    ACTION_ARRIVED_TOP,         // turysta dotarl na gore
     ACTION_REJECTED = -1
 } WorkerMsgAction;
 
@@ -180,10 +182,10 @@ typedef struct {
 
 // ============ KOMUNIKATY FIFO MIEDZY PRACOWNIKAMI ============
 typedef enum {
-    FIFO_PAUSE_REQ,
-    FIFO_PAUSE_ACK,
-    FIFO_RESUME_REQ,
-    FIFO_RESUME_ACK
+    FIFO_PAUSE_REQ,     // zadanie zatrzymania kolei
+    FIFO_PAUSE_ACK,     // potwierdzenie gotowosci do zatrzymania
+    FIFO_RESUME_REQ,    // zadanie wznowienia
+    FIFO_RESUME_ACK     // potwierdzenie wznowienia
 } FifoMsgType;
 
 typedef struct {
