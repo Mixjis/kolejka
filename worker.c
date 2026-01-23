@@ -1,69 +1,184 @@
 #include "common.h"
 
 volatile sig_atomic_t worker_is_running = 1;
-volatile sig_atomic_t is_paused = 0;
+volatile sig_atomic_t emergency_stop = 0;
+int fifo_fd = -1;
 
 void worker_sigterm_handler(int sig) {
+    (void)sig;
     worker_is_running = 0;
 }
 
+// SIGUSR1 - zatrzymanie kolei w przypadku zagrozenia
 void worker_sigusr1_handler(int sig) {
-    // SIGUSR1: zatrzymanie kolei
-    is_paused = 1;
+    (void)sig;
+    emergency_stop = 1;
 }
 
+// SIGUSR2 - wznowienie kolei
 void worker_sigusr2_handler(int sig) {
-    // SIGUSR2: wznowienie pracy
-    is_paused = 0;
+    (void)sig;
+    emergency_stop = 0;
 }
 
+// === FUNKCJE KOLEJKI Z LAZY DELETION ===
+
+int shared_q_is_empty(SharedQueue *q) {
+    for (int i = 0; i < q->count; i++) {
+        int idx = (q->head + i) % MAX_Q_SIZE;
+        if (!q->items[idx].is_removed) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+QueuedTourist shared_q_pop(SharedQueue *q) {
+    while (q->count > 0) {
+        QueuedTourist t = q->items[q->head];
+        q->head = (q->head + 1) % MAX_Q_SIZE;
+        q->count--;
+        if (!t.is_removed) {
+            return t;
+        }
+    }
+    QueuedTourist empty = { .pid = -1, .is_removed = 1 };
+    return empty;
+}
+
+void shared_q_mark_removed(SharedQueue *q, int logical_idx) {
+    if (logical_idx < 0 || logical_idx >= q->count) return;
+    int physical_idx = (q->head + logical_idx) % MAX_Q_SIZE;
+    q->items[physical_idx].is_removed = 1;
+}
+
+void shared_q_compact(SharedQueue *q) {
+    QueuedTourist temp[MAX_Q_SIZE];
+    int new_count = 0;
+    for (int i = 0; i < q->count; i++) {
+        int idx = (q->head + i) % MAX_Q_SIZE;
+        if (!q->items[idx].is_removed) {
+            temp[new_count++] = q->items[idx];
+        }
+    }
+    q->head = 0;
+    q->tail = new_count;
+    q->count = new_count;
+    for (int i = 0; i < new_count; i++) {
+        q->items[i] = temp[i];
+    }
+}
+
+// VIP - na poczatek kolejki
+void shared_q_push_vip(SharedQueue *q, QueuedTourist t) {
+    if (q->count >= MAX_Q_SIZE) return;
+    // Przesun head do tylu i wstaw na poczatek
+    q->head = (q->head - 1 + MAX_Q_SIZE) % MAX_Q_SIZE;
+    q->items[q->head] = t;
+    q->count++;
+}
+
+void shared_q_push_back(SharedQueue *q, QueuedTourist t) {
+    if (q->count >= MAX_Q_SIZE) return;
+    q->items[q->tail] = t;
+    q->tail = (q->tail + 1) % MAX_Q_SIZE;
+    q->count++;
+}
+
+// === WYSLIJ TURYSTOM SYGNAL ODJAZDU ===
 void send_tourists_go(QueuedTourist group[], int size) {
-    log_msg("PRACOWNIK: Formowanie grupy %d-osobowej.", size);
     for (int i = 0; i < size; i++) {
         MsgBuf go_msg;
+        memset(&go_msg, 0, sizeof(go_msg));
         go_msg.mtype = group[i].pid;
+        go_msg.action = ACTION_TOURIST_READY;
         if (msgsnd(msg_queue_id, &go_msg, sizeof(go_msg) - sizeof(long), 0) == -1) {
-            if (errno != EIDRM) perror("Worker msgsnd to tourist");
+            perror("msgsnd send_tourists_go");
         }
     }
 }
 
-int shared_q_is_empty(SharedQueue *q) {
-    return q->count == 0;
-}
+// === ZATRZYMANIE/WZNOWIENIE KOLEI (FIFO) ===
+void handle_emergency_stop() {
+    log_msg("PRACOWNIK1: ZAGROZENIE! Zatrzymuje kolej (SIGUSR1).");
 
-QueuedTourist shared_q_pop(SharedQueue *q) {
-    if (q->count <= 0) {
-        QueuedTourist empty = { -1, -1 };
-        return empty;
+    sem_wait_op(sem_state_mutex_id, 0);
+    state->is_paused = 1;
+    sem_signal_op(sem_state_mutex_id, 0);
+
+    // Wyslij zadanie pauzy do pracownika2 przez FIFO
+    if (fifo_fd >= 0) {
+        FifoMsg fmsg;
+        fmsg.type = FIFO_PAUSE_REQ;
+        fmsg.sender_pid = getpid();
+        if (write(fifo_fd, &fmsg, sizeof(fmsg)) == -1) {
+            perror("write FIFO_PAUSE_REQ");
+        }
+        log_msg("PRACOWNIK1: Wyslano PAUSE_REQ do pracownika2 przez FIFO.");
     }
-    QueuedTourist t = q->items[q->head];
-    q->head = (q->head + 1) % MAX_Q_SIZE;
-    q->count--;
-    return t;
+
+    // Czekaj na potwierdzenie od pracownika2
+    log_msg("PRACOWNIK1: Czekam na potwierdzenie od pracownika2...");
+    if (fifo_fd >= 0) {
+        FifoMsg ack;
+        ssize_t r = read(fifo_fd, &ack, sizeof(ack));
+        if (r > 0 && ack.type == FIFO_PAUSE_ACK) {
+            log_msg("PRACOWNIK1: Otrzymano PAUSE_ACK od pracownika2.");
+        }
+    }
+
+    log_msg("PRACOWNIK1: Kolej ZATRZYMANA. Oczekiwanie na sygnal wznowienia (SIGUSR2)...");
+
+    // Czekaj az emergency_stop zostanie wyzerowane przez SIGUSR2
+    while (emergency_stop && worker_is_running) {
+        usleep(100000);
+    }
+
+    if (worker_is_running) {
+        log_msg("PRACOWNIK1: Otrzymano SIGUSR2 - wznawiam kolej.");
+
+        // Wyslij wznowienie do pracownika2
+        if (fifo_fd >= 0) {
+            FifoMsg fmsg;
+            fmsg.type = FIFO_RESUME_REQ;
+            fmsg.sender_pid = getpid();
+            if (write(fifo_fd, &fmsg, sizeof(fmsg)) == -1) {
+                perror("write FIFO_RESUME_REQ");
+            }
+        }
+
+        sem_wait_op(sem_state_mutex_id, 0);
+        state->is_paused = 0;
+        sem_signal_op(sem_state_mutex_id, 0);
+
+        log_msg("PRACOWNIK1: Kolej WZNOWIONA.");
+    }
 }
 
+// === GRUPOWANIE NA KRZESELKU ===
+// - max 2 rowerzystow
+// - 1 rowerzysta + max 2 pieszych
+// - max 4 pieszych
+// - dziecko 4-8 lat z opiekunem (dorosly max 2 dzieci)
 
-void shared_q_remove_at(SharedQueue *q, int logical_idx) {
-    if (logical_idx < 0 || logical_idx >= q->count) {
+void try_to_dispatch_groups(SharedQueue *queue) {
+    static int operation_counter = 0;
+
+    sem_wait_op(sem_state_mutex_id, 0);
+
+    if (++operation_counter > 50) {
+        shared_q_compact(queue);
+        operation_counter = 0;
+    }
+
+    // Sprawdz czy kolej nie jest wstrzymana
+    if (state->is_paused) {
+        sem_signal_op(sem_state_mutex_id, 0);
         return;
     }
-    
- 
-    for (int i = logical_idx; i < q->count - 1; i++) {
-        int curr_physical_idx = (q->head + i) % MAX_Q_SIZE;
-        int next_physical_idx = (q->head + i + 1) % MAX_Q_SIZE;
-        q->items[curr_physical_idx] = q->items[next_physical_idx];
-    }
-    q->count--;
-
-    q->tail = (q->tail - 1 + MAX_Q_SIZE) % MAX_Q_SIZE;
-}
-
-void try_to_dispatch_groups(SharedQueue *queue, const char* log_prefix) {
-    sem_wait(sem_state_mutex_id, 0);
 
     int dispatched_in_pass;
+
     do {
         dispatched_in_pass = 0;
 
@@ -71,166 +186,257 @@ void try_to_dispatch_groups(SharedQueue *queue, const char* log_prefix) {
             break;
         }
 
-        //GRUPY RODZINNE
-        // Szukaj opiekuna (dorosłego) i zbierz z nim maksymalnie 2 dzieci
-        int guardian_idx = -1;
+        if (shared_q_is_empty(queue)) {
+            break;
+        }
+
+        int family_idx = -1;
         for (int i = 0; i < queue->count; i++) {
             int idx = (queue->head + i) % MAX_Q_SIZE;
-            if (!queue->items[idx].requires_guardian && 
-                queue->items[idx].age >= GUARDIAN_AGE_MIN) {
-                guardian_idx = i;
+            if (!queue->items[idx].is_removed &&
+                queue->items[idx].num_children > 0) {
+                family_idx = i;
                 break;
             }
         }
 
-        if (guardian_idx >= 0) {
-            // Zbierz dzieci do tego opiekuna (max 2)
-            int children_indices[2] = {-1, -1};
-            int children_count = 0;
-            
-            for (int i = 0; i < queue->count && children_count < 2; i++) {
+        if (family_idx >= 0) {
+            int f_phys = (queue->head + family_idx) % MAX_Q_SIZE;
+            QueuedTourist guardian = queue->items[f_phys];
+            int family_size = 1 + guardian.num_children; // opiekun + dzieci
+
+            if (family_size <= CHAIR_CAPACITY) {
+                QueuedTourist group[CHAIR_CAPACITY];
+                group[0] = guardian;
+                // opiekun jest w kolejce, zajmuje family_size miejsc
+                int remaining = CHAIR_CAPACITY - family_size;
+                int extra_indices[CHAIR_CAPACITY];
+                int extra_count = 0;
+                for (int i = 0; i < queue->count && extra_count < remaining; i++) {
+                    int idx = (queue->head + i) % MAX_Q_SIZE;
+                    if (i != family_idx &&
+                        !queue->items[idx].is_removed &&
+                        queue->items[idx].num_children == 0 &&
+                        queue->items[idx].type == WALKER) {
+                        extra_indices[extra_count] = i;
+                        group[family_size + extra_count] = queue->items[idx];
+                        extra_count++;
+                    }
+                }
+
+                shared_q_mark_removed(queue, family_idx);
+                for (int i = 0; i < extra_count; i++) {
+                    shared_q_mark_removed(queue, extra_indices[i]);
+                }
+
+                // Wysylamy sygnal tylko opiekunowi i dodatkowym osobom
+                int msg_count = 1 + extra_count;
+                QueuedTourist msg_group[CHAIR_CAPACITY];
+                msg_group[0] = guardian;
+                for (int i = 0; i < extra_count; i++) {
+                    msg_group[1 + i] = group[family_size + i];
+                }
+                send_tourists_go(msg_group, msg_count);
+
+                state->busy_chairs++;
+                stats->total_rides++;
+                stats->total_people += family_size + extra_count;
+                // Opiekun: rowerzysta lub pieszy
+                if (guardian.type == BIKER) stats->bikers++;
+                else stats->walkers++;
+                // Dzieci liczone jako piesi z opiekunem
+                stats->walkers += guardian.num_children;
+                stats->with_guardian += guardian.num_children;
+                // Dodatkowi piesi
+                stats->walkers += extra_count;
+                dispatched_in_pass = 1;
+
+                log_msg("PRACOWNIK1: RODZINA (opiekun+%d dzieci, +%d dod.) -> krzeslo %d/%d",
+                    guardian.num_children, extra_count, state->busy_chairs, MAX_BUSY_CHAIRS);
+                continue;
+            }
+        }
+
+        // ===GRUPA ROWERZYSTOW (max 2 na krzeslo) ===
+        {
+            int biker_indices[MAX_BIKERS_PER_CHAIR];
+            int biker_count = 0;
+            for (int i = 0; i < queue->count && biker_count < MAX_BIKERS_PER_CHAIR; i++) {
                 int idx = (queue->head + i) % MAX_Q_SIZE;
-                if (i != guardian_idx && queue->items[idx].requires_guardian) {
-                    children_indices[children_count] = i;
-                    children_count++;
+                if (!queue->items[idx].is_removed &&
+                    queue->items[idx].num_children == 0 &&
+                    queue->items[idx].type == BIKER) {
+                    biker_indices[biker_count++] = i;
                 }
             }
 
-            // Wysyłanie jeśli mamy przynajmniej 1 dziecko
-            if (children_count > 0) {
-                int total_seats_needed = 1 + children_count; // opiekun + dzieci
-                if (state->busy_chairs + total_seats_needed <= MAX_BUSY_CHAIRS) {
-                    
-                    QueuedTourist guardian = queue->items[(queue->head + guardian_idx) % MAX_Q_SIZE];
-                    QueuedTourist group[3]; // Max: opiekun + 2 dzieci
-                    group[0] = guardian;
-                    int group_size = 1;
+            if (biker_count == MAX_BIKERS_PER_CHAIR) {
+                QueuedTourist group[MAX_BIKERS_PER_CHAIR];
+                for (int i = 0; i < biker_count; i++) {
+                    int phys = (queue->head + biker_indices[i]) % MAX_Q_SIZE;
+                    group[i] = queue->items[phys];
+                    shared_q_mark_removed(queue, biker_indices[i]);
+                }
+                send_tourists_go(group, biker_count);
+                state->busy_chairs++;
+                stats->total_rides++;
+                stats->total_people += biker_count;
+                stats->bikers += biker_count;
+                dispatched_in_pass = 1;
 
-                    // Dodawanie dzieci do grupy
-                    for (int i = 0; i < children_count; i++) {
-                        QueuedTourist child = queue->items[(queue->head + children_indices[i]) % MAX_Q_SIZE];
-                        child.guardian_id = guardian.pid;
-                        group[group_size] = child;
-                        group_size++;
-                    }
-                    for (int i = children_count - 1; i >= 0; i--) {
-                        shared_q_remove_at(queue, children_indices[i]);
-                    }
-                    // Opiekun może zmienić indeks po usunięciu dzieci, przeindeksuj
-                    int adjusted_guardian_idx = guardian_idx;
-                    for (int i = 0; i < children_count; i++) {
-                        if (children_indices[i] < guardian_idx) {
-                            adjusted_guardian_idx--;
-                        }
-                    }
-                    shared_q_remove_at(queue, adjusted_guardian_idx);
+                log_msg("PRACOWNIK1: 2 ROWERZ. -> krzeslo %d/%d",
+                    state->busy_chairs, MAX_BUSY_CHAIRS);
+                continue;
+            }
 
-                    // Wyślij grupę
-                    send_tourists_go(group, group_size);
-                    stats->walkers += group_size;
-                    int new_busy = state->busy_chairs + group_size;
-                    if (new_busy <= MAX_BUSY_CHAIRS) {
-                        state->busy_chairs = new_busy;
-                    } else {
-                        log_msg("%s: BŁĄD! busy_chairs został by %d > %d. Nie wysyłam grupy!", 
-                            log_prefix, new_busy, MAX_BUSY_CHAIRS);
-                        break; // Wyjdź z pętli jeśli zabraknie miejsca
+            // 1 rowerzysta + max 2 pieszych
+            if (biker_count >= 1) {
+                int walker_indices[2];
+                int walker_count = 0;
+                for (int i = 0; i < queue->count && walker_count < 2; i++) {
+                    int idx = (queue->head + i) % MAX_Q_SIZE;
+                    if (!queue->items[idx].is_removed &&
+                        queue->items[idx].num_children == 0 &&
+                        queue->items[idx].type == WALKER &&
+                        i != biker_indices[0]) {
+                        walker_indices[walker_count++] = i;
                     }
+                }
+
+                if (walker_count >= 1) {
+                    int total = 1 + walker_count;
+                    QueuedTourist group[3];
+                    int phys_b = (queue->head + biker_indices[0]) % MAX_Q_SIZE;
+                    group[0] = queue->items[phys_b];
+                    shared_q_mark_removed(queue, biker_indices[0]);
+
+                    for (int i = 0; i < walker_count; i++) {
+                        int phys_w = (queue->head + walker_indices[i]) % MAX_Q_SIZE;
+                        group[1 + i] = queue->items[phys_w];
+                        shared_q_mark_removed(queue, walker_indices[i]);
+                    }
+
+                    send_tourists_go(group, total);
+                    state->busy_chairs++;
                     stats->total_rides++;
-                    stats->with_guardian += children_count;
+                    stats->total_people += total;
+                    stats->bikers += 1;
+                    stats->walkers += walker_count;
                     dispatched_in_pass = 1;
-                    
-                    log_msg("%s: GRUPA RODZINNA (opiekun PID:%d + %d dziecko/dzieci) wysłana! Zajęte: %d/%d.", 
-                        log_prefix, guardian.pid, children_count, state->busy_chairs, MAX_BUSY_CHAIRS);
+
+                    log_msg("PRACOWNIK1: 1 ROWERZ.+%d PIESZYCH -> krzeslo %d/%d",
+                        walker_count, state->busy_chairs, MAX_BUSY_CHAIRS);
                     continue;
                 }
             }
         }
 
-        //GRUPY ZWYKŁE
-        int walkers = 0, bikers = 0;
-        for (int i = 0; i < queue->count; i++) {
-            int idx = (queue->head + i) % MAX_Q_SIZE;
-            if (!queue->items[idx].requires_guardian) {
-                if (queue->items[idx].type == WALKER) walkers++;
-                else bikers++;
+        // === GRUPA PIESZYCH (max 4 na krzeslo) ===
+        {
+            int walker_indices[CHAIR_CAPACITY];
+            int walker_count = 0;
+            for (int i = 0; i < queue->count && walker_count < CHAIR_CAPACITY; i++) {
+                int idx = (queue->head + i) % MAX_Q_SIZE;
+                if (!queue->items[idx].is_removed &&
+                    queue->items[idx].num_children == 0 &&
+                    queue->items[idx].type == WALKER) {
+                    walker_indices[walker_count++] = i;
+                }
+            }
+
+            if (walker_count >= 2) {
+                QueuedTourist group[CHAIR_CAPACITY];
+                for (int i = 0; i < walker_count; i++) {
+                    int phys = (queue->head + walker_indices[i]) % MAX_Q_SIZE;
+                    group[i] = queue->items[phys];
+                    shared_q_mark_removed(queue, walker_indices[i]);
+                }
+
+                send_tourists_go(group, walker_count);
+                state->busy_chairs++;
+                stats->total_rides++;
+                stats->total_people += walker_count;
+                stats->walkers += walker_count;
+                dispatched_in_pass = 1;
+
+                log_msg("PRACOWNIK1: %d PIESZYCH -> krzeslo %d/%d",
+                    walker_count, state->busy_chairs, MAX_BUSY_CHAIRS);
+                continue;
             }
         }
 
-        int group_size = 0;
-        if (walkers >= 4) group_size = 4;
-        else if (bikers >= 1 && walkers >= 2) group_size = 3;
-        else if (bikers >= 2) group_size = 2;
-        else if (walkers >= 3) group_size = 3;
-        else if (bikers >= 1 && walkers >= 1) group_size = 2;
-        else if (walkers >= 2) group_size = 2;
-        else if (bikers >= 1) group_size = 1;
-        else if (walkers >= 1) group_size = 1;
-
-        if (group_size > 0 && state->busy_chairs + group_size <= MAX_BUSY_CHAIRS) {
-            QueuedTourist group[4];
-            int indices_to_remove[4];
-            int selected_count = 0;
-
-            int walkers_in_group = 0;
-            int bikers_in_group = 0;
-
-            for (int i = 0; i < queue->count && selected_count < group_size; i++) {
+        //POJEDYNCZY (przy zamykaniu - wysylaj WSZYSTKICH) ===
+        if (!state->is_running || state->is_closing) {
+            for (int i = 0; i < queue->count; i++) {
                 int idx = (queue->head + i) % MAX_Q_SIZE;
-                QueuedTourist candidate = queue->items[idx];
-                
-                if (!candidate.requires_guardian) {
-                    group[selected_count] = candidate;
-                    indices_to_remove[selected_count] = i;
-                    selected_count++;
-                    
-                    if (candidate.type == WALKER) walkers_in_group++;
-                    else bikers_in_group++;
-                }
-            }
+                if (!queue->items[idx].is_removed) {
+                    QueuedTourist entry = queue->items[idx];
+                    shared_q_mark_removed(queue, i);
 
-            if (selected_count == group_size) {
-                for (int i = selected_count - 1; i >= 0; i--) {
-                    shared_q_remove_at(queue, indices_to_remove[i]);
-                }
+                    QueuedTourist group[1];
+                    group[0] = entry;
+                    send_tourists_go(group, 1);
+                    state->busy_chairs++;
+                    stats->total_rides++;
 
-                send_tourists_go(group, selected_count);
-                stats->bikers += bikers_in_group;
-                stats->walkers += walkers_in_group;
-                int new_busy = state->busy_chairs + selected_count;
-                if (new_busy <= MAX_BUSY_CHAIRS) {
-                    state->busy_chairs = new_busy;
-                } else {
-                    log_msg("%s: BŁĄD! busy_chairs był by %d > %d. Nie wysyłam grupy!", 
-                        log_prefix, new_busy, MAX_BUSY_CHAIRS);
+                    int people = 1 + entry.num_children;
+                    stats->total_people += people;
+                    if (entry.type == BIKER) stats->bikers++;
+                    else stats->walkers++;
+                    // Jesli opiekun z dziecmi - policz dzieci
+                    if (entry.num_children > 0) {
+                        stats->walkers += entry.num_children;
+                        stats->with_guardian += entry.num_children;
+                    }
+                    dispatched_in_pass = 1;
+
+                    log_msg("PRACOWNIK1: POJEDYNCZY (zamykanie, osoby:%d) -> krzeslo %d/%d",
+                        people, state->busy_chairs, MAX_BUSY_CHAIRS);
                     break;
                 }
-                stats->total_rides++;
-                dispatched_in_pass = 1;
-                
-                log_msg("%s: Grupa (%d os.) odjechała. Zajęte miejsca: %d/%d. Kolejka: %d osób.", 
-                    log_prefix, selected_count, state->busy_chairs, MAX_BUSY_CHAIRS, queue->count);
             }
         }
 
     } while (dispatched_in_pass && state->busy_chairs < MAX_BUSY_CHAIRS);
 
-    sem_signal(sem_state_mutex_id, 0);
+    sem_signal_op(sem_state_mutex_id, 0);
 }
 
-void run_worker(long msg_type, const char* log_prefix) {
-    log_msg("%s: Proces pracownika uruchomiony.", log_prefix);
+// === GLOWNA PETLA PRACOWNIKA1 ===
+void run_worker_down() {
+    log_msg("PRACOWNIK1: Proces pracownika stacji dolnej uruchomiony (PID:%d).", getpid());
 
-    SharedQueue *queue = (msg_type == MSG_TYPE_WORKER_DOWN) ? &state->waiting_tourists_down : &state->waiting_tourists_up;
+    sem_wait_op(sem_state_mutex_id, 0);
+    state->worker_down_pid = getpid();
+    sem_signal_op(sem_state_mutex_id, 0);
 
+    // Otworz FIFO do komunikacji z pracownikiem2
+    fifo_fd = open(FIFO_WORKER_PATH, O_RDWR | O_NONBLOCK);
+    if (fifo_fd == -1) {
+        perror("PRACOWNIK1: open FIFO");
+    }
+
+    SharedQueue *queue = &state->waiting_tourists_down;
     MsgBuf msg;
+
     while (state->is_running && worker_is_running) {
-       
-        if (msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long), msg_type, 0) == -1) {
-            if (!worker_is_running || errno == EIDRM || errno == EINVAL || errno == EINTR) {
-                break;
+        // Sprawdz awaryjne zatrzymanie
+        if (emergency_stop) {
+            handle_emergency_stop();
+            if (!worker_is_running) break;
+        }
+
+        ssize_t result = msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long),
+                                MSG_TYPE_WORKER_DOWN, IPC_NOWAIT);
+
+        if (result == -1) {
+            if (errno == ENOMSG) {
+                // Brak wiadomosci - sprobuj wyslac grupy z kolejki
+                try_to_dispatch_groups(queue);
+                usleep(50000);
+                continue;
             }
-            perror("Worker msgrcv");
+            if (!worker_is_running || errno == EIDRM || errno == EINVAL) break;
             continue;
         }
 
@@ -238,105 +444,100 @@ void run_worker(long msg_type, const char* log_prefix) {
 
         switch (msg.action) {
             case ACTION_TOURIST_READY: {
-                sem_wait(sem_state_mutex_id, 0);
+                sem_wait_op(sem_state_mutex_id, 0);
 
                 if (queue->count >= MAX_Q_SIZE) {
-                    log_msg("%s: BŁĄD! Kolejka pełna (%d/%d). Turysta PID:%d zostaje odrzucony.", 
-                        log_prefix, queue->count, MAX_Q_SIZE, msg.pid);
-                    sem_signal(sem_state_mutex_id, 0);
+                    log_msg("PRACOWNIK1: Kolejka pelna! Turysta %d odrzucony.", msg.tourist_id);
+                    sem_signal_op(sem_state_mutex_id, 0);
+
+                    MsgBuf reject_msg;
+                    memset(&reject_msg, 0, sizeof(reject_msg));
+                    reject_msg.mtype = msg.pid;
+                    reject_msg.action = ACTION_REJECTED;
+                    msgsnd(msg_queue_id, &reject_msg, sizeof(reject_msg) - sizeof(long), 0);
                     break;
                 }
-                
-                QueuedTourist new_tourist = { 
-                    .pid = msg.pid, 
-                    .type = msg.tourist_type, 
-                    .age = msg.age, 
-                    .requires_guardian = msg.requires_guardian 
+
+                QueuedTourist new_tourist = {
+                    .pid = msg.pid,
+                    .type = msg.tourist_type,
+                    .age = msg.age,
+                    .requires_guardian = msg.requires_guardian,
+                    .is_removed = 0,
+                    .num_children = msg.num_children,
+                    .tourist_id = msg.tourist_id,
+                    .family_id = msg.family_id,
+                    .is_vip = msg.is_vip
                 };
 
-                queue->items[queue->tail] = new_tourist;
-                queue->tail = (queue->tail + 1) % MAX_Q_SIZE;
-                queue->count++;
-                
-                log_msg("%s: %s %d zgłosił się. Kolejka: %d osób", log_prefix, 
-                    (new_tourist.type == BIKER ? "Rowerzysta" : "Pieszy"), new_tourist.pid, queue->count);
-                
-                sem_signal(sem_state_mutex_id, 0);
+                // VIP - priorytet w kolejce
+                if (msg.is_vip) {
+                    shared_q_push_vip(queue, new_tourist);
+                    stats->vip_served++;
+                    log_msg("PRACOWNIK1: VIP turysta %d dodany na poczatek kolejki!", msg.tourist_id);
+                } else {
+                    shared_q_push_back(queue, new_tourist);
+                }
+
+                sem_signal_op(sem_state_mutex_id, 0);
                 break;
             }
             case ACTION_CHAIR_FREE:
-                log_msg("%s: Otrzymano sygnał zwolnienia miejsca, próba wysłania grup. Kolejka: %d", 
-                    log_prefix, queue->count);
+                sem_wait_op(sem_state_mutex_id, 0);
+                if (state->busy_chairs > 0) {
+                    state->busy_chairs--;
+                }
+                sem_signal_op(sem_state_mutex_id, 0);
+                break;
+            default:
                 break;
         }
-        
-        if (is_paused) {
-            log_msg("%s: Kolej wstrzymana (SIGUSR1). Czekanie na wznowienie (SIGUSR2)...", log_prefix);
-            sem_wait(sem_state_mutex_id, 0);
-            while (is_paused && state->is_running && worker_is_running) {
-                sem_signal(sem_state_mutex_id, 0);
-                sleep(1); // Czekaj na sygnał wznowienia
-                sem_wait(sem_state_mutex_id, 0);
-            }
-            log_msg("%s: Wznowienie pracy (SIGUSR2).", log_prefix);
-            sem_signal(sem_state_mutex_id, 0);
-            continue;
-        }
-        
-        if (msg_type == MSG_TYPE_WORKER_UP) {
-            sem_wait(sem_state_mutex_id, 0);
-            
-            while (queue->count > 0) {
-                QueuedTourist tourist = shared_q_pop(queue);
-                
-                int route = rand() % 3;  // 0=T1, 1=T2, 2=T3
-                const char* route_name = (route == 0) ? "T1 (łatwa)" : (route == 1) ? "T2 (średnia)" : "T3 (trudna)";
-                
-                if (route == 0) stats->route_t1++;
-                else if (route == 1) stats->route_t2++;
-                else stats->route_t3++;
-                
-                log_msg("%s: Turystę %d wysyłam na trasę %s", log_prefix, tourist.pid, route_name);
-                
-                MsgBuf go_msg;
-                go_msg.mtype = tourist.pid;
-                go_msg.action = ACTION_TOURIST_READY;
-                go_msg.tourist_type = tourist.type;
-                msgsnd(msg_queue_id, &go_msg, sizeof(go_msg) - sizeof(long), 0);
-            }
-            
-            sem_signal(sem_state_mutex_id, 0);
-        } else {
-            try_to_dispatch_groups(queue, log_prefix);
-        }
+
+        try_to_dispatch_groups(queue);
     }
 
-    log_msg("%s: Koniec pętli, uruchamiam finalne wysyłanie.", log_prefix);
-    
-    if (msg_type == MSG_TYPE_WORKER_DOWN) {
-        try_to_dispatch_groups(queue, log_prefix);
+    // Finalne oproznianie kolejki
+    log_msg("PRACOWNIK1: Finalne oproznianie kolejki...");
+    int final_attempts = 0;
+    while (!shared_q_is_empty(queue) && final_attempts < 20) {
+        try_to_dispatch_groups(queue);
+        usleep(100000);
+        final_attempts++;
     }
-    
-    log_msg("%s: Proces pracownika zakończony.", log_prefix);
+
+    sem_wait_op(sem_state_mutex_id, 0);
+    shared_q_compact(queue);
+    sem_signal_op(sem_state_mutex_id, 0);
+
+    if (fifo_fd >= 0) close(fifo_fd);
+    log_msg("PRACOWNIK1: Proces pracownika zakonczony.");
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Worker: Missing argument (up/down)\n");
-        return 1;
-    }
+    (void)argc; (void)argv;
 
-    signal(SIGTERM, worker_sigterm_handler);
-    signal(SIGUSR1, worker_sigusr1_handler);
-    signal(SIGUSR2, worker_sigusr2_handler);
+    struct sigaction sa_term, sa_usr1, sa_usr2;
+
+    sa_term.sa_handler = worker_sigterm_handler;
+    sigemptyset(&sa_term.sa_mask);
+    sa_term.sa_flags = 0;
+    sigaction(SIGTERM, &sa_term, NULL);
+
+    sa_usr1.sa_handler = worker_sigusr1_handler;
+    sigemptyset(&sa_usr1.sa_mask);
+    sa_usr1.sa_flags = 0;
+    sigaction(SIGUSR1, &sa_usr1, NULL);
+
+    sa_usr2.sa_handler = worker_sigusr2_handler;
+    sigemptyset(&sa_usr2.sa_mask);
+    sa_usr2.sa_flags = 0;
+    sigaction(SIGUSR2, &sa_usr2, NULL);
+
+    signal(SIGALRM, SIG_IGN);
     srand(time(NULL) ^ getpid());
     attach_ipc_resources();
 
-    if (strcmp(argv[1], "down") == 0) {
-        run_worker(MSG_TYPE_WORKER_DOWN, "PRACOWNIK (DÓŁ)");
-    } else {
-        run_worker(MSG_TYPE_WORKER_UP, "PRACOWNIK (GÓRA)");
-    }
+    run_worker_down();
 
     return 0;
 }
