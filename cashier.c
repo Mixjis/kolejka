@@ -39,6 +39,8 @@ void cashier_sigterm_handler(int sig) {
 }
 
 int main(void) {
+    process_role = ROLE_CASHIER;
+
     struct sigaction sa;
     sa.sa_handler = cashier_sigterm_handler;
     sigemptyset(&sa.sa_mask);

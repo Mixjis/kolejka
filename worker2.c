@@ -225,6 +225,7 @@ void run_worker_up() {
 
 int main(int argc, char* argv[]) {
     (void)argc; (void)argv;
+    process_role = ROLE_WORKER_UP;
 
     struct sigaction sa_term, sa_usr1, sa_usr2;
 

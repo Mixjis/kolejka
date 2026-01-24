@@ -585,6 +585,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    process_role = ROLE_TOURIST;
     setenv("TOURIST_ID", argv[1], 1);
 
     struct sigaction sa;

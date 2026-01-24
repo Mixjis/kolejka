@@ -1,4 +1,21 @@
 #include "common.h"
+#include <stdarg.h>
+
+// Kolorowe logowanie dla procesu glownego
+static void sys_log(const char *format, ...) {
+    time_t now = time(NULL);
+    char time_str[20];
+    strftime(time_str, sizeof(time_str), "%H:%M:%S", localtime(&now));
+
+    printf(ANSI_BOLD_WHITE "[%s] [SYSTEM|PID:%d] ", time_str, getpid());
+
+    va_list args;
+    va_start(args, format);
+    vprintf(format, args);
+    va_end(args);
+
+    printf(ANSI_RESET);
+}
 
 pid_t *child_pids = NULL;
 int num_children = 0;
@@ -11,6 +28,7 @@ void graceful_shutdown();
 void generate_daily_report();
 
 int main(void) {
+    process_role = ROLE_MAIN;
     atexit(cleanup_ipc);
 
     struct sigaction sa;
@@ -55,7 +73,7 @@ int main(void) {
         exit(1);
     }
 
-    printf("SYSTEM: Uruchamianie procesow potomnych...\n");
+    sys_log("Uruchamianie procesow potomnych...\n");
 
     char* argv_logger[] = {"./logger", NULL};
     char* argv_cashier[] = {"./cashier", NULL};
@@ -108,7 +126,7 @@ int main(void) {
     }
     child_pids[num_children++] = pid;
 
-    printf("SYSTEM: Tworzenie %d turystow...\n", NUM_TOURISTS);
+    sys_log("Tworzenie %d turystow...\n", NUM_TOURISTS);
 
     for (int i = 1; i <= NUM_TOURISTS; i++) {
         char id_str[12];
@@ -146,8 +164,8 @@ int main(void) {
         }
     }
 
-    printf("SYSTEM: Utworzono %d/%d procesow turystow.\n", num_children - 4, NUM_TOURISTS);
-    printf("SYSTEM: Symulacja uruchomiona. Czas zamkniecia bramek: %d s, calkowity: %d s.\n",
+    sys_log("Utworzono %d/%d procesow turystow.\n", num_children - 4, NUM_TOURISTS);
+    sys_log("Symulacja uruchomiona. Czas zamkniecia bramek: %d s, calkowity: %d s.\n",
            CLOSING_TIME, SIM_DURATION);
 
     // Ustaw alarm na czas zamkniecia bramek
@@ -168,14 +186,14 @@ int main(void) {
 
 void main_signal_handler(int sig) {
     if (sig == SIGALRM) {
-        printf("\nSYSTEM: Czas zamkniecia (Tk). Zamykanie bramek.\n");
+        printf("\n" ANSI_BOLD_YELLOW "[SYSTEM] Czas zamkniecia (Tk). Zamykanie bramek." ANSI_RESET "\n");
         is_sim_running = 0;
     } else if (sig == SIGINT || sig == SIGTERM) {
         sigint_count++;
-        printf("\nSYSTEM: Otrzymano %s. Zamykanie.\n", sig == SIGINT ? "SIGINT" : "SIGTERM");
+        printf("\n" ANSI_BOLD_RED "[SYSTEM] Otrzymano %s. Zamykanie." ANSI_RESET "\n", sig == SIGINT ? "SIGINT" : "SIGTERM");
         is_sim_running = 0;
         if (sigint_count >= 2) {
-            printf("\nSYSTEM: Wymuszone wyjscie (podwojne Ctrl+C)!\n");
+            printf("\n" ANSI_BOLD_RED "[SYSTEM] Wymuszone wyjscie (podwojne Ctrl+C)!" ANSI_RESET "\n");
             for (int i = 0; i < num_children; i++) {
                 if (child_pids[i] > 0) kill(child_pids[i], SIGKILL);
             }
@@ -186,15 +204,15 @@ void main_signal_handler(int sig) {
 }
 
 void graceful_shutdown() {
-    printf("\nSYSTEM: Rozpoczynam zamykanie kolei...\n");
+    printf("\n" ANSI_BOLD_YELLOW "[SYSTEM] Rozpoczynam zamykanie kolei..." ANSI_RESET "\n");
 
     // Zamknij bramki - karnety przestaja dzialac
     sem_wait_op(sem_state_mutex_id, 0);
     state->is_closing = 1;
     sem_signal_op(sem_state_mutex_id, 0);
 
-    printf("SYSTEM: Bramki wejsciowe zamkniete. Karnety nieaktywne.\n");
-    printf("SYSTEM: Oczekiwanie na przetransportowanie osob z peronu...\n");
+    sys_log("Bramki wejsciowe zamkniete. Karnety nieaktywne.\n");
+    sys_log("Oczekiwanie na przetransportowanie osob z peronu...\n");
 
     // Czekaj az kolejka i krzesla sie oproznia (peron pusty)
     int wait_iterations = 0;
@@ -209,13 +227,13 @@ void graceful_shutdown() {
         sem_signal_op(sem_state_mutex_id, 0);
 
         if (wait_iterations % 3 == 0) {
-            printf("SYSTEM: Status - Stacja:%d, Krzesla:%d/%d, Kolejka:%d, Na gorze:%d\n",
+            sys_log("Status - Stacja:%d, Krzesla:%d/%d, Kolejka:%d, Na gorze:%d\n",
                    pop, busy, MAX_BUSY_CHAIRS, queue_count, on_top);
         }
 
         // Warunek: kolejka pusta i krzesla wolne = wszyscy z peronu przetransportowani
         if (busy == 0 && queue_count == 0) {
-            printf("SYSTEM: Peron pusty, wszyscy przetransportowani.\n");
+            sys_log("Peron pusty, wszyscy przetransportowani.\n");
             break;
         }
 
@@ -224,7 +242,7 @@ void graceful_shutdown() {
     }
 
     // Wg opisu: po 3 sekundach kolej ma zostac wylaczona
-    printf("SYSTEM: Odliczanie przed wylaczeniem kolei...\n");
+    sys_log("Odliczanie przed wylaczeniem kolei...\n");
     sleep(1);
 
     // Zatrzymaj kolej
@@ -232,7 +250,7 @@ void graceful_shutdown() {
     state->is_running = 0;
     sem_signal_op(sem_state_mutex_id, 0);
 
-    printf("SYSTEM: Kolej WYLACZONA.\n");
+    sys_log("Kolej WYLACZONA.\n");
 
     // Wyslij SIGTERM do worker1 (stacja dolna) i kasjera - kolej juz nie dziala
     // child_pids[1] = cashier, child_pids[2] = worker1
@@ -244,7 +262,7 @@ void graceful_shutdown() {
     }
 
     // Czekaj az turyści na gorze zjada/zejda (worker2 nadal ich obsluguje)
-    printf("SYSTEM: Oczekiwanie na turystow na gorze...\n");
+    sys_log("Oczekiwanie na turystow na gorze...\n");
     int top_wait = 0;
     const int MAX_TOP_WAIT = ROUTE_TIME_T3 + RIDE_DURATION + 5; // max czas zjazdu + margines
 
@@ -255,12 +273,12 @@ void graceful_shutdown() {
         sem_signal_op(sem_state_mutex_id, 0);
 
         if (on_top == 0 && pop == 0) {
-            printf("SYSTEM: Wszyscy turyści opuscili system.\n");
+            sys_log("Wszyscy turyści opuscili system.\n");
             break;
         }
 
         if (top_wait % 3 == 0) {
-            printf("SYSTEM: Oczekiwanie - Na gorze:%d, Stacja:%d\n", on_top, pop);
+            sys_log("Oczekiwanie - Na gorze:%d, Stacja:%d\n", on_top, pop);
         }
 
         sleep(1);
@@ -286,7 +304,7 @@ void graceful_shutdown() {
         kill(child_pids[0], SIGTERM);
     }
 
-    printf("SYSTEM: Oczekiwanie na zakonczenie procesow...\n");
+    sys_log("Oczekiwanie na zakonczenie procesow...\n");
 
     // Czekaj na zakonczenie WSZYSTKICH procesow potomnych (blokujace waitpid)
     int max_wait_sec = MAX_TOP_WAIT + 5;
@@ -301,7 +319,7 @@ void graceful_shutdown() {
         waited++;
     }
 
-    printf("SYSTEM: Procesy zakonczone.\n");
+    sys_log("Procesy zakonczone.\n");
 }
 
 // Generowanie raportu koncowego (zapis do kolej_log.txt)
@@ -312,17 +330,17 @@ void generate_daily_report() {
                      stats->tk3_sold + stats->daily_sold;
 
     // Raport na ekran
-    printf("\n============================================================\n");
+    printf(ANSI_BOLD_MAGENTA "\n============================================================\n");
     printf("         RAPORT KONCOWY SYMULACJI KOLEI LINOWEJ\n");
-    printf("============================================================\n");
-    printf("\n1. SPRZEDAZ BILETOW:\n");
+    printf("============================================================\n" ANSI_RESET);
+    printf(ANSI_MAGENTA "\n1. SPRZEDAZ BILETOW:\n" ANSI_RESET);
     printf("   Jednorazowe (SINGLE):     %d szt.\n", stats->single_sold);
     printf("   Czasowe TK1 (1h):         %d szt.\n", stats->tk1_sold);
     printf("   Czasowe TK2 (2h):         %d szt.\n", stats->tk2_sold);
     printf("   Czasowe TK3 (3h):         %d szt.\n", stats->tk3_sold);
     printf("   Dzienne (DAILY):          %d szt.\n", stats->daily_sold);
-    printf("   RAZEM:                    %d szt.\n", total_sold);
-    printf("\n2. STATYSTYKI PRZEJAZDOW:\n");
+    printf(ANSI_BOLD_WHITE "   RAZEM:                    %d szt.\n" ANSI_RESET, total_sold);
+    printf(ANSI_MAGENTA "\n2. STATYSTYKI PRZEJAZDOW:\n" ANSI_RESET);
     printf("   Odjazdy krzeselek:        %d\n", stats->total_rides);
     printf("   Przewiezione osoby:       %d\n", stats->total_people);
     printf("   - Rowerzyści:             %d\n", stats->bikers);
@@ -331,17 +349,17 @@ void generate_daily_report() {
         printf("   Sr. osob/krzeslo:         %.2f\n",
                (float)stats->total_people / stats->total_rides);
     }
-    printf("\n3. KATEGORIE SPECJALNE:\n");
+    printf(ANSI_MAGENTA "\n3. KATEGORIE SPECJALNE:\n" ANSI_RESET);
     printf("   VIP obsluzeni:            %d\n", stats->vip_served);
     printf("   Dzieci z opiekunem:       %d\n", stats->with_guardian);
     printf("   Odrzuceni (wygasly):      %d\n", stats->rejected_expired);
-    printf("\n4. TRASY ZJAZDOWE:\n");
+    printf(ANSI_MAGENTA "\n4. TRASY ZJAZDOWE:\n" ANSI_RESET);
     printf("   T1 (latwa, %ds):          %d turystow\n", ROUTE_TIME_T1, stats->route_t1);
     printf("   T2 (srednia, %ds):        %d turystow\n", ROUTE_TIME_T2, stats->route_t2);
     printf("   T3 (trudna, %ds):         %d turystow\n", ROUTE_TIME_T3, stats->route_t3);
-    printf("\n5. REJESTRACJA PRZEJSC BRAMKOWYCH:\n");
+    printf(ANSI_MAGENTA "\n5. REJESTRACJA PRZEJSC BRAMKOWYCH:\n" ANSI_RESET);
     printf("   Zarejestrowanych przejsc: %d\n", state->pass_log_count);
-    printf("\n============================================================\n\n");
+    printf(ANSI_BOLD_MAGENTA "\n============================================================\n\n" ANSI_RESET);
 
     // Zapis raportu do kolej_log.txt (dopisanie na koniec)
     FILE *report = fopen("kolej_log.txt", "a");
@@ -390,7 +408,7 @@ void generate_daily_report() {
 
         fprintf(report, "\n============================================================\n");
         fclose(report);
-        printf("SYSTEM: Raport dopisany do pliku 'kolej_log.txt'.\n");
+        sys_log("Raport dopisany do pliku 'kolej_log.txt'.\n");
     } else {
         perror("fopen kolej_log.txt");
     }
@@ -448,7 +466,7 @@ void generate_daily_report() {
 
         fprintf(karnet_report, "\n============================================================\n");
         fclose(karnet_report);
-        printf("SYSTEM: Raport karnetow zapisany do 'raport_karnetow.txt'.\n");
+        sys_log("Raport karnetow zapisany do 'raport_karnetow.txt'.\n");
     } else {
         perror("fopen raport_karnetow.txt");
     }
@@ -531,5 +549,5 @@ void create_ipc_resources() {
     if (sem_worker_wakeup_down_id == -1) { perror("semget D"); exit(1); }
     semctl(sem_worker_wakeup_down_id, 0, SETVAL, 0);
 
-    printf("SYSTEM: Zasoby IPC utworzone pomyslnie.\n");
+    sys_log("Zasoby IPC utworzone pomyslnie.\n");
 }

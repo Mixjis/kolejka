@@ -9,6 +9,8 @@ void logger_sigterm_handler(int sig) {
 }
 
 int main(void) {
+    process_role = ROLE_LOGGER;
+
     struct sigaction sa;
     sa.sa_handler = logger_sigterm_handler;
     sigemptyset(&sa.sa_mask);

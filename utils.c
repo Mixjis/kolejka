@@ -1,6 +1,8 @@
 #include "common.h"
 #include <stdarg.h>
 
+ProcessRole process_role = ROLE_MAIN;
+
 int msg_queue_id;
 int shm_state_id, shm_tickets_id, shm_stats_id;
 int sem_state_mutex_id, sem_chair_queue_id, sem_chair_loaded_id;
@@ -114,7 +116,7 @@ void attach_ipc_resources() {
 
 // ========== USUWANIE ZASOBOW IPC ==========
 void cleanup_ipc() {
-    printf("SYSTEM: Sprzatanie zasobow IPC...\n");
+    printf(ANSI_BOLD_WHITE "SYSTEM: Sprzatanie zasobow IPC..." ANSI_RESET "\n");
 
     if (state != NULL && state != (void *)-1) shmdt(state);
     if (tickets != NULL && tickets != (void *)-1) shmdt(tickets);
@@ -137,10 +139,34 @@ void cleanup_ipc() {
     // Usuwanie FIFO
     unlink(FIFO_WORKER_PATH);
 
-    printf("SYSTEM: Zasoby IPC posprzatane.\n");
+    printf(ANSI_BOLD_WHITE "SYSTEM: Zasoby IPC posprzatane." ANSI_RESET "\n");
 }
 
 // ========== LOGOWANIE ==========
+static const char* get_role_color(ProcessRole role) {
+    switch (role) {
+        case ROLE_MAIN:        return ANSI_BOLD_WHITE;
+        case ROLE_LOGGER:      return ANSI_DIM;
+        case ROLE_CASHIER:     return ANSI_BOLD_GREEN;
+        case ROLE_WORKER_DOWN: return ANSI_BOLD_YELLOW;
+        case ROLE_WORKER_UP:   return ANSI_BOLD_BLUE;
+        case ROLE_TOURIST:     return ANSI_BOLD_CYAN;
+        default:               return ANSI_RESET;
+    }
+}
+
+static const char* get_role_label(ProcessRole role) {
+    switch (role) {
+        case ROLE_MAIN:        return "SYSTEM";
+        case ROLE_LOGGER:      return "LOGGER";
+        case ROLE_CASHIER:     return "KASJER";
+        case ROLE_WORKER_DOWN: return "PRAC.1";
+        case ROLE_WORKER_UP:   return "PRAC.2";
+        case ROLE_TOURIST:     return "TURYSTA";
+        default:               return "???";
+    }
+}
+
 void log_msg(const char *format, ...) {
     MsgBuf msg;
     msg.mtype = MSG_TYPE_LOG;
@@ -154,7 +180,12 @@ void log_msg(const char *format, ...) {
     time_t now = time(NULL);
     char time_str[20];
     strftime(time_str, sizeof(time_str), "%H:%M:%S", localtime(&now));
-    printf("[%s] [PID:%d] %s\n", time_str, msg.pid, msg.mtext);
+
+    const char *color = get_role_color(process_role);
+    const char *label = get_role_label(process_role);
+
+    printf("%s[%s] [%s|PID:%d] %s%s\n",
+           color, time_str, label, msg.pid, msg.mtext, ANSI_RESET);
 
     msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), IPC_NOWAIT);
 }
