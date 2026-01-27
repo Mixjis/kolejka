@@ -131,7 +131,7 @@ void logger(LogSender sender, const char* format, ...) {
     
     get_timestamp(timestamp, sizeof(timestamp));
     
-    // Formatuj wiadomość
+    // Formatowanie
     va_list args;
     va_start(args, format);
     vsnprintf(message, sizeof(message), format, args);
@@ -141,12 +141,11 @@ void logger(LogSender sender, const char* format, ...) {
     const char* color = get_color(sender);
     const char* name = get_sender_name(sender);
     
-    // Linia do konsoli (kolorowa, chaotyczna - bez mutexu na write)
+    // Linia do konsoli
     snprintf(console_line, sizeof(console_line),
              "%s[%s] %s(%d): %s%s\n",
              color, timestamp, name, pid, message, ANSI_RESET);
     
-    // Zapisz do konsoli bez blokady (chaotycznie)
     write(STDOUT_FILENO, console_line, strlen(console_line));
     
     // Linia do pliku (sekwencyjna - z mutexem)
@@ -158,7 +157,7 @@ void logger(LogSender sender, const char* format, ...) {
     
     if (fd_log >= 0) {
         safe_write(fd_log, file_line, strlen(file_line));
-        fsync(fd_log); // Wymuszenie zapisu dla sekwencyjności
+        fsync(fd_log);
     }
     pthread_mutex_unlock(&file_mutex);
 }
@@ -171,7 +170,7 @@ void logger_report(const char* format, ...) {
     vsnprintf(line, sizeof(line), format, args);
     va_end(args);
     
-    // Zapisz do pliku raportu
+    // Zapisanie do pliku raportu
     pthread_mutex_lock(&file_mutex);
     if (fd_report >= 0) {
         safe_write(fd_report, line, strlen(line));
@@ -179,7 +178,6 @@ void logger_report(const char* format, ...) {
     }
     pthread_mutex_unlock(&file_mutex);
     
-    // Wyświetl też na konsoli (zielony kolor)
     char console_line[1100];
     snprintf(console_line, sizeof(console_line), "%s%s%s\n", 
              ANSI_BRIGHT_GREEN, line, ANSI_RESET);
@@ -187,7 +185,7 @@ void logger_report(const char* format, ...) {
 }
 
 void logger_clear_files(void) {
-    // Wyczyść pliki przed nową symulacją
+    // czyszczenie plików przed nową symulacją
     int fd = open(LOG_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd >= 0) close(fd);
     

@@ -126,12 +126,48 @@ int main(void) {
         bool gates_closed = shm->gates_closed;
         sem_podnies(sem_id, SEM_MAIN);
         
+        // Gdy bramki zamknięte - opróżnij kolejki i odrzuć wszystkich czekających
         if (gates_closed) {
-            // Nie przyjmowanie nowych klientów
-            if (queue_empty()) {
-                logger(LOG_CASHIER, "Bramki zamknięte, kolejka pusta - kończę pracę");
-                break;
+            // Opróżnij kolejkę VIP komunikatów
+            while (odbierz_komunikat(msg_id, &msg, MSG_VIP_PRIORITY + MSG_TOURIST_TO_CASHIER, false)) {
+                // Wyślij odmowę
+                Message response;
+                response.mtype = msg.sender_pid;
+                response.sender_pid = getpid();
+                response.tourist_id = msg.tourist_id;
+                response.data = -1; // Odmowa
+                response.data2 = -1;
+                wyslij_komunikat(msg_id, &response);
+                logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla VIP #%d", msg.tourist_id);
             }
+            
+            // Opróżnij kolejkę zwykłych komunikatów
+            while (odbierz_komunikat(msg_id, &msg, MSG_TOURIST_TO_CASHIER, false)) {
+                Message response;
+                response.mtype = msg.sender_pid;
+                response.sender_pid = getpid();
+                response.tourist_id = msg.tourist_id;
+                response.data = -1;
+                response.data2 = -1;
+                wyslij_komunikat(msg_id, &response);
+                logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla turysty #%d", msg.tourist_id);
+            }
+            
+            // Opróżnij wewnętrzną kolejkę - odrzuć tych co czekają
+            QueuedTourist qt;
+            while (get_from_queue(&qt)) {
+                Message response;
+                response.mtype = qt.pid;
+                response.sender_pid = getpid();
+                response.tourist_id = qt.tourist_id;
+                response.data = -1;
+                response.data2 = -1;
+                wyslij_komunikat(msg_id, &response);
+                logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla turysty #%d (z kolejki wewnętrznej)", qt.tourist_id);
+            }
+            
+            usleep(10000);
+            continue;
         }
         
         // Odbieranie komunikatów od turystów chcących kupić bilet
@@ -153,7 +189,7 @@ int main(void) {
             logger(LOG_VIP, "VIP #%d dołączył do kolejki priorytetowej!", qt.tourist_id);
         }
         
-        // Potem zwykli turyści
+        // zwykli turyści
         while (odbierz_komunikat(msg_id, &msg, MSG_TOURIST_TO_CASHIER, false)) {
             if (shutdown_flag || gates_closed) break;
             

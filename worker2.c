@@ -70,29 +70,14 @@ void initiate_emergency_stop_w2(void) {
 
 // Wznowienie po awarii (gdy worker2 jest inicjatorem)
 void resume_from_emergency_w2(void) {
-    logger(LOG_EMERGENCY, "PRACOWNIK2: Sprawdzam gotowość do wznowienia...");
+    logger(LOG_EMERGENCY, "PRACOWNIK2: Worker1 gotowy - wznawiamy po 5s...");
     
-    // Oznacz gotowość
-    sem_opusc(g_sem_id, SEM_MAIN);
-    g_shm->worker2_ready = true;
-    bool worker1_ready = g_shm->worker1_ready;
-    sem_podnies(g_sem_id, SEM_MAIN);
-    
-    // Czekaj na worker1
-    while (!worker1_ready && !shutdown_flag) {
-        usleep(10000);
-        sem_opusc(g_sem_id, SEM_MAIN);
-        worker1_ready = g_shm->worker1_ready;
-        sem_podnies(g_sem_id, SEM_MAIN);
+    // Poczekaj 5 sekund przed wznowieniem
+    for (int i = 0; i < 50 && !shutdown_flag; i++) {
+        usleep(100000);
     }
     
     if (shutdown_flag) return;
-    
-    // Poczekaj 5 sekund przed wznowieniem (używamy pętli usleep zamiast sleep)
-    logger(LOG_EMERGENCY, "PRACOWNIK2: Worker1 gotowy - wznawiamy po 5s...");
-    for (int i = 0; i < 50 && !shutdown_flag; i++) {
-        usleep(100000); // 100ms x 50 = 5 sekund
-    }
     
     // Wznów działanie
     sem_opusc(g_sem_id, SEM_MAIN);
@@ -132,13 +117,43 @@ typedef struct {
 void* tourist_exit_thread(void* arg) {
     TouristExit* te = (TouristExit*)arg;
     
-    // Pobierz numer bramki
+    // Zmniejsz licznik turystów na górnej stacji
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->tourists_at_top--;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    // Sprawdź czy to pieszy opuszczający system na górze (trail == -1)
+    if (te->trail == (TrailType)(-1)) {
+        // Pieszy - opuszcza system bez zjazdu trasą
+        int gate_num = get_next_exit_gate();
+        
+        sem_opusc(g_sem_id, SEM_GATE_EXIT);
+        logger(LOG_WORKER2, "Pieszy #%d wypuszczony przez bramkę wyjściową #%d (opuszcza system)",
+               te->tourist_id, gate_num);
+        sem_podnies(g_sem_id, SEM_GATE_EXIT);
+        
+        // Wyślij potwierdzenie
+        Message msg;
+        msg.mtype = te->tourist_pid;
+        msg.sender_pid = getpid();
+        msg.data = 3; // Zakończone
+        msg.tourist_id = te->tourist_id;
+        wyslij_komunikat(g_msg_id, &msg);
+        
+        free(te);
+        return NULL;
+    }
+    
+    // Rowerzysta - normalny zjazd trasą
     int gate_num = get_next_exit_gate();
     
     // Czekaj na semafor wyjścia (2 bramki)
     sem_opusc(g_sem_id, SEM_GATE_EXIT);
     logger(LOG_WORKER2, "Turysta #%d wypuszczony przez bramkę wyjściową #%d", 
            te->tourist_id, gate_num);
+    
+    // Zwolnij bramkę od razu po przejściu (turysta już jest na trasie)
+    sem_podnies(g_sem_id, SEM_GATE_EXIT);
     
     // Symulacja zjazdu trasą
     int trail_time;
@@ -162,24 +177,27 @@ void* tourist_exit_thread(void* arg) {
     logger(LOG_WORKER2, "Turysta #%d zjeżdża trasą %s (%ds)", 
            te->tourist_id, trail_name, trail_time);
     
-    // Aktualizuj statystyki tras
+    // Aktualizuj statystyki tras i licznik zjeżdżających
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->trail_usage[te->trail]++;
+    g_shm->tourists_descending++;
     sem_podnies(g_sem_id, SEM_MAIN);
     
     // Symulacja zjazdu
     sleep(trail_time);
     
-    // Wyślij powiadomienie do turysty, że zjazd zakończony i może wrócić
+    // Zmniejsz licznik zjeżdżających
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->tourists_descending--;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    // Wyślij powiadomienie do turysty, że zjazd zakończony i może wrócić (blokujące)
     Message msg;
     msg.mtype = te->tourist_pid;
     msg.sender_pid = getpid();
     msg.data = 3; // Zjazd zakończony (różne od 2 = dotarcie na górę)
     msg.tourist_id = te->tourist_id;
-    wyslij_komunikat_nowait(g_msg_id, &msg);
-    
-    // Zwolnij bramkę wyjścia
-    sem_podnies(g_sem_id, SEM_GATE_EXIT);
+    wyslij_komunikat(g_msg_id, &msg);
     
     logger(LOG_WORKER2, "Turysta #%d zakończył zjazd trasą %s i zjeżdża na dół", 
            te->tourist_id, trail_name);
@@ -220,20 +238,27 @@ int main(void) {
     int next_emergency = 3000 + (rand() % 2000); // Losowy czas do następnej awarii (3-5s)
     
     while (!shutdown_flag) {
-        // Obsługa awarii - sprawdź czy trzeba zainicjować
-        emergency_timer++;
-        if (!emergency_stop && emergency_timer >= next_emergency) {
-            // Losowa szansa na awarię (50%)
-            if (rand() % 100 < 50) {
-                should_trigger_emergency = true;
-            }
-            emergency_timer = 0;
-            next_emergency = 3000 + (rand() % 2000); // Reset na 3-5s
-        }
+        // Sprawdź czy bramki zamknięte (koniec dnia)
+        sem_opusc(g_sem_id, SEM_MAIN);
+        bool gates_closed = g_shm->gates_closed;
+        sem_podnies(g_sem_id, SEM_MAIN);
         
-        if (should_trigger_emergency && !emergency_stop) {
-            should_trigger_emergency = false;
-            initiate_emergency_stop_w2();
+        // Obsługa awarii - sprawdź czy trzeba zainicjować (tylko gdy bramki otwarte)
+        if (!gates_closed) {
+            emergency_timer++;
+            if (!emergency_stop && emergency_timer >= next_emergency) {
+                // Losowa szansa na awarię (50%)
+                if (rand() % 100 < 50) {
+                    should_trigger_emergency = true;
+                }
+                emergency_timer = 0;
+                next_emergency = 3000 + (rand() % 2000); // Reset na 3-5s
+            }
+            
+            if (should_trigger_emergency && !emergency_stop) {
+                should_trigger_emergency = false;
+                initiate_emergency_stop_w2();
+            }
         }
         
         // Obsługa zatrzymania awaryjnego
@@ -241,11 +266,27 @@ int main(void) {
             // Sprawdź czy to my zainicjowaliśmy
             sem_opusc(g_sem_id, SEM_MAIN);
             int initiator = g_shm->emergency_initiator;
+            bool w1_ready = g_shm->worker1_ready;
             sem_podnies(g_sem_id, SEM_MAIN);
             
-            if (initiator == 2 && emergency_resume) {
-                // My zainicjowaliśmy i dostaliśmy sygnał wznowienia
-                resume_from_emergency_w2();
+            if (initiator == 2) {
+                // My zainicjowaliśmy - czekaj na worker1 i wznów
+                logger(LOG_EMERGENCY, "PRACOWNIK2: Awaria aktywna - czekam na worker1...");
+                
+                // Czekaj aż worker1 potwierdzi gotowość
+                int wait_count = 0;
+                while (!w1_ready && !shutdown_flag && wait_count < 300) {
+                    usleep(10000); // 10ms
+                    wait_count++;
+                    sem_opusc(g_sem_id, SEM_MAIN);
+                    w1_ready = g_shm->worker1_ready;
+                    sem_podnies(g_sem_id, SEM_MAIN);
+                }
+                
+                if (w1_ready || wait_count >= 300) {
+                    // Worker1 gotowy lub timeout - wznów
+                    resume_from_emergency_w2();
+                }
             } else if (initiator == 1) {
                 // Worker1 zainicjował - loguj i odpowiedz gotowością
                 logger(LOG_EMERGENCY, "PRACOWNIK2: Odebrano sygnał AWARII od worker1!");
@@ -274,12 +315,34 @@ int main(void) {
             }
         }
         
-        // Sprawdź koniec dnia
-        sem_opusc(g_sem_id, SEM_MAIN);
-        bool is_running = g_shm->is_running;
-        sem_podnies(g_sem_id, SEM_MAIN);
-        
-        if (!is_running) {
+        // Sprawdź koniec dnia - kończ tylko na SIGTERM
+        // Obsłużenie wszystkich turystów którzy są jeszcze w systemie
+        if (shutdown_flag) {
+            //Obsłużenie wszystkich pozostałych komunikatów MSG_CHAIR_ARRIVAL
+            Message cleanup_msg;
+            while (odbierz_komunikat(g_msg_worker_id, &cleanup_msg, MSG_CHAIR_ARRIVAL, false)) {
+                int passenger_count = cleanup_msg.data2;
+                for (int i = 0; i < passenger_count && i < CHAIR_CAPACITY; i++) {
+                    pid_t tourist_pid = cleanup_msg.child_ids[i];
+                    if (tourist_pid <= 0) continue;
+                    Message reply;
+                    reply.mtype = tourist_pid;
+                    reply.sender_pid = getpid();
+                    reply.data = 2; // Dotarłeś na górę
+                    wyslij_komunikat_nowait(g_msg_id, &reply);
+                }
+            }
+            
+            // 2. Wyślij odpowiedzi do turystów czekających na wyjście (MSG_TOURIST_EXIT)
+            while (odbierz_komunikat(g_msg_id, &cleanup_msg, MSG_TOURIST_EXIT, false)) {
+                Message reply;
+                reply.mtype = cleanup_msg.sender_pid;
+                reply.sender_pid = getpid();
+                reply.data = 3; // Zakończone
+                reply.tourist_id = cleanup_msg.tourist_id;
+                wyslij_komunikat_nowait(g_msg_id, &reply);
+            }
+            
             logger(LOG_WORKER2, "Symulacja zakończona");
             break;
         }
@@ -291,20 +354,25 @@ int main(void) {
             int chair_id = msg.data;
             int passenger_count = msg.data2;
             
+            // Zwiększ licznik turystów na górnej stacji
+            sem_opusc(g_sem_id, SEM_MAIN);
+            g_shm->tourists_at_top += passenger_count;
+            sem_podnies(g_sem_id, SEM_MAIN);
+            
             logger(LOG_CHAIR, "Krzesełko #%d dotarło na górną stację z %d pasażerami",
                    chair_id, passenger_count);
             
-            // Wyślij powiadomienie do pasażerów że dotarli (data == 2)
+            // Wyślij powiadomienie do pasażerów że dotarli (data == 2) - blokujące!
             for (int i = 0; i < passenger_count && i < CHAIR_CAPACITY; i++) {
                 pid_t tourist_pid = msg.child_ids[i];
                 if (tourist_pid <= 0) continue;
-                
+
                 Message reply;
                 reply.mtype = tourist_pid;
                 reply.sender_pid = getpid();
                 reply.data = 2; // Dotarłeś na górę
                 reply.tourist_id = chair_id * 100 + i;
-                wyslij_komunikat_nowait(g_msg_id, &reply);
+                wyslij_komunikat(g_msg_id, &reply);
             }
         }
         

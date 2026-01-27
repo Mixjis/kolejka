@@ -204,12 +204,28 @@ int sem_probuj_opusc(int sem_id, int sem_num) {
     op.sem_num = sem_num;
     op.sem_op = -1;
     op.sem_flg = IPC_NOWAIT | SEM_UNDO;
-    
+
     if (semop(sem_id, &op, 1) == -1) {
         if (errno == EAGAIN || errno == EINTR) {
             return 0; // Nie udało się
         }
         perror("Błąd semop (próba opuszczenia)");
+        return -1;
+    }
+    return 1; // Udało się
+}
+
+int sem_probuj_opusc_bez_undo(int sem_id, int sem_num) {
+    struct sembuf op;
+    op.sem_num = sem_num;
+    op.sem_op = -1;
+    op.sem_flg = IPC_NOWAIT;  // BEZ SEM_UNDO - dla użycia w wątkach
+
+    if (semop(sem_id, &op, 1) == -1) {
+        if (errno == EAGAIN || errno == EINTR) {
+            return 0; // Nie udało się
+        }
+        perror("Błąd semop (próba opuszczenia bez undo)");
         return -1;
     }
     return 1; // Udało się

@@ -54,7 +54,7 @@ typedef struct {
     int child_ids[2];
 } PlatformWaiter;
 
-#define MAX_WAITERS 500
+#define MAX_WAITERS 2000
 static PlatformWaiter waiters[MAX_WAITERS];
 static int waiter_count = 0;
 static pthread_mutex_t waiter_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -72,13 +72,17 @@ int get_next_platform_gate(void) {
     return gate;
 }
 
-// Dodaj oczekującego
-void add_waiter(PlatformWaiter* w) {
+// Dodaj oczekującego - zwraca true jeśli dodano, false jeśli kolejka pełna
+bool add_waiter(PlatformWaiter* w) {
     pthread_mutex_lock(&waiter_mutex);
     if (waiter_count < MAX_WAITERS) {
         waiters[waiter_count++] = *w;
+        pthread_mutex_unlock(&waiter_mutex);
+        return true;
     }
     pthread_mutex_unlock(&waiter_mutex);
+    logger(LOG_WORKER1, "[ERROR] Kolejka waiters pełna! Turysta #%d NIE dodany!", w->tourist_id);
+    return false;
 }
 
 // Sprawdź czy kombinacja jest dozwolona
@@ -208,7 +212,7 @@ void* chair_thread(void* arg) {
     sem_podnies(g_sem_id, SEM_MAIN);
     
     // Zwolnij semafor krzesełka
-    sem_podnies(g_sem_id, SEM_CHAIRS);
+    sem_podnies_bez_undo(g_sem_id, SEM_CHAIRS);
     
     free(group);
     return NULL;
@@ -319,38 +323,45 @@ int main(void) {
     int next_emergency = 3000 + (rand() % 2000); // Losowy czas do następnej awarii (3-5s)
     
     while (!shutdown_flag) {
-        // Obsługa awarii - sprawdź czy trzeba zainicjować
-        emergency_timer++;
-        if (!emergency_stop && emergency_timer >= next_emergency) {
-            // Losowa szansa na awarię (30%)
-            if (rand() % 100 < 30) {
-                should_trigger_emergency = true;
-            }
-            emergency_timer = 0;
-            next_emergency = 3000 + (rand() % 2000); // Reset na 3-5s
-        }
+        // Sprawdź czy bramki zamknięte (koniec dnia) - NIE inicjuj awarii po zamknięciu!
+        sem_opusc(g_sem_id, SEM_MAIN);
+        bool gates_closed_check = g_shm->gates_closed;
+        sem_podnies(g_sem_id, SEM_MAIN);
         
-        if (should_trigger_emergency && !emergency_stop) {
-            should_trigger_emergency = false;
-            initiate_emergency_stop();
+        // Obsługa awarii - sprawdź czy trzeba zainicjować (TYLKO gdy bramki otwarte)
+        if (!gates_closed_check) {
+            emergency_timer++;
+            if (!emergency_stop && emergency_timer >= next_emergency) {
+                // Losowa szansa na awarię (30%)
+                if (rand() % 100 < 30) {
+                    should_trigger_emergency = true;
+                }
+                emergency_timer = 0;
+                next_emergency = 3000 + (rand() % 2000); // Reset na 3-5s
+            }
+            
+            if (should_trigger_emergency && !emergency_stop) {
+                should_trigger_emergency = false;
+                initiate_emergency_stop();
+            }
         }
         
         // Obsługa zatrzymania awaryjnego
         if (emergency_stop) {
-            // Sprawdź kto zainicjował
+            // Sprawdzanie kto zainicjował
             sem_opusc(g_sem_id, SEM_MAIN);
             int initiator = g_shm->emergency_initiator;
             bool w2_ready = g_shm->worker2_ready;
             sem_podnies(g_sem_id, SEM_MAIN);
             
             if (initiator == 1) {
-                // My zainicjowaliśmy - czekaj na worker2 i wznów
+                // czekanie na worker2 i wznów
                 logger(LOG_EMERGENCY, "PRACOWNIK1: Awaria aktywna - czekam na worker2...");
                 
-                // Czekaj aż worker2 potwierdzi gotowość
+                // Czekanie aż worker2 potwierdzi gotowość
                 int wait_count = 0;
                 while (!w2_ready && !shutdown_flag && wait_count < 300) {
-                    usleep(10000); // 10ms
+                    usleep(10000);
                     wait_count++;
                     sem_opusc(g_sem_id, SEM_MAIN);
                     w2_ready = g_shm->worker2_ready;
@@ -361,9 +372,8 @@ int main(void) {
                     // Worker2 gotowy lub timeout - wznów
                     logger(LOG_EMERGENCY, "PRACOWNIK1: Worker2 gotowy - wznawiamy po 5s...");
                     
-                    // Używamy pętli z usleep zamiast sleep (sleep jest przerywany przez sygnały)
                     for (int i = 0; i < 50 && !shutdown_flag; i++) {
-                        usleep(100000); // 100ms x 50 = 5 sekund
+                        usleep(100000);
                     }
                     
                     resume_from_emergency();
@@ -390,20 +400,68 @@ int main(void) {
             continue;
         }
         
-        // Sprawdź koniec dnia
+        // Sprawdź stan systemu
         sem_opusc(g_sem_id, SEM_MAIN);
         bool gates_closed = g_shm->gates_closed;
         int on_platform = g_shm->tourists_on_platform;
         int in_station = g_shm->tourists_in_station;
+        bool is_running = g_shm->is_running;
+        int active_chairs = g_shm->active_chairs;
         sem_podnies(g_sem_id, SEM_MAIN);
-        
-        if (gates_closed && on_platform == 0 && in_station == 0 && waiter_count == 0) {
-            logger(LOG_WORKER1, "Koniec dnia - wszyscy obsłużeni");
+
+        // Kończ dopiero gdy:
+        // 1. Dostaliśmy SIGTERM (shutdown_flag)
+        // 2. Bramki zamknięte, peron pusty, kolejka pusta I wszystkie krzesełka wróciły
+        if (shutdown_flag) {
+            // Wymuszony shutdown - wyślij odmowy do pozostałych
+            Message cleanup_msg;
+            while (odbierz_komunikat(g_msg_id, &cleanup_msg, MSG_TOURIST_TO_PLATFORM, false)) {
+                Message refuse;
+                refuse.mtype = cleanup_msg.sender_pid;
+                refuse.sender_pid = getpid();
+                refuse.data = -1;
+                refuse.tourist_id = cleanup_msg.tourist_id;
+                wyslij_komunikat_nowait(g_msg_id, &refuse);
+            }
+
+            pthread_mutex_lock(&waiter_mutex);
+            for (int i = 0; i < waiter_count; i++) {
+                Message refuse;
+                refuse.mtype = waiters[i].pid;
+                refuse.sender_pid = getpid();
+                refuse.data = -1;
+                refuse.tourist_id = waiters[i].tourist_id;
+                wyslij_komunikat_nowait(g_msg_id, &refuse);
+            }
+            waiter_count = 0;
+            pthread_mutex_unlock(&waiter_mutex);
+
+            logger(LOG_WORKER1, "Wymuszony shutdown - zamykam stację dolną");
             break;
         }
+
+        // Normalne zakończenie - bramki zamknięte, peron pusty, kolejka pusta I wszystkie krzesełka wróciły
+        if (gates_closed && on_platform == 0 && waiter_count == 0 && active_chairs == 0) {
+            logger(LOG_WORKER1, "Koniec dnia - wszyscy turyści obsłużeni, wszystkie krzesełka wróciły");
+            break;
+        }
+
+        // Diagnostyka
+        static int diag_counter = 0;
+        if (gates_closed) {
+            diag_counter++;
+            if (diag_counter % 2000 == 0) {  // Co ~2 sekundy (2000 * 1ms)
+                int sem_chairs_val = sem_pobierz_wartosc(g_sem_id, SEM_CHAIRS);
+                logger(LOG_WORKER1, "[DIAG] waiter_count=%d, on_platform=%d, active_chairs=%d, sem_chairs_val=%d, emergency_stop=%d",
+                       waiter_count, on_platform, active_chairs, sem_chairs_val, emergency_stop);
+            }
+        }
         
-        // Odbierz turystów chcących wejść na peron
+        // ZAWSZE odbieraj komunikaty od turystów którzy wysłali MSG_TOURIST_TO_PLATFORM
+        // Ci turyści już przeszli przez bramkę na peron - muszą być obsłużeni
+        int received_count = 0;
         while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
+            received_count++;
             if (shutdown_flag || emergency_stop) break;
             
             PlatformWaiter w;
@@ -413,39 +471,61 @@ int main(void) {
             w.children_count = msg.children_count;
             w.child_ids[0] = msg.child_ids[0];
             w.child_ids[1] = msg.child_ids[1];
-            
+        
             // Pobierz numer bramki na peron
             int gate_num = get_next_platform_gate();
-            
-            add_waiter(&w);
-            
-            // Rejestruj przejście przez bramkę
-            sem_opusc(g_sem_id, SEM_MAIN);
-            g_shm->gate_passages_count++;
-            g_shm->tourists_on_platform++;
-            sem_podnies(g_sem_id, SEM_MAIN);
-            
-            logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (typ: %s, dzieci: %d)",
-                   w.tourist_id, gate_num, 
-                   w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy",
-                   w.children_count);
+
+            // Dodaj do kolejki
+            if (add_waiter(&w)) {
+                sem_opusc(g_sem_id, SEM_MAIN);
+                g_shm->gate_passages_count++;
+                g_shm->tourists_on_platform++;
+                sem_podnies(g_sem_id, SEM_MAIN);
+
+                logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (typ: %s, dzieci: %d)",
+                       w.tourist_id, gate_num,
+                       w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy",
+                       w.children_count);
+            } else {
+                // Kolejka pełna - wyślij odmowę turystie
+                Message refuse;
+                refuse.mtype = w.pid;
+                refuse.sender_pid = getpid();
+                refuse.data = -1;  // Odmowa
+                refuse.tourist_id = w.tourist_id;
+                wyslij_komunikat_nowait(g_msg_id, &refuse);
+            }
         }
-        
+
+        // Log jeśli odebrano komunikaty po zamknięciu bramek
+        if (gates_closed && received_count > 0) {
+            logger(LOG_WORKER1, "[DIAG] Odebrano %d komunikatów po zamknięciu bramek, waiter_count=%d",
+                   received_count, waiter_count);
+        }
+
         // Próbuj utworzyć grupę i wysłać krzesełko
+        // Diagnostyka gdy bramki zamknięte i warunki nie są spełnione
+        if (gates_closed && (emergency_stop || waiter_count == 0)) {
+            static int skip_diag = 0;
+            if (++skip_diag % 5000 == 0) {  // Co ~5 sekund
+                logger(LOG_WORKER1, "[DIAG-SKIP] Nie wysyłam krzesełek: emergency=%d, waiter_count=%d",
+                       emergency_stop, waiter_count);
+            }
+        }
         if (!emergency_stop && waiter_count > 0) {
             // Sprawdź dostępność krzesełka
-            int result = sem_probuj_opusc(g_sem_id, SEM_CHAIRS);
+            int result = sem_probuj_opusc_bez_undo(g_sem_id, SEM_CHAIRS);
             if (result == 1) {
                 ChairGroup* group = malloc(sizeof(ChairGroup));
                 if (try_create_group(group)) {
-                    // Powiadom turystów o wsiadaniu
+                    // Powiadom turystów o wsiadaniu 
                     for (int i = 0; i < group->count; i++) {
                         Message notify;
                         notify.mtype = group->tourist_pids[i];
                         notify.sender_pid = getpid();
                         notify.data = 1; // OK wsiadaj
                         notify.tourist_id = group->tourist_ids[i];
-                        wyslij_komunikat_nowait(g_msg_id, &notify);
+                        wyslij_komunikat(g_msg_id, &notify);
                     }
                     
                     // Aktualizuj licznik na peronie
@@ -462,13 +542,13 @@ int main(void) {
                     if (pthread_create(&thread, &attr, chair_thread, group) != 0) {
                         perror("Błąd tworzenia wątku krzesełka");
                         free(group);
-                        sem_podnies(g_sem_id, SEM_CHAIRS);
+                        sem_podnies_bez_undo(g_sem_id, SEM_CHAIRS);
                     }
-                    
+
                     pthread_attr_destroy(&attr);
                 } else {
                     free(group);
-                    sem_podnies(g_sem_id, SEM_CHAIRS);
+                    sem_podnies_bez_undo(g_sem_id, SEM_CHAIRS);
                 }
             }
         }

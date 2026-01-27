@@ -17,6 +17,7 @@ void sem_opusc(int sem_id, int sem_num);
 void sem_podnies_bez_undo(int sem_id, int sem_num);
 void sem_opusc_bez_undo(int sem_id, int sem_num);
 int sem_probuj_opusc(int sem_id, int sem_num);
+int sem_probuj_opusc_bez_undo(int sem_id, int sem_num);
 void sem_czekaj_na_zero(int sem_id, int sem_num);
 int sem_pobierz_wartosc(int sem_id, int sem_num);
 void sem_ustaw_wartosc(int sem_id, int sem_num, int value);

@@ -7,7 +7,7 @@
 #include <time.h>
 
 // ==== KONFIGURACJA SYMULACJI ====
-#define TOTAL_TOURISTS       10000   // Liczba turystów do obsłużenia
+#define TOTAL_TOURISTS       10   // Liczba turystów do obsłużenia
 #define MAX_CHAIRS           72      // Łączna liczba krzesełek
 #define MAX_ACTIVE_CHAIRS    36      // Maks krzesełek jednocześnie w ruchu
 #define CHAIR_CAPACITY       4       // Pojemność jednego krzesełka
@@ -25,11 +25,11 @@
 
 // Godziny pracy (w sekundach symulacyjnych od startu)
 #define WORK_START_TIME      0       // Tp - start
-#define WORK_END_TIME        300     // Tk - koniec (300 sekund = 5 minut dla 10000 turystów)
+#define WORK_END_TIME        15     // Tk - koniec (sekundy)
 #define SHUTDOWN_DELAY       3       // Opóźnienie przed wyłączeniem po Tk
 
 // Szybkość generowania turystów
-#define TOURIST_SPAWN_DELAY_MAX  2000  // Max opóźnienie między turystami (microseconds)
+#define TOURIST_SPAWN_DELAY_MAX  2000  // opóźnienie między turystami
 
 // Procent VIPów
 #define VIP_PERCENT          1
@@ -113,14 +113,14 @@ typedef struct {
     int id;
     TicketType type;
     time_t purchase_time;
-    time_t valid_until;     // 0 dla dziennego
+    time_t valid_until;     // 0 - dzienny
     int rides_count;        // Liczba przejazdów
     bool is_vip;
     int owner_age;
     bool has_discount;
 } Ticket;
 
-// Przejście przez bramkę (do raportu)
+// Przejście przez bramkę
 typedef struct {
     int ticket_id;
     time_t timestamp;
@@ -188,9 +188,12 @@ typedef struct {
     
     // Kolejki i liczniki
     int tourists_in_station;    // Na dolnej stacji
-    int tourists_on_platform;   // Na peronie
+    int tourists_on_platform;   // Na peronie (dolna stacja)
+    int tourists_at_top;        // Na górnej stacji (czekający na wyjście/zjazd)
     int active_chairs;          // Krzesełka w ruchu
     int tourists_waiting_entry; // Czekający przed bramkami
+    int tourists_at_cashier;    // Czekający na bilet przy kasie
+    int tourists_descending;    // W trakcie zjazdu trasą
     
     // PIDy procesów
     pid_t main_pid;
@@ -230,7 +233,7 @@ typedef struct {
     int age;
     bool is_vip;
     int children_count;
-    int child_ids[CHAIR_CAPACITY]; // Zmienione z 2 na CHAIR_CAPACITY=4 dla PIDów pasażerów krzesełka
+    int child_ids[CHAIR_CAPACITY];
 } Message;
 
 #define MSG_SIZE (sizeof(Message) - sizeof(long))

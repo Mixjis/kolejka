@@ -51,9 +51,13 @@ void* reaper_thread(void* arg) {
         pid_t finished_pid;
         
         while ((finished_pid = waitpid(-1, &status, WNOHANG)) > 0) {
+            if (finished_pid == worker1_pid || finished_pid == worker2_pid || finished_pid == cashier_pid) {
+                continue;
+            }
+            
             pthread_mutex_lock(&tourist_mutex);
             
-            // Usunięcie z listy
+            // Usunięcie z listy turystów
             for (int i = 0; i < tourist_pid_count; i++) {
                 if (tourist_pids[i] == finished_pid) {
                     tourist_pids[i] = tourist_pids[tourist_pid_count - 1];
@@ -314,7 +318,20 @@ int main(void) {
         }
         
         if (wait_cycles % 1000 == 0) {
-            logger(LOG_SYSTEM, "Pozostało %d turystów w systemie...", remaining);
+            // Debug info - gdzie są turyści
+            sem_opusc(g_sem_id, SEM_MAIN);
+            int in_station = g_shm->tourists_in_station;
+            int on_platform = g_shm->tourists_on_platform;
+            int active_chairs = g_shm->active_chairs;
+            int at_top = g_shm->tourists_at_top;
+            int at_cashier = g_shm->tourists_at_cashier;
+            int descending = g_shm->tourists_descending;
+            int created = g_shm->total_tourists_created;
+            int finished = g_shm->total_tourists_finished;
+            sem_podnies(g_sem_id, SEM_MAIN);
+            
+            logger(LOG_SYSTEM, "Procesy: %d, pozostało: %d (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
+                   remaining, created - finished, at_cashier, in_station, on_platform, active_chairs, at_top, descending);
         }
         
         usleep(1000);
@@ -342,20 +359,70 @@ int main(void) {
     if (worker1_pid > 0) waitpid(worker1_pid, &status, 0);
     if (worker2_pid > 0) waitpid(worker2_pid, &status, 0);
     
-    // Zakończenie wątku sprzątającego
-    shutdown_flag = 1;
-    pthread_join(reaper, NULL);
+    logger(LOG_SYSTEM, "Oczekiwanie na zakończenie turystów po SIGTERM...");
+    int grace_wait = 0;
+    int last_remaining = -1;
+    while (grace_wait < 50) {
+        pthread_mutex_lock(&tourist_mutex);
+        int remaining = tourist_pid_count;
+        pthread_mutex_unlock(&tourist_mutex);
+        
+        if (remaining == 0) {
+            logger(LOG_SYSTEM, "Wszyscy turyści zakończyli pracę");
+            break;
+        }
+        
+        // Przerwij jeśli Ctrl+C
+        if (interrupt_flag) {
+            logger(LOG_SYSTEM, "Przerwanie shutdown (Ctrl+C)");
+            break;
+        }
+        
+        // Loguj co sekundę z debug info
+        if (grace_wait % 10 == 0 && remaining != last_remaining) {
+            sem_opusc(g_sem_id, SEM_MAIN);
+            int in_station = g_shm->tourists_in_station;
+            int on_platform = g_shm->tourists_on_platform;
+            int active_chairs = g_shm->active_chairs;
+            int at_top = g_shm->tourists_at_top;
+            int at_cashier = g_shm->tourists_at_cashier;
+            int descending = g_shm->tourists_descending;
+            int created = g_shm->total_tourists_created;
+            int finished = g_shm->total_tourists_finished;
+            sem_podnies(g_sem_id, SEM_MAIN);
+            
+            logger(LOG_SYSTEM, "procesy: %d (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
+                   remaining, at_cashier, in_station, on_platform, active_chairs, at_top, descending);
+            last_remaining = remaining;
+        }
+        
+        usleep(100000); // 100ms
+        grace_wait++;
+    }
     
     // Dobicie pozostałych procesów turystów
+    int killed_count = 0;
     pthread_mutex_lock(&tourist_mutex);
     for (int i = 0; i < tourist_pid_count; i++) {
         if (tourist_pids[i] > 0) {
             kill(tourist_pids[i], SIGKILL);
             waitpid(tourist_pids[i], &status, 0);
+            killed_count++;
         }
     }
+    tourist_pid_count = 0;
     pthread_mutex_unlock(&tourist_mutex);
     
+    // kończenie wątku sprzątającego
+    shutdown_flag = 1;
+    pthread_join(reaper, NULL);
+    
+    if (killed_count > 0) {
+        sem_opusc(g_sem_id, SEM_MAIN);
+        g_shm->total_tourists_finished += killed_count;
+        sem_podnies(g_sem_id, SEM_MAIN);
+        logger(LOG_SYSTEM, "Wymuszono zakończenie %d turystów", killed_count);
+    }
 
     logger(LOG_SYSTEM, "Generowanie raportu końcowego...");
     generuj_raport_koncowy();

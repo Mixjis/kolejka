@@ -56,29 +56,14 @@ clean:
 	rm -f *.o $(MAIN) $(CASHIER) $(WORKER) $(WORKER2) $(TOURIST)
 	rm -f kolej_log.txt raport_karnetow.txt
 
-# Czyszczenie zasobów IPC (po awarii)
-clean-ipc:
-	ipcs -s | grep $(USER) | awk '{print $$2}' | xargs -I {} ipcrm -s {} 2>/dev/null || true
-	ipcs -m | grep $(USER) | awk '{print $$2}' | xargs -I {} ipcrm -m {} 2>/dev/null || true
-	ipcs -q | grep $(USER) | awk '{print $$2}' | xargs -I {} ipcrm -q {} 2>/dev/null || true
-
-# Wyświetl zasoby IPC
-show-ipc:
-	@echo "=== Semafory ==="
-	ipcs -s
-	@echo "=== Pamięć dzielona ==="
-	ipcs -m
-	@echo "=== Kolejki komunikatów ==="
-	ipcs -q
-
 # Pomoc
 help:
 	@echo "Dostępne cele:"
-	@echo "  make        - kompilacja wszystkich plików"
-	@echo "  make run    - kompilacja i uruchomienie symulacji"
-	@echo "  make clean  - usunięcie plików wykonywalnych i obiektowych"
+	@echo "  make        	- kompilacja wszystkich plików"
+	@echo "  make run    	- kompilacja i uruchomienie symulacji"
+	@echo "  make clean  	- usunięcie plików wykonywalnych i obiektowych"
 	@echo "  make clean-ipc - usunięcie zasobów IPC (po awarii)"
-	@echo "  make show-ipc - wyświetlenie zasobów IPC"
-	@echo "  make help   - ta pomoc"
+	@echo "  make show-ipc 	- wyświetlenie zasobów IPC"
+	@echo "  make help   	- ta pomoc"
 
 .PHONY: all run clean clean-ipc show-ipc help
