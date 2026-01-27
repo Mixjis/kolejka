@@ -292,10 +292,13 @@ bool enter_station(void) {
     g_shm->gate_passages_count++;
     sem_podnies(g_sem_id, SEM_MAIN);
     
+    // Rejestruj przejście przez bramkę wejściową (typ 1 = wejściowa)
+    rejestruj_przejscie_bramki(g_ticket_id, g_entry_gate, 1);
+    
     // Log przejścia przez bramkę wejściową
     const char* vip_str = g_is_vip ? " [VIP]" : "";
-    logger(LOG_TOURIST, "Turysta #%d%s wpuszczony przez bramkę wejściową #%d",
-           g_tourist_id, vip_str, g_entry_gate);
+    logger(LOG_TOURIST, "Turysta #%d%s wpuszczony przez bramkę wejściową #%d (bilet #%d)",
+           g_tourist_id, vip_str, g_entry_gate, g_ticket_id);
     
     // Symulacja przejścia
     usleep(10000 + rand() % 20000); // 10-30ms
@@ -386,6 +389,10 @@ bool go_to_platform(void) {
     // Symulacja przejścia przez bramkę
     usleep(5000 + rand() % 10000);
     
+    // Rejestruj przejście przez bramkę peronową (typ 2 = peronowa)
+    int platform_gate = (g_tourist_id % PLATFORM_GATES) + 1;
+    rejestruj_przejscie_bramki(g_ticket_id, platform_gate, 2);
+    
     // Zwolnij bramkę na peron
     sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
     
@@ -397,7 +404,8 @@ bool go_to_platform(void) {
     // Zwolnij semafor limitu stacji
     sem_podnies(g_sem_id, SEM_STATION);
     
-    logger(LOG_TOURIST, "Turysta #%d przeszedł na peron", g_tourist_id);
+    logger(LOG_TOURIST, "Turysta #%d przeszedł na peron (bramka peronowa #%d, bilet #%d)", 
+           g_tourist_id, platform_gate, g_ticket_id);
     
     return true;
 }
@@ -486,7 +494,11 @@ void exit_at_top(void) {
         timeout_count++;
     }
     
-    logger(LOG_TOURIST, "Turysta #%d (pieszy) zakończył wizytę na górnej stacji", g_tourist_id);
+    // Rejestruj "zjazd" (właściwie wyjście na górze) dla pieszego
+    rejestruj_zjazd(g_ticket_id);
+    
+    logger(LOG_TOURIST, "Turysta #%d (pieszy) zakończył wizytę na górnej stacji (bilet #%d)", 
+           g_tourist_id, g_ticket_id);
 }
 
 // Zjazd trasą i powrót na stację dolną (dla rowerzystów)
@@ -527,7 +539,11 @@ void descend_trail(void) {
         timeout_count++;
     }
     
-    logger(LOG_TOURIST, "Turysta #%d zakończył trasę zjazdową i dotarł na stację dolną", g_tourist_id);
+    // Rejestruj zjazd dla tego biletu
+    rejestruj_zjazd(g_ticket_id);
+    
+    logger(LOG_TOURIST, "Turysta #%d zakończył trasę zjazdową i dotarł na stację dolną (bilet #%d)", 
+           g_tourist_id, g_ticket_id);
 }
 
 // Obsługa wielokrotnych przejazdów (dla biletów czasowych i dziennych)
@@ -555,6 +571,9 @@ bool can_ride_again(void) {
 }
 
 int main(int argc, char* argv[]) {
+    // Inicjalizacja loggera dla procesu potomnego
+    logger_init_child();
+    
     // Konfiguracja sygnałów
     struct sigaction sa;
     sa.sa_handler = tourist_signal_handler;

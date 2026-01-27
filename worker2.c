@@ -207,6 +207,9 @@ void* tourist_exit_thread(void* arg) {
 }
 
 int main(void) {
+    // Inicjalizacja loggera dla procesu potomnego
+    logger_init_child();
+    
     // Konfiguracja sygnałów
     struct sigaction sa;
     sa.sa_handler = worker2_signal_handler;

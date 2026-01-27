@@ -7,7 +7,7 @@
 #include <time.h>
 
 // ==== KONFIGURACJA SYMULACJI ====
-#define TOTAL_TOURISTS       10   // Liczba turystów do obsłużenia
+#define TOTAL_TOURISTS       10000   // Liczba turystów do obsłużenia
 #define MAX_CHAIRS           72      // Łączna liczba krzesełek
 #define MAX_ACTIVE_CHAIRS    36      // Maks krzesełek jednocześnie w ruchu
 #define CHAIR_CAPACITY       4       // Pojemność jednego krzesełka
@@ -183,8 +183,14 @@ typedef struct {
     // Trasy
     int trail_usage[TRAIL_COUNT];
     
-    // Przejścia bramkowe
+    // Przejścia bramkowe - historia
     int gate_passages_count;
+    #define MAX_GATE_PASSAGES 20000
+    GatePassage gate_passages[MAX_GATE_PASSAGES];
+    
+    // Statystyki per bilet (liczba zjazdów)
+    #define MAX_TICKETS 20000
+    int ticket_rides[MAX_TICKETS];  // ticket_rides[ticket_id] = liczba zjazdów
     
     // Kolejki i liczniki
     int tourists_in_station;    // Na dolnej stacji

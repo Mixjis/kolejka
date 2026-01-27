@@ -292,6 +292,9 @@ void resume_from_emergency(void) {
 }
 
 int main(void) {
+    // Inicjalizacja loggera dla procesu potomnego
+    logger_init_child();
+    
     // Konfiguracja sygnałów
     struct sigaction sa;
     sa.sa_handler = worker1_signal_handler;
