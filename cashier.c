@@ -1,154 +1,234 @@
-#include "common.h"
+// cashier.c - proces kasjera (sprzedaż biletów, obsługa bramek wejściowych)
 
-volatile sig_atomic_t cashier_running = 1;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <errno.h>
+#include <time.h>
+#include <sys/msg.h>
+#include "struktury.h"
+#include "operacje.h"
+#include "logger.h"
 
-// Obliczanie ceny biletu z uwzglednieniem znizek
-// Dzieci < 10 lat i seniorzy >= 65 lat maja 25% znizki
-float calculate_ticket_price(TicketType type, int age) {
-    float base_price = 0;
-    switch (type) {
-        case SINGLE: base_price = 10.0f; break;
-        case TK1:    base_price = 30.0f; break;
-        case TK2:    base_price = 50.0f; break;
-        case TK3:    base_price = 70.0f; break;
-        case DAILY:  base_price = 100.0f; break;
-    }
+// Flagi sygnałów
+static volatile sig_atomic_t shutdown_flag = 0;
+static volatile sig_atomic_t emergency_flag = 0;
 
-    // 25% znizki dla dzieci < 10 lat i seniorow >= 65 lat
-    if (age < CHILD_DISCOUNT_MAX || age >= SENIOR_AGE_LIMIT) {
-        return base_price * 0.75f;
-    }
-
-    return base_price;
-}
-
-const char* ticket_type_name(TicketType type) {
-    switch (type) {
-        case SINGLE: return "JEDNORAZOWY";
-        case TK1:    return "CZASOWY_1H";
-        case TK2:    return "CZASOWY_2H";
-        case TK3:    return "CZASOWY_3H";
-        case DAILY:  return "DZIENNY";
-        default:     return "NIEZNANY";
+// Handler sygnałów
+void cashier_signal_handler(int sig) {
+    if (sig == SIGTERM) {
+        shutdown_flag = 1;
+    } else if (sig == SIGUSR1) {
+        emergency_flag = 1;
+    } else if (sig == SIGUSR2) {
+        emergency_flag = 0; // Wznowienie po awarii
     }
 }
 
-void cashier_sigterm_handler(int sig) {
-    (void)sig;
-    cashier_running = 0;
+// Struktura turysty w kolejce
+typedef struct {
+    pid_t pid;
+    int tourist_id;
+    int age;
+    TouristType type;
+    bool is_vip;
+    int children_count;
+    int child_ids[2];
+} QueuedTourist;
+
+// Kolejka priorytetowa (VIP na początku)
+#define MAX_QUEUE 1000
+static QueuedTourist normal_queue[MAX_QUEUE];
+static int normal_queue_size = 0;
+static QueuedTourist vip_queue[MAX_QUEUE];
+static int vip_queue_size = 0;
+
+// Dodawanie do kolejki
+void add_to_queue(QueuedTourist* tourist) {
+    if (tourist->is_vip) {
+        if (vip_queue_size < MAX_QUEUE) {
+            vip_queue[vip_queue_size++] = *tourist;
+        }
+    } else {
+        if (normal_queue_size < MAX_QUEUE) {
+            normal_queue[normal_queue_size++] = *tourist;
+        }
+    }
+}
+
+// Pobieranie z kolejki (VIP ma priorytet)
+bool get_from_queue(QueuedTourist* tourist) {
+    if (vip_queue_size > 0) {
+        *tourist = vip_queue[0];
+        // Przesuń kolejkę
+        for (int i = 0; i < vip_queue_size - 1; i++) {
+            vip_queue[i] = vip_queue[i + 1];
+        }
+        vip_queue_size--;
+        return true;
+    }
+    
+    if (normal_queue_size > 0) {
+        *tourist = normal_queue[0];
+        for (int i = 0; i < normal_queue_size - 1; i++) {
+            normal_queue[i] = normal_queue[i + 1];
+        }
+        normal_queue_size--;
+        return true;
+    }
+    
+    return false;
+}
+
+bool queue_empty(void) {
+    return (vip_queue_size == 0 && normal_queue_size == 0);
 }
 
 int main(void) {
-    process_role = ROLE_CASHIER;
-
+    // Konfiguracja sygnałów
     struct sigaction sa;
-    sa.sa_handler = cashier_sigterm_handler;
+    sa.sa_handler = cashier_signal_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sigaction(SIGTERM, &sa, NULL);
-    signal(SIGINT, SIG_IGN);  // SIGINT obsluguje main, kasjer czeka na SIGTERM
-
+    sigaction(SIGUSR1, &sa, NULL);
+    sigaction(SIGUSR2, &sa, NULL);
+    
+    // Połączenie z zasobami IPC
+    int msg_id = polacz_kolejke();
+    int sem_id = polacz_semafory();
+    int shm_id = polacz_pamiec();
+    SharedMemory* shm = dolacz_pamiec(shm_id);
+    
     srand(time(NULL) ^ getpid());
-    attach_ipc_resources();
-
-    log_msg("KASJER: Proces kasjera uruchomiony (PID:%d).", getpid());
-
-    MsgBuf msg;
-    while (state->is_running && cashier_running) {
-        ssize_t result = msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long),
-                                MSG_TYPE_CASHIER_REQ, IPC_NOWAIT);
-
-        if (result == -1) {
-            if (errno == ENOMSG) {
-                usleep(50000);
-                continue;
+    
+    logger(LOG_CASHIER, "Rozpoczynam pracę - kasa otwarta!");
+    
+    Message msg;
+    
+    while (!shutdown_flag) {
+        // Sprawdzenie awarii
+        if (emergency_flag) {
+            logger(LOG_CASHIER, "AWARIA - wstrzymuję sprzedaż biletów!");
+            while (emergency_flag && !shutdown_flag) {
+                usleep(10000); // Czekaj na wznowienie
             }
-            if (errno == EIDRM || errno == EINVAL) break;
-            if (errno != EINTR) perror("KASJER: msgrcv");
+            if (!shutdown_flag) {
+                logger(LOG_CASHIER, "Wznawiam sprzedaż biletów");
+            }
             continue;
         }
-
-        if (!state->is_running || !cashier_running) break;
-
-        // Sprawdz czy bramki sa zamkniete
-        sem_wait_op(sem_state_mutex_id, 0);
-        int gates_closed = state->is_closing;
-        sem_signal_op(sem_state_mutex_id, 0);
-
+        
+        // Sprawdzenie czy bramki są zamknięte (koniec dnia)
+        sem_opusc(sem_id, SEM_MAIN);
+        bool gates_closed = shm->gates_closed;
+        sem_podnies(sem_id, SEM_MAIN);
+        
         if (gates_closed) {
-            log_msg("KASJER: Bramki zamkniete - odrzucam turystę %d.", msg.tourist_id);
-            // Odblokuj turystę zeby nie czekal w nieskonczonosc
-            sem_signal_op(sem_ticket_bought_id, msg.tourist_id - 1);
-            continue;
+            // Nie przyjmowanie nowych klientów
+            if (queue_empty()) {
+                logger(LOG_CASHIER, "Bramki zamknięte, kolejka pusta - kończę pracę");
+                break;
+            }
         }
-
-        // Czas obslugi (symulacja) - skalowany z liczba turystow
-        {
-            int svc_max = 200000 * 50 / NUM_TOURISTS;
-            int svc_min = 100000 * 50 / NUM_TOURISTS;
-            if (svc_max < 10000) svc_max = 10000;
-            if (svc_min < 5000) svc_min = 5000;
-            usleep((rand() % svc_max) + svc_min);
+        
+        // Odbieranie komunikatów od turystów chcących kupić bilet
+        // Najpierw VIP (mtype = MSG_VIP_PRIORITY + MSG_TOURIST_TO_CASHIER)
+        while (odbierz_komunikat(msg_id, &msg, MSG_VIP_PRIORITY + MSG_TOURIST_TO_CASHIER, false)) {
+            if (shutdown_flag || gates_closed) break;
+            
+            QueuedTourist qt;
+            qt.pid = msg.sender_pid;
+            qt.tourist_id = msg.tourist_id;
+            qt.age = msg.age;
+            qt.type = msg.tourist_type;
+            qt.is_vip = true;
+            qt.children_count = msg.children_count;
+            qt.child_ids[0] = msg.child_ids[0];
+            qt.child_ids[1] = msg.child_ids[1];
+            
+            add_to_queue(&qt);
+            logger(LOG_VIP, "VIP #%d dołączył do kolejki priorytetowej!", qt.tourist_id);
         }
-
-        // Sprawdz ponownie po obsludze
-        sem_wait_op(sem_state_mutex_id, 0);
-        gates_closed = state->is_closing;
-        if (gates_closed) {
-            sem_signal_op(sem_state_mutex_id, 0);
-            log_msg("KASJER: Bramki zamknely sie podczas obslugi - turysta %d.", msg.tourist_id);
-            sem_signal_op(sem_ticket_bought_id, msg.tourist_id - 1);
-            continue;
+        
+        // Potem zwykli turyści
+        while (odbierz_komunikat(msg_id, &msg, MSG_TOURIST_TO_CASHIER, false)) {
+            if (shutdown_flag || gates_closed) break;
+            
+            QueuedTourist qt;
+            qt.pid = msg.sender_pid;
+            qt.tourist_id = msg.tourist_id;
+            qt.age = msg.age;
+            qt.type = msg.tourist_type;
+            qt.is_vip = false;
+            qt.children_count = msg.children_count;
+            qt.child_ids[0] = msg.child_ids[0];
+            qt.child_ids[1] = msg.child_ids[1];
+            
+            add_to_queue(&qt);
         }
-
-        // Wybierz typ biletu (losowo, ale sensownie)
-        int tourist_idx = msg.tourist_id;
-        if (tourist_idx < 1 || tourist_idx > NUM_TOURISTS) {
-            sem_signal_op(sem_state_mutex_id, 0);
-            log_msg("KASJER: BLAD - nieprawidlowy tourist_id: %d", tourist_idx);
-            continue;
+        
+        // Obsługa klientów z kolejki
+        QueuedTourist tourist;
+        while (get_from_queue(&tourist) && !shutdown_flag && !emergency_flag) {
+            // Losowy typ biletu
+            TicketType ticket_type = rand() % TICKET_TYPE_COUNT;
+            
+            // Sprawdzanie zniżki (dzieci <10, seniorzy >65)
+            bool has_discount = (tourist.age < 10 || tourist.age > 65);
+            int price = cena_biletu(ticket_type, has_discount);
+            
+            // Aktualizacja statystyk
+            sem_opusc(sem_id, SEM_MAIN);
+            shm->tickets_sold[ticket_type]++;
+            shm->total_revenue += price;
+            int ticket_id = ++shm->next_ticket_id;
+            
+            if (tourist.is_vip) {
+                shm->vip_served++;
+            }
+            
+            // Dzieci z opiekunem
+            if (tourist.children_count > 0) {
+                shm->children_with_guardian += tourist.children_count;
+            }
+            sem_podnies(sem_id, SEM_MAIN);
+            
+            // Wysłanie potwierdzenia do turysty
+            Message response;
+            response.mtype = tourist.pid; // Adresowanie do konkretnego turysty
+            response.sender_pid = getpid();
+            response.tourist_id = tourist.tourist_id;
+            response.data = ticket_id;
+            response.data2 = ticket_type;
+            
+            if (wyslij_komunikat(msg_id, &response)) {
+                const char* ticket_name = nazwa_biletu(ticket_type);
+                const char* discount_str = has_discount ? " (ze zniżką 25%)" : "";
+                const char* vip_str = tourist.is_vip ? " [VIP]" : "";
+                const char* type_str = tourist.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy";
+                
+                logger(LOG_CASHIER, "Sprzedano bilet #%d (%s) turyscie #%d (%s, %d lat)%s%s - cena: %d",
+                       ticket_id, ticket_name, tourist.tourist_id, type_str, 
+                       tourist.age, discount_str, vip_str, price);
+                
+                if (tourist.children_count > 0) {
+                    logger(LOG_CASHIER, "  -> Turysta #%d ma pod opieką %d dzieci", 
+                           tourist.tourist_id, tourist.children_count);
+                }
+            }
         }
-
-        TicketType chosen_type = (TicketType)(rand() % 5);
-        tickets[tourist_idx].owner_pid = msg.pid;
-        tickets[tourist_idx].type = chosen_type;
-        tickets[tourist_idx].validation_count = 0;
-        tickets[tourist_idx].family_id = msg.family_id;
-        tickets[tourist_idx].is_valid = 1;
-
-        // Waznosc karnetu czasowego
-        time_t now = time(NULL);
-        switch (chosen_type) {
-            case TK1: tickets[tourist_idx].valid_until = now + 3600; break;
-            case TK2: tickets[tourist_idx].valid_until = now + 7200; break;
-            case TK3: tickets[tourist_idx].valid_until = now + 10800; break;
-            case SINGLE:
-            case DAILY:
-            default: tickets[tourist_idx].valid_until = 0; break;  // bez limitu
+        
+        // Krótka pauza jeśli kolejka pusta
+        if (queue_empty()) {
+            usleep(1000); // 1ms
         }
-
-        // Statystyki sprzedazy
-        switch (chosen_type) {
-            case SINGLE: stats->single_sold++; break;
-            case TK1:    stats->tk1_sold++; break;
-            case TK2:    stats->tk2_sold++; break;
-            case TK3:    stats->tk3_sold++; break;
-            case DAILY:  stats->daily_sold++; break;
-        }
-
-        sem_signal_op(sem_state_mutex_id, 0);
-
-        float price = calculate_ticket_price(chosen_type, msg.age);
-        int has_discount = (msg.age < CHILD_DISCOUNT_MAX || msg.age >= SENIOR_AGE_LIMIT);
-
-        log_msg("KASJER: Sprzedano %s turyscie %d (wiek:%d%s) za %.2f PLN",
-                ticket_type_name(chosen_type), tourist_idx, msg.age,
-                has_discount ? ", ZNIZKA 25%" : "", price);
-
-        // Sygnalizuj turyscie ze bilet gotowy
-        sem_signal_op(sem_ticket_bought_id, tourist_idx - 1);
     }
-
-    log_msg("KASJER: Koniec pracy, zamykanie.");
+    
+    logger(LOG_CASHIER, "Zamykam kasę - koniec pracy!");
+    
+    odlacz_pamiec(shm);
     return 0;
 }

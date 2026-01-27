@@ -120,7 +120,11 @@ Rowerzyści/turyści przychodzą na teren stacji w losowych momentach czasu (nie
 - wejście na teren dolnej stacji odbywa się czterema bramkami jednocześnie – na tych bramkach sprawdzany jest bilet/karnet,  
 - wejście na peron odbywa się trzema bramkami – na tych bramkach następuje kontrola osób, które mają usiąść na jednym krzesełku; bramki te otwiera pracownik1.  
 
-Na terenie dolnej stacji (po przejściu pierwszych bramek, a przed wyjściem drugimi bramkami) może przebywać maksymalnie N osób. Wyjazd/wyjście z peronu stacji górnej odbywa się dwoma drogami jednocześnie (ruch jednokierunkowy). Stacja dolna jest obsługiwana przez pracownika1, stacja górna jest obsługiwana przez pracownika2. W przypadku zagrożenia pracownik1 lub pracownik2 zatrzymują kolej linową (sygnał1). Aby wznowić działanie, pracownik który zatrzymał kolej komunikuje się z drugim pracownikiem – po otrzymaniu komunikatu zwrotnego o gotowości kolej jest uruchamiana ponownie (sygnał2).
+Na terenie dolnej stacji (po przejściu pierwszych bramek, a przed wyjściem drugimi bramkami) może przebywać maksymalnie N osób. 
+Wyjazd/wyjście z peronu stacji górnej odbywa się dwoma drogami jednocześnie (ruch jednokierunkowy). 
+Stacja dolna jest obsługiwana przez pracownika1, stacja górna jest obsługiwana przez pracownika2. 
+W przypadku zagrożenia pracownik1 lub pracownik2 zatrzymują kolej linową (sygnał1). 
+Aby wznowić działanie, pracownik który zatrzymał kolej komunikuje się z drugim pracownikiem – po otrzymaniu komunikatu zwrotnego o gotowości kolej jest uruchamiana ponownie (sygnał2).
 
 Rowerzyści zjeżdżają trzema trasami o różnym stopniu trudności – średni czas przejazdu dla poszczególnych tras jest różny i wynosi odpowiednio T1, T2 i T3 (T1 < T2 < T3).
 

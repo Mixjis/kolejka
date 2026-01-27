@@ -1,255 +1,340 @@
-#include "common.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <errno.h>
+#include <time.h>
+#include <sys/msg.h>
+#include <pthread.h>
+#include "struktury.h"
+#include "operacje.h"
+#include "logger.h"
 
-volatile sig_atomic_t worker2_is_running = 1;
-volatile sig_atomic_t emergency_stop_2 = 0;
-int fifo_fd_2 = -1;
+// Flagi sygnałów
+static volatile sig_atomic_t shutdown_flag = 0;
+static volatile sig_atomic_t emergency_stop = 0;
+static volatile sig_atomic_t emergency_resume = 0;
 
-void worker2_sigterm_handler(int sig) {
-    (void)sig;
-    worker2_is_running = 0;
+static int g_sem_id = -1;
+static int g_msg_id = -1;
+static int g_msg_worker_id = -1;
+static SharedMemory* g_shm = NULL;
+
+// Handler sygnałów
+void worker2_signal_handler(int sig) {
+    if (sig == SIGTERM) {
+        shutdown_flag = 1;
+    } else if (sig == SIGUSR1) {
+        // Zatrzymanie awaryjne (od worker1 lub własne)
+        emergency_stop = 1;
+        emergency_resume = 0;
+        // Log będzie w głównej pętli
+    } else if (sig == SIGUSR2) {
+        // Wznowienie po awarii
+        emergency_resume = 1;
+    }
 }
 
-// SIGUSR1 - pracownik2 takze moze zatrzymac kolej
-void worker2_sigusr1_handler(int sig) {
-    (void)sig;
-    emergency_stop_2 = 1;
-}
-
-void worker2_sigusr2_handler(int sig) {
-    (void)sig;
-    emergency_stop_2 = 0;
-}
-
-// Obsluga zatrzymania kolei inicjowanego przez pracownika2
-// Wg opisu: pracownik zatrzymuje kolej (sygnal1), komunikuje sie z drugim pracownikiem,
-// po otrzymaniu komunikatu zwrotnego o gotowosci kolej jest uruchamiana ponownie (sygnal2).
-void handle_emergency_stop_worker2() {
-    log_msg("PRACOWNIK2: ZAGROZENIE! Zatrzymuje kolej (sygnal1 - SIGUSR1).");
-
-    sem_wait_op(sem_state_mutex_id, 0);
-    state->is_paused = 1;
-    pid_t worker1_pid = state->worker_down_pid;
-    sem_signal_op(sem_state_mutex_id, 0);
-
-    // Wyslij sygnal SIGUSR1 do pracownika1 (zatrzymaj go tez)
+// Wysyłanie sygnału do worker1
+void send_signal_to_worker1(int sig) {
+    sem_opusc(g_sem_id, SEM_MAIN);
+    pid_t worker1_pid = g_shm->worker1_pid;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
     if (worker1_pid > 0) {
-        kill(worker1_pid, SIGUSR1);
-        log_msg("PRACOWNIK2: Wyslano SIGUSR1 do pracownika1 (PID:%d).", worker1_pid);
-    }
-
-    // Powiadom pracownika1 przez FIFO
-    if (fifo_fd_2 >= 0) {
-        FifoMsg fmsg;
-        fmsg.type = FIFO_PAUSE_REQ;
-        fmsg.sender_pid = getpid();
-        if (write(fifo_fd_2, &fmsg, sizeof(fmsg)) == -1) {
-            perror("PRACOWNIK2: write FIFO_PAUSE_REQ");
-        }
-        log_msg("PRACOWNIK2: Wyslano PAUSE_REQ do pracownika1 przez FIFO.");
-    }
-
-    // Czekaj na potwierdzenie gotowosci od pracownika1
-    log_msg("PRACOWNIK2: Kolej ZATRZYMANA. Czekam na potwierdzenie od pracownika1...");
-    int got_ack = 0;
-    int wait_count = 0;
-    while (!got_ack && worker2_is_running && wait_count < 50) {
-        if (fifo_fd_2 >= 0) {
-            FifoMsg ack;
-            ssize_t r = read(fifo_fd_2, &ack, sizeof(ack));
-            if (r > 0 && ack.type == FIFO_PAUSE_ACK) {
-                log_msg("PRACOWNIK2: Otrzymano PAUSE_ACK od pracownika1.");
-                got_ack = 1;
-            }
-        }
-        if (!got_ack) {
-            usleep(100000);
-            wait_count++;
-        }
-    }
-
-    // Symulacja rozwiazywania zagrozenia
-    log_msg("PRACOWNIK2: Rozwiazywanie zagrozenia...");
-    usleep(500000);
-
-    if (worker2_is_running) {
-        // Wznowienie (sygnal2)
-        log_msg("PRACOWNIK2: Zagrozenie usuniete. Wysylam RESUME_REQ (sygnal2).");
-
-        if (fifo_fd_2 >= 0) {
-            FifoMsg fmsg;
-            fmsg.type = FIFO_RESUME_REQ;
-            fmsg.sender_pid = getpid();
-            if (write(fifo_fd_2, &fmsg, sizeof(fmsg)) == -1) {
-                perror("PRACOWNIK2: write FIFO_RESUME_REQ");
-            }
-        }
-
-        // Czekaj na RESUME_ACK
-        int got_resume_ack = 0;
-        wait_count = 0;
-        while (!got_resume_ack && worker2_is_running && wait_count < 30) {
-            if (fifo_fd_2 >= 0) {
-                FifoMsg ack;
-                ssize_t r = read(fifo_fd_2, &ack, sizeof(ack));
-                if (r > 0 && ack.type == FIFO_RESUME_ACK) {
-                    log_msg("PRACOWNIK2: Otrzymano RESUME_ACK od pracownika1.");
-                    got_resume_ack = 1;
-                }
-            }
-            if (!got_resume_ack) {
-                usleep(100000);
-                wait_count++;
-            }
-        }
-
-        emergency_stop_2 = 0;
-        sem_wait_op(sem_state_mutex_id, 0);
-        state->is_paused = 0;
-        sem_signal_op(sem_state_mutex_id, 0);
-
-        log_msg("PRACOWNIK2: Kolej WZNOWIONA (sygnal2).");
+        kill(worker1_pid, sig);
     }
 }
 
-// Obsluga FIFO - odpowiedz na zadania od pracownika1
-void check_fifo_messages() {
-    if (fifo_fd_2 < 0) return;
+// Inicjowanie zatrzymania awaryjnego przez worker2
+void initiate_emergency_stop_w2(void) {
+    logger(LOG_EMERGENCY, "PRACOWNIK2: Inicjuję AWARYJNE ZATRZYMANIE kolei!");
+    
+    // Ustaw lokalną flagę
+    emergency_stop = 1;
+    emergency_resume = 0;
+    
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->emergency_stop = true;
+    g_shm->emergency_initiator = 2;
+    g_shm->worker1_ready = false;
+    g_shm->worker2_ready = false;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    // Powiadom worker1
+    send_signal_to_worker1(SIGUSR1);
+    
+    logger(LOG_EMERGENCY, "PRACOWNIK2: Kolej ZATRZYMANA - czekam na gotowość worker1");
+}
 
-    FifoMsg fmsg;
-    ssize_t r = read(fifo_fd_2, &fmsg, sizeof(fmsg));
-    if (r <= 0) return;
+// Wznowienie po awarii (gdy worker2 jest inicjatorem)
+void resume_from_emergency_w2(void) {
+    logger(LOG_EMERGENCY, "PRACOWNIK2: Sprawdzam gotowość do wznowienia...");
+    
+    // Oznacz gotowość
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->worker2_ready = true;
+    bool worker1_ready = g_shm->worker1_ready;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    // Czekaj na worker1
+    while (!worker1_ready && !shutdown_flag) {
+        usleep(10000);
+        sem_opusc(g_sem_id, SEM_MAIN);
+        worker1_ready = g_shm->worker1_ready;
+        sem_podnies(g_sem_id, SEM_MAIN);
+    }
+    
+    if (shutdown_flag) return;
+    
+    // Poczekaj 5 sekund przed wznowieniem (używamy pętli usleep zamiast sleep)
+    logger(LOG_EMERGENCY, "PRACOWNIK2: Worker1 gotowy - wznawiamy po 5s...");
+    for (int i = 0; i < 50 && !shutdown_flag; i++) {
+        usleep(100000); // 100ms x 50 = 5 sekund
+    }
+    
+    // Wznów działanie
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->emergency_stop = false;
+    g_shm->emergency_initiator = 0;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    // Powiadom worker1
+    send_signal_to_worker1(SIGUSR2);
+    
+    emergency_stop = 0;
+    emergency_resume = 0;
+    
+    logger(LOG_EMERGENCY, "PRACOWNIK2: Kolej WZNOWIONA - normalny ruch!");
+}
 
-    switch (fmsg.type) {
-        case FIFO_PAUSE_REQ:
-            log_msg("PRACOWNIK2: Otrzymano PAUSE_REQ od pracownika1. Potwierdzam.");
-            {
-                FifoMsg ack;
-                ack.type = FIFO_PAUSE_ACK;
-                ack.sender_pid = getpid();
-                if (write(fifo_fd_2, &ack, sizeof(ack)) == -1) {
-                    perror("PRACOWNIK2: write FIFO_PAUSE_ACK");
-                }
-            }
+// Licznik bramek wyjściowych (dla round-robin)
+static int g_exit_gate_counter = 0;
+static pthread_mutex_t g_exit_gate_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+// Pobierz następny numer bramki wyjściowej (1-2)
+int get_next_exit_gate(void) {
+    pthread_mutex_lock(&g_exit_gate_mutex);
+    int gate = (g_exit_gate_counter % EXIT_GATES) + 1;
+    g_exit_gate_counter++;
+    pthread_mutex_unlock(&g_exit_gate_mutex);
+    return gate;
+}
+
+// Wątek obsługi turysty na górnej stacji
+typedef struct {
+    int tourist_id;
+    pid_t tourist_pid;
+    TrailType trail;
+} TouristExit;
+
+void* tourist_exit_thread(void* arg) {
+    TouristExit* te = (TouristExit*)arg;
+    
+    // Pobierz numer bramki
+    int gate_num = get_next_exit_gate();
+    
+    // Czekaj na semafor wyjścia (2 bramki)
+    sem_opusc(g_sem_id, SEM_GATE_EXIT);
+    logger(LOG_WORKER2, "Turysta #%d wypuszczony przez bramkę wyjściową #%d", 
+           te->tourist_id, gate_num);
+    
+    // Symulacja zjazdu trasą
+    int trail_time;
+    const char* trail_name;
+    switch (te->trail) {
+        case TRAIL_T1:
+            trail_time = TRAIL_T1_TIME;
+            trail_name = "T1 (łatwa)";
             break;
-        case FIFO_RESUME_REQ:
-            log_msg("PRACOWNIK2: Otrzymano RESUME_REQ od pracownika1. Potwierdzam.");
-            {
-                FifoMsg ack;
-                ack.type = FIFO_RESUME_ACK;
-                ack.sender_pid = getpid();
-                if (write(fifo_fd_2, &ack, sizeof(ack)) == -1) {
-                    perror("PRACOWNIK2: write FIFO_RESUME_ACK");
-                }
-            }
+        case TRAIL_T2:
+            trail_time = TRAIL_T2_TIME;
+            trail_name = "T2 (średnia)";
             break;
+        case TRAIL_T3:
         default:
+            trail_time = TRAIL_T3_TIME;
+            trail_name = "T3 (trudna)";
             break;
     }
+    
+    logger(LOG_WORKER2, "Turysta #%d zjeżdża trasą %s (%ds)", 
+           te->tourist_id, trail_name, trail_time);
+    
+    // Aktualizuj statystyki tras
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->trail_usage[te->trail]++;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    // Symulacja zjazdu
+    sleep(trail_time);
+    
+    // Wyślij powiadomienie do turysty, że zjazd zakończony i może wrócić
+    Message msg;
+    msg.mtype = te->tourist_pid;
+    msg.sender_pid = getpid();
+    msg.data = 3; // Zjazd zakończony (różne od 2 = dotarcie na górę)
+    msg.tourist_id = te->tourist_id;
+    wyslij_komunikat_nowait(g_msg_id, &msg);
+    
+    // Zwolnij bramkę wyjścia
+    sem_podnies(g_sem_id, SEM_GATE_EXIT);
+    
+    logger(LOG_WORKER2, "Turysta #%d zakończył zjazd trasą %s i zjeżdża na dół", 
+           te->tourist_id, trail_name);
+    
+    free(te);
+    return NULL;
 }
 
-// Glowna petla pracownika2 (stacja gorna)
-void run_worker_up() {
-    log_msg("PRACOWNIK2: Proces pracownika stacji gornej uruchomiony (PID:%d).", getpid());
-
-    sem_wait_op(sem_state_mutex_id, 0);
-    state->worker_up_pid = getpid();
-    sem_signal_op(sem_state_mutex_id, 0);
-
-    // Otworz FIFO
-    fifo_fd_2 = open(FIFO_WORKER_PATH, O_RDWR | O_NONBLOCK);
-    if (fifo_fd_2 == -1) {
-        perror("PRACOWNIK2: open FIFO");
-    }
-
-    MsgBuf msg;
-
-    while (state->is_running && worker2_is_running) {
-        // Sprawdz awaryjne zatrzymanie
-        if (emergency_stop_2) {
-            handle_emergency_stop_worker2();
-            if (!worker2_is_running) break;
+int main(void) {
+    // Konfiguracja sygnałów
+    struct sigaction sa;
+    sa.sa_handler = worker2_signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction(SIGTERM, &sa, NULL);
+    sigaction(SIGUSR1, &sa, NULL);
+    sigaction(SIGUSR2, &sa, NULL);
+    
+    // Połącz z zasobami IPC
+    g_msg_id = polacz_kolejke();
+    g_msg_worker_id = polacz_kolejke_worker();
+    g_sem_id = polacz_semafory();
+    int shm_id = polacz_pamiec();
+    g_shm = dolacz_pamiec(shm_id);
+    
+    // Zapisz PID
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->worker2_pid = getpid();
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    srand(time(NULL) ^ getpid());
+    
+    logger(LOG_WORKER2, "Rozpoczynam pracę na stacji górnej!");
+    
+    Message msg;
+    int emergency_timer = 0;
+    bool should_trigger_emergency = false;
+    int next_emergency = 3000 + (rand() % 2000); // Losowy czas do następnej awarii (3-5s)
+    
+    while (!shutdown_flag) {
+        // Obsługa awarii - sprawdź czy trzeba zainicjować
+        emergency_timer++;
+        if (!emergency_stop && emergency_timer >= next_emergency) {
+            // Losowa szansa na awarię (50%)
+            if (rand() % 100 < 50) {
+                should_trigger_emergency = true;
+            }
+            emergency_timer = 0;
+            next_emergency = 3000 + (rand() % 2000); // Reset na 3-5s
         }
-
-        // Sprawdz wiadomosci FIFO od pracownika1
-        check_fifo_messages();
-
-        // Odbierz wiadomosci od turystow docierajacych na gore
-        ssize_t result = msgrcv(msg_queue_id, &msg, sizeof(msg) - sizeof(long),
-                                MSG_TYPE_WORKER_UP, IPC_NOWAIT);
-
-        if (result == -1) {
-            if (errno == ENOMSG) {
-                usleep(100000);
+        
+        if (should_trigger_emergency && !emergency_stop) {
+            should_trigger_emergency = false;
+            initiate_emergency_stop_w2();
+        }
+        
+        // Obsługa zatrzymania awaryjnego
+        if (emergency_stop) {
+            // Sprawdź czy to my zainicjowaliśmy
+            sem_opusc(g_sem_id, SEM_MAIN);
+            int initiator = g_shm->emergency_initiator;
+            sem_podnies(g_sem_id, SEM_MAIN);
+            
+            if (initiator == 2 && emergency_resume) {
+                // My zainicjowaliśmy i dostaliśmy sygnał wznowienia
+                resume_from_emergency_w2();
+            } else if (initiator == 1) {
+                // Worker1 zainicjował - loguj i odpowiedz gotowością
+                logger(LOG_EMERGENCY, "PRACOWNIK2: Odebrano sygnał AWARII od worker1!");
+                
+                sem_opusc(g_sem_id, SEM_MAIN);
+                g_shm->worker2_ready = true;
+                sem_podnies(g_sem_id, SEM_MAIN);
+                
+                logger(LOG_WORKER2, "Potwierdzam gotowość do wznowienia (awaria od worker1)");
+                
+                // Czekaj na sygnał wznowienia
+                while (emergency_stop && !emergency_resume && !shutdown_flag) {
+                    usleep(10000);
+                }
+                
+                if (emergency_resume) {
+                    emergency_stop = 0;
+                    emergency_resume = 0;
+                    logger(LOG_EMERGENCY, "PRACOWNIK2: Otrzymano sygnał WZNOWIENIA od worker1!");
+                }
+            }
+            
+            if (emergency_stop) {
+                usleep(10000);
                 continue;
             }
-            if (!worker2_is_running || errno == EIDRM || errno == EINVAL) break;
-            continue;
         }
-
-        if (msg.action == ACTION_ARRIVED_TOP) {
-            sem_wait_op(sem_state_mutex_id, 0);
-            state->people_on_top++;
-            int pop = state->people_on_top;
-            sem_signal_op(sem_state_mutex_id, 0);
-
-            log_msg("PRACOWNIK2: Turysta %d dotarl na gore. Osoby na gorze: %d",
-                    msg.tourist_id, pop);
-
-            // Przydziel droge wyjscia (jedna z 2 drog)
-            int exit_route = msg.tourist_id % EXIT_ROUTES;
-
-            // Otworz bramke wyjsciowa
-            sem_wait_op(sem_exit_id, exit_route);
-            log_msg("PRACOWNIK2: Turysta %d wychodzi droga %d.", msg.tourist_id, exit_route + 1);
-            usleep(50000); // czas przejscia
-            sem_signal_op(sem_exit_id, exit_route);
-
-            sem_wait_op(sem_state_mutex_id, 0);
-            state->people_on_top--;
-            sem_signal_op(sem_state_mutex_id, 0);
-
-            // Wyslij potwierdzenie do turysty
-            MsgBuf ack;
-            memset(&ack, 0, sizeof(ack));
-            ack.mtype = msg.pid;
-            ack.action = ACTION_TOURIST_READY;
-            if (msgsnd(msg_queue_id, &ack, sizeof(ack) - sizeof(long), 0) == -1) {
-                perror("PRACOWNIK2: msgsnd ack to tourist");
+        
+        // Sprawdź koniec dnia
+        sem_opusc(g_sem_id, SEM_MAIN);
+        bool is_running = g_shm->is_running;
+        sem_podnies(g_sem_id, SEM_MAIN);
+        
+        if (!is_running) {
+            logger(LOG_WORKER2, "Symulacja zakończona");
+            break;
+        }
+        
+        // Odbieraj krzesełka przyjeżdżające na górną stację (tylko logowanie)
+        while (odbierz_komunikat(g_msg_worker_id, &msg, MSG_CHAIR_ARRIVAL, false)) {
+            if (shutdown_flag || emergency_stop) break;
+            
+            int chair_id = msg.data;
+            int passenger_count = msg.data2;
+            
+            logger(LOG_CHAIR, "Krzesełko #%d dotarło na górną stację z %d pasażerami",
+                   chair_id, passenger_count);
+            
+            // Wyślij powiadomienie do pasażerów że dotarli (data == 2)
+            for (int i = 0; i < passenger_count && i < CHAIR_CAPACITY; i++) {
+                pid_t tourist_pid = msg.child_ids[i];
+                if (tourist_pid <= 0) continue;
+                
+                Message reply;
+                reply.mtype = tourist_pid;
+                reply.sender_pid = getpid();
+                reply.data = 2; // Dotarłeś na górę
+                reply.tourist_id = chair_id * 100 + i;
+                wyslij_komunikat_nowait(g_msg_id, &reply);
             }
         }
+        
+        // Odbieraj prośby turystów o wyjście
+        while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_EXIT, false)) {
+            if (shutdown_flag || emergency_stop) break;
+            
+            TouristExit* te = malloc(sizeof(TouristExit));
+            te->tourist_pid = msg.sender_pid;
+            te->tourist_id = msg.tourist_id;
+            te->trail = (TrailType)msg.data; // Wybrana trasa
+            
+            pthread_t thread;
+            pthread_attr_t attr;
+            pthread_attr_init(&attr);
+            pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+            
+            if (pthread_create(&thread, &attr, tourist_exit_thread, te) != 0) {
+                perror("Błąd tworzenia wątku wyjścia turysty");
+                free(te);
+            }
+            
+            pthread_attr_destroy(&attr);
+        }
+        
+        usleep(1000); // 1ms
     }
-
-    if (fifo_fd_2 >= 0) close(fifo_fd_2);
-    log_msg("PRACOWNIK2: Proces pracownika zakonczony.");
-}
-
-int main(int argc, char* argv[]) {
-    (void)argc; (void)argv;
-    process_role = ROLE_WORKER_UP;
-
-    struct sigaction sa_term, sa_usr1, sa_usr2;
-
-    sa_term.sa_handler = worker2_sigterm_handler;
-    sigemptyset(&sa_term.sa_mask);
-    sa_term.sa_flags = 0;
-    sigaction(SIGTERM, &sa_term, NULL);
-
-    sa_usr1.sa_handler = worker2_sigusr1_handler;
-    sigemptyset(&sa_usr1.sa_mask);
-    sa_usr1.sa_flags = 0;
-    sigaction(SIGUSR1, &sa_usr1, NULL);
-
-    sa_usr2.sa_handler = worker2_sigusr2_handler;
-    sigemptyset(&sa_usr2.sa_mask);
-    sa_usr2.sa_flags = 0;
-    sigaction(SIGUSR2, &sa_usr2, NULL);
-
-    signal(SIGALRM, SIG_IGN);
-    signal(SIGINT, SIG_IGN);  // SIGINT obsluguje main, worker2 czeka na SIGTERM
-    srand(time(NULL) ^ getpid());
-    attach_ipc_resources();
-
-    run_worker_up();
-
+    
+    logger(LOG_WORKER2, "Kończę pracę na stacji górnej");
+    
+    odlacz_pamiec(g_shm);
     return 0;
 }

@@ -1,35 +1,84 @@
-CC=gcc
-CFLAGS=-Wall -Wextra -std=gnu11 -pthread
-LDFLAGS=-pthread -lrt
-TARGETS=main logger cashier worker worker2 tourist
+# Makefile dla symulacji kolei linowej
+# Kompilacja: make
+# Uruchomienie: make run
+# Czyszczenie: make clean
 
-all: $(TARGETS)
+CC = gcc
+CFLAGS = -Wall -Wextra -pthread -D_GNU_SOURCE -g
+LDFLAGS = -pthread
 
-main: main.c utils.o common.h
-	$(CC) $(CFLAGS) -o $@ main.c utils.o $(LDFLAGS)
+# Pliki źródłowe i docelowe
+SOURCES = main.c cashier.c worker.c worker2.c tourist.c logger.c utils.c
+HEADERS = struktury.h operacje.h logger.h
 
-logger: logger.c utils.o common.h
-	$(CC) $(CFLAGS) -o $@ logger.c utils.o $(LDFLAGS)
+# Główne pliki wykonywalne
+MAIN = kolej
+CASHIER = cashier
+WORKER = worker
+WORKER2 = worker2
+TOURIST = tourist
 
-cashier: cashier.c utils.o common.h
-	$(CC) $(CFLAGS) -o $@ cashier.c utils.o $(LDFLAGS)
+# Pliki obiektowe wspólne
+COMMON_OBJ = utils.o logger.o
 
-worker: worker.c utils.o common.h
-	$(CC) $(CFLAGS) -o $@ worker.c utils.o $(LDFLAGS)
+all: $(MAIN) $(CASHIER) $(WORKER) $(WORKER2) $(TOURIST)
 
-worker2: worker2.c utils.o common.h
-	$(CC) $(CFLAGS) -o $@ worker2.c utils.o $(LDFLAGS)
+# Główny program
+$(MAIN): main.o $(COMMON_OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
 
-tourist: tourist.c utils.o common.h
-	$(CC) $(CFLAGS) -o $@ tourist.c utils.o $(LDFLAGS)
+# Kasjer
+$(CASHIER): cashier.o $(COMMON_OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
 
-utils.o: utils.c common.h
+# Pracownik 1 (stacja dolna)
+$(WORKER): worker.o $(COMMON_OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+# Pracownik 2 (stacja górna)
+$(WORKER2): worker2.o $(COMMON_OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+# Turysta
+$(TOURIST): tourist.o $(COMMON_OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+# Kompilacja plików obiektowych
+%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-clean:
-	rm -f $(TARGETS) *.o kolej_log.txt rides_log.txt /tmp/kolej_worker_fifo
-
+# Uruchomienie symulacji
 run: all
-	./main
+	./$(MAIN)
 
-.PHONY: all clean run
+# Czyszczenie
+clean:
+	rm -f *.o $(MAIN) $(CASHIER) $(WORKER) $(WORKER2) $(TOURIST)
+	rm -f kolej_log.txt raport_karnetow.txt
+
+# Czyszczenie zasobów IPC (po awarii)
+clean-ipc:
+	ipcs -s | grep $(USER) | awk '{print $$2}' | xargs -I {} ipcrm -s {} 2>/dev/null || true
+	ipcs -m | grep $(USER) | awk '{print $$2}' | xargs -I {} ipcrm -m {} 2>/dev/null || true
+	ipcs -q | grep $(USER) | awk '{print $$2}' | xargs -I {} ipcrm -q {} 2>/dev/null || true
+
+# Wyświetl zasoby IPC
+show-ipc:
+	@echo "=== Semafory ==="
+	ipcs -s
+	@echo "=== Pamięć dzielona ==="
+	ipcs -m
+	@echo "=== Kolejki komunikatów ==="
+	ipcs -q
+
+# Pomoc
+help:
+	@echo "Dostępne cele:"
+	@echo "  make        - kompilacja wszystkich plików"
+	@echo "  make run    - kompilacja i uruchomienie symulacji"
+	@echo "  make clean  - usunięcie plików wykonywalnych i obiektowych"
+	@echo "  make clean-ipc - usunięcie zasobów IPC (po awarii)"
+	@echo "  make show-ipc - wyświetlenie zasobów IPC"
+	@echo "  make help   - ta pomoc"
+
+.PHONY: all run clean clean-ipc show-ipc help

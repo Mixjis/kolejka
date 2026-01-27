@@ -1,602 +1,508 @@
-#include "common.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <errno.h>
+#include <time.h>
+#include <sys/msg.h>
+#include <pthread.h>
+#include "struktury.h"
+#include "operacje.h"
+#include "logger.h"
 
-int tourist_id;
-int age;
-TouristType type;
-int is_vip;
-int num_children = 0;
-int family_id = 0;
-pthread_t child_threads[MAX_CHILDREN_PER_GUARDIAN];
+// Globalne zmienne dla wątków
+static volatile sig_atomic_t shutdown_flag = 0;
+static volatile sig_atomic_t emergency_flag = 0;
 
+static int g_sem_id = -1;
+static int g_msg_id = -1;
+static SharedMemory* g_shm = NULL;
+static int g_tourist_id = -1;
+static pid_t g_pid = 0;
+
+// Dane turysty
+static int g_age = 0;
+static TouristType g_type = TOURIST_PEDESTRIAN;
+static bool g_is_vip = false;
+static int g_ticket_id = -1;
+static TicketType g_ticket_type = TICKET_SINGLE;
+static time_t g_ticket_valid_until = 0;
+static int g_children_count = 0;
+static int g_child_ages[2] = {0, 0};
+
+// Struktura dziecka (realizowana wątkiem)
 typedef struct {
-    int child_num;
-    int age;
-} ChildData;
+    int child_index;
+    int child_age;
+    pthread_t thread;
+    volatile bool on_chair;
+    volatile bool finished;
+} ChildThread;
 
-volatile sig_atomic_t tourist_running = 1;
-volatile sig_atomic_t force_exit = 0;
+static ChildThread g_children[2];
+static pthread_mutex_t children_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void tourist_sigterm_handler(int sig) {
-    (void)sig;
-    tourist_running = 0;
-    force_exit = 1;
+// Licznik bramek wejściowych (lokalny dla procesu - każdy turysta sam liczy)
+static int g_entry_gate = 0;
+
+// Handler sygnałów
+void tourist_signal_handler(int sig) {
+    if (sig == SIGTERM) {
+        shutdown_flag = 1;
+    } else if (sig == SIGUSR1) {
+        emergency_flag = 1;
+    } else if (sig == SIGUSR2) {
+        emergency_flag = 0;
+    }
 }
 
-// Watek dziecka (pod opieka dorosleg)
+// Funkcja wątku dziecka - dziecko podąża za rodzicem
 void* child_thread_func(void* arg) {
-    ChildData* data = (ChildData*)arg;
-    log_msg("DZIECKO %d (family:%d, wiek:%d): Watek uruchomiony, pod opieka.",
-            data->child_num, family_id, data->age);
-
-    // Czekaj az opiekun kupi bilet
-    while (!force_exit) {
-        if (sem_trywait_op(sem_ticket_bought_id, tourist_id - 1) == 0) {
-            log_msg("DZIECKO %d (family:%d): Rodzina gotowa, podazam za opiekunem.",
-                    data->child_num, family_id);
-            break;
-        }
-        usleep(100000);
-        if (force_exit) break;
+    ChildThread* child = (ChildThread*)arg;
+    
+    logger(LOG_TOURIST, "Dziecko #%d (wiek %d) turysty #%d - podąża z opiekunem",
+           child->child_index, child->child_age, g_tourist_id);
+    
+    // Dziecko po prostu czeka aż rodzic zakończy
+    while (!child->finished && !shutdown_flag) {
+        usleep(10000);
     }
-
-    free(data);
+    
+    logger(LOG_TOURIST, "Dziecko #%d turysty #%d zakończyło podróż",
+           child->child_index, g_tourist_id);
+    
     return NULL;
 }
 
-void create_family_threads() {
-    if (num_children == 0) return;
-
-    log_msg("TURYSTA %d: OPIEKUN (wiek:%d, family:%d) z %d dziecmi",
-            tourist_id, age, family_id, num_children);
-
-    for (int i = 0; i < num_children; i++) {
-        ChildData* data = malloc(sizeof(ChildData));
-        if (!data) {
-            perror("malloc ChildData");
-            continue;
-        }
-        data->child_num = i + 1;
-        data->age = rand() % (CHILD_NEEDS_GUARDIAN_MAX - AGE_MIN + 1) + AGE_MIN;
-
-        if (pthread_create(&child_threads[i], NULL, child_thread_func, data) != 0) {
-            perror("pthread_create child");
-            free(data);
+// Uruchom wątki dzieci
+void start_children_threads(void) {
+    for (int i = 0; i < g_children_count; i++) {
+        g_children[i].child_index = i;
+        g_children[i].child_age = g_child_ages[i];
+        g_children[i].on_chair = false;
+        g_children[i].finished = false;
+        
+        if (pthread_create(&g_children[i].thread, NULL, child_thread_func, &g_children[i]) != 0) {
+            perror("Błąd tworzenia wątku dziecka");
         }
     }
 }
 
-// Kupno biletu w kasie
-void buy_ticket() {
-    log_msg("TURYSTA %d: Podchodze do kasy (VIP:%d, family:%d).",
-            tourist_id, is_vip, family_id);
-
-    // Losowy czas dojscia do kasy (skrocony)
-    usleep((rand() % 300000) + 100000);
-
-    MsgBuf msg;
-    memset(&msg, 0, sizeof(msg));
-    msg.mtype = MSG_TYPE_CASHIER_REQ;
-    msg.pid = getpid();
-    msg.tourist_id = tourist_id;
-    msg.tourist_type = type;
-    msg.age = age;
-    msg.is_vip = is_vip;
-    msg.num_children = num_children;
-    msg.family_id = family_id;
-
-    while (msgsnd(msg_queue_id, &msg, sizeof(msg) - sizeof(long), 0) == -1) {
-        if (errno == EINTR) continue;  // przerwane sygnalem - ponow
-        if (errno == EIDRM || errno == EINVAL) return;  // kolejka usunieta
-        perror("TURYSTA: msgsnd to cashier");
-        return;
+// Zakończ wątki dzieci
+void finish_children_threads(void) {
+    pthread_mutex_lock(&children_mutex);
+    for (int i = 0; i < g_children_count; i++) {
+        g_children[i].finished = true;
     }
-
-    // Czekaj na bilet (polling - pozwala na przerwanie przez SIGTERM)
-    while (tourist_running) {
-        if (sem_trywait_op(sem_ticket_bought_id, tourist_id - 1) == 0) break;
-        usleep(50000);
-    }
-    if (!tourist_running) return;
-
-    // Sprawdz czy kasjer rzeczywiscie sprzedal bilet (mogl odrzucic)
-    sem_wait_op(sem_state_mutex_id, 0);
-    int got_ticket = tickets[tourist_id].is_valid;
-    sem_signal_op(sem_state_mutex_id, 0);
-
-    if (!got_ticket) {
-        log_msg("TURYSTA %d: Kasa odrzucila - bramki zamkniete.", tourist_id);
-        return;
-    }
-    log_msg("TURYSTA %d: Bilet kupiony (family:%d).", tourist_id, family_id);
-
-    // Powiadom dzieci
-    if (num_children > 0) {
-        for (int i = 0; i < num_children; i++) {
-            sem_signal_op(sem_ticket_bought_id, tourist_id - 1);
-        }
-        usleep(50000);
-        log_msg("TURYSTA %d: Rodzina skompletowana, idziemy razem.", tourist_id);
+    pthread_mutex_unlock(&children_mutex);
+    
+    for (int i = 0; i < g_children_count; i++) {
+        pthread_join(g_children[i].thread, NULL);
     }
 }
 
-// Walidacja karnetu przy bramce wejsciowej
-int validate_ticket_at_gate() {
-    sem_wait_op(sem_state_mutex_id, 0);
-
-    Ticket *t = &tickets[tourist_id];
-    if (!t->is_valid) {
-        sem_signal_op(sem_state_mutex_id, 0);
-        log_msg("TURYSTA %d: Bilet nieaktywny! Odrzucony.", tourist_id);
-        return 0;
-    }
-
-    // Sprawdz waznosc czasowa
-    if (t->type == TK1 || t->type == TK2 || t->type == TK3) {
-        time_t now = time(NULL);
-        if (t->valid_until > 0 && now > t->valid_until) {
-            sem_signal_op(sem_state_mutex_id, 0);
-            log_msg("TURYSTA %d: Karnet czasowy WYGASL! Odrzucony.", tourist_id);
-            stats->rejected_expired++;
-            return 0;
-        }
-    }
-
-    // Jednorazowy - sprawdz czy juz uzyty
-    if (t->type == SINGLE && t->validation_count > 0) {
-        sem_signal_op(sem_state_mutex_id, 0);
-        log_msg("TURYSTA %d: Bilet jednorazowy juz uzyty! Odrzucony.", tourist_id);
-        return 0;
-    }
-
-    // Zarejestruj przejscie
-    t->validation_count++;
-
-    if (state->pass_log_count < MAX_PASS_LOG) {
-        PassLogEntry *entry = &state->pass_log[state->pass_log_count];
-        entry->tourist_id = tourist_id;
-        entry->ticket_type = t->type;
-        entry->timestamp = time(NULL);
-        entry->ride_number = t->validation_count;
-        state->pass_log_count++;
-    }
-
-    sem_signal_op(sem_state_mutex_id, 0);
-
-    log_msg("TURYSTA %d: Karnet zwalidowany (uzycie #%d).", tourist_id, t->validation_count);
-    return 1;
-}
-
-// Wejscie przez bramki (4 bramki)
-int enter_through_gates() {
-    sem_wait_op(sem_state_mutex_id, 0);
-    int gates_open = !state->is_closing;
-    sem_signal_op(sem_state_mutex_id, 0);
-
-    if (!gates_open) {
-        log_msg("TURYSTA %d: Bramki zamkniete. Rezygnuje.", tourist_id);
-        return 0;
-    }
-
-    int gate_num;
-    if (is_vip) {
-        // VIP wchodzi bez kolejki - wybiera najkrotsza bramke
-        gate_num = rand() % ENTRY_GATES;
-        log_msg("TURYSTA %d: VIP - priorytetowe wejscie (bramka %d).", tourist_id, gate_num + 1);
+// Kupno biletu
+bool buy_ticket(void) {
+    Message msg;
+    
+    // Wyślij prośbę o bilet (VIP używa innego typu)
+    if (g_is_vip) {
+        msg.mtype = MSG_VIP_PRIORITY + MSG_TOURIST_TO_CASHIER;
     } else {
-        gate_num = rand() % ENTRY_GATES;
-        log_msg("TURYSTA %d: Czekam na wejscie (bramka %d).", tourist_id, gate_num + 1);
+        msg.mtype = MSG_TOURIST_TO_CASHIER;
     }
-
-    // VIP nie czeka (trywait), zwykly czeka
-    if (is_vip) {
-        // VIP probuje bez czekania, jesli nie moze - czeka krotko
-        if (sem_trywait_op(sem_entry_id, gate_num) != 0) {
-            sem_wait_op(sem_entry_id, gate_num);
-        }
-    } else {
-        sem_wait_op(sem_entry_id, gate_num);
+    msg.sender_pid = g_pid;
+    msg.tourist_id = g_tourist_id;
+    msg.age = g_age;
+    msg.tourist_type = g_type;
+    msg.is_vip = g_is_vip;
+    msg.children_count = g_children_count;
+    msg.child_ids[0] = g_child_ages[0];
+    msg.child_ids[1] = g_child_ages[1];
+    
+    if (!wyslij_komunikat(g_msg_id, &msg)) {
+        return false;
     }
-
-    // Walidacja biletu na bramce
-    if (!validate_ticket_at_gate()) {
-        sem_signal_op(sem_entry_id, gate_num);
-        return 0;
+    
+    // Czekaj na odpowiedź (adresowaną do naszego PID)
+    if (!odbierz_komunikat(g_msg_id, &msg, g_pid, true)) {
+        return false;
     }
-
-    log_msg("TURYSTA %d: Przeszedlem bramke %d (walidacja OK).", tourist_id, gate_num + 1);
-
-    usleep((rand() % 100000) + 50000);
-    sem_signal_op(sem_entry_id, gate_num);
-    return 1;
-}
-
-// Wejscie na teren stacji dolnej (max N osob)
-void enter_station() {
-    int group_size = 1 + num_children;
-
-    log_msg("TURYSTA %d: Czekam na miejsce na stacji (%d osob).", tourist_id, group_size);
-
-    for (int i = 0; i < group_size; i++) {
-        sem_wait_op(sem_station_id, 0);
-    }
-
-    sem_wait_op(sem_state_mutex_id, 0);
-    state->station_population += group_size;
-    int pop = state->station_population;
-    sem_signal_op(sem_state_mutex_id, 0);
-
-    log_msg("TURYSTA %d: Wszedlem na stacje. Populacja: %d/%d",
-            tourist_id, pop, MAX_STATION_CAPACITY);
-}
-
-// Przejscie na peron (3 bramki peronowe - otwierane przez pracownika1 po kontroli grupy)
-void go_to_platform() {
-    int platform_gate = rand() % PLATFORM_GATES;
-
-    log_msg("TURYSTA %d: Pracownik1 otworzyl bramke peronowa %d - przechodze na peron.",
-            tourist_id, platform_gate + 1);
-
-    sem_wait_op(sem_platform_id, platform_gate);
-
-    log_msg("TURYSTA %d: Przeszedlem bramke peronowa %d. Wsiadam na krzeslo.",
-            tourist_id, platform_gate + 1);
-
-    usleep((rand() % 100000) + 30000);
-    sem_signal_op(sem_platform_id, platform_gate);
-}
-
-// Oczekiwanie na krzeslo - wyslij zgloszenie do pracownika1
-int wait_for_chair() {
-    MsgBuf worker_msg;
-    memset(&worker_msg, 0, sizeof(worker_msg));
-    worker_msg.mtype = MSG_TYPE_WORKER_DOWN;
-    worker_msg.pid = getpid();
-    worker_msg.tourist_id = tourist_id;
-    worker_msg.tourist_type = type;
-    worker_msg.age = age;
-    worker_msg.is_vip = is_vip;
-    worker_msg.num_children = num_children;
-    worker_msg.family_id = family_id;
-    worker_msg.requires_guardian = (age < CHILD_NEEDS_GUARDIAN_MAX) ? 1 : 0;
-    worker_msg.action = ACTION_TOURIST_READY;
-
-    while (msgsnd(msg_queue_id, &worker_msg, sizeof(worker_msg) - sizeof(long), 0) == -1) {
-        if (errno == EINTR) continue;
-        if (errno == EIDRM || errno == EINVAL) return 0;
-        perror("TURYSTA: msgsnd to worker");
-        return 0;
-    }
-
-    log_msg("TURYSTA %d: Zgloszenie do pracownika, czekam na przydział krzesla.", tourist_id);
-
-    // Czekaj na odpowiedz od pracownika (polling - pozwala na przerwanie)
-    MsgBuf go_msg;
-    while (tourist_running) {
-        ssize_t r = msgrcv(msg_queue_id, &go_msg, sizeof(go_msg) - sizeof(long),
-                           getpid(), IPC_NOWAIT);
-        if (r >= 0) break;
-        if (errno == ENOMSG) { usleep(50000); continue; }
-        if (errno == EINTR) continue;
-        if (errno == EIDRM || errno == EINVAL) return 0;
-        perror("TURYSTA: msgrcv wait for chair");
-        return 0;
-    }
-    if (!tourist_running) return 0;
-
-    if (go_msg.action == ACTION_REJECTED) {
-        log_msg("TURYSTA %d: Odrzucony przez pracownika.", tourist_id);
-        return 0;
-    }
-
-    log_msg("TURYSTA %d: Pracownik1 przydzielil krzeslo - ide na peron.", tourist_id);
-    return 1;
-}
-
-// Przejazd w gore
-void ride_up() {
-    sleep(RIDE_DURATION);
-    log_msg("TURYSTA %d: Dojechalem na GORE. Wysiadam.", tourist_id);
-}
-
-// Wyjscie ze stacji gornej (2 drogi, obslugiwane przez pracownika2)
-void exit_upper_station() {
-    // Powiadom pracownika2 o przybyciu
-    MsgBuf arrive_msg;
-    memset(&arrive_msg, 0, sizeof(arrive_msg));
-    arrive_msg.mtype = MSG_TYPE_WORKER_UP;
-    arrive_msg.pid = getpid();
-    arrive_msg.tourist_id = tourist_id;
-    arrive_msg.action = ACTION_ARRIVED_TOP;
-
-    while (msgsnd(msg_queue_id, &arrive_msg, sizeof(arrive_msg) - sizeof(long), 0) == -1) {
-        if (errno == EINTR) continue;
-        if (errno == EIDRM || errno == EINVAL) return;
-        perror("TURYSTA: msgsnd to worker2");
-        return;
-    }
-
-    // Czekaj na potwierdzenie wyjscia od pracownika2 (polling)
-    MsgBuf exit_ack;
-    while (tourist_running) {
-        ssize_t r = msgrcv(msg_queue_id, &exit_ack, sizeof(exit_ack) - sizeof(long),
-                           getpid(), IPC_NOWAIT);
-        if (r >= 0) break;
-        if (errno == ENOMSG) { usleep(50000); continue; }
-        if (errno == EINTR) continue;
-        if (errno == EIDRM || errno == EINVAL) return;
-        perror("TURYSTA: msgrcv exit ack");
-        return;
-    }
-
-    log_msg("TURYSTA %d: Opuscilem stacje gorna.", tourist_id);
-}
-
-// Zjazd trasa (rowerzysta) lub zejscie (pieszy)
-void descend() {
-    int route = rand() % 3;
-    int duration;
-    const char *route_name;
-
-    if (route == 0) {
-        duration = ROUTE_TIME_T1;
-        route_name = "T1 (latwa)";
-        sem_wait_op(sem_state_mutex_id, 0);
-        stats->route_t1++;
-        sem_signal_op(sem_state_mutex_id, 0);
-    } else if (route == 1) {
-        duration = ROUTE_TIME_T2;
-        route_name = "T2 (srednia)";
-        sem_wait_op(sem_state_mutex_id, 0);
-        stats->route_t2++;
-        sem_signal_op(sem_state_mutex_id, 0);
-    } else {
-        duration = ROUTE_TIME_T3;
-        route_name = "T3 (trudna)";
-        sem_wait_op(sem_state_mutex_id, 0);
-        stats->route_t3++;
-        sem_signal_op(sem_state_mutex_id, 0);
-    }
-
-    if (type == BIKER) {
-        log_msg("TURYSTA %d: ROWERZYSTA zjezdza trasa %s (%ds).", tourist_id, route_name, duration);
-    } else {
-        log_msg("TURYSTA %d: PIESZY schodzi trasa %s (%ds).", tourist_id, route_name, duration);
-    }
-
-    sleep(duration);
-    log_msg("TURYSTA %d: Zakonczylem zjazd/zejscie.", tourist_id);
-}
-
-// Opuszczenie systemu - zwolnij krzeslo i miejsce na stacji
-void leave_system() {
-    int group_size = 1 + num_children;
-
-    // Zwolnij miejsce na stacji
-    sem_wait_op(sem_state_mutex_id, 0);
-    state->station_population -= group_size;
-    sem_signal_op(sem_state_mutex_id, 0);
-
-    for (int i = 0; i < group_size; i++) {
-        sem_signal_op(sem_station_id, 0);
-    }
-
-    // Powiadom pracownika1 o zwolnieniu krzesla
-    MsgBuf chair_free_msg;
-    memset(&chair_free_msg, 0, sizeof(chair_free_msg));
-    chair_free_msg.mtype = MSG_TYPE_WORKER_DOWN;
-    chair_free_msg.action = ACTION_CHAIR_FREE;
-    chair_free_msg.pid = getpid();
-    chair_free_msg.tourist_id = tourist_id;
-    while (msgsnd(msg_queue_id, &chair_free_msg, sizeof(chair_free_msg) - sizeof(long), 0) == -1) {
-        if (errno == EINTR) continue;
-        if (errno == EIDRM || errno == EINVAL) break;
-        perror("TURYSTA: msgsnd chair_free");
-        break;
-    }
-
-    log_msg("TURYSTA %d: Opuszczam system. Do zobaczenia!", tourist_id);
-}
-
-// Sprawdz czy bilet pozwala na kolejny przejazd
-int can_ride_again() {
-    sem_wait_op(sem_state_mutex_id, 0);
-    Ticket *t = &tickets[tourist_id];
-
-    // Bramki zamkniete - koniec
-    if (state->is_closing) {
-        sem_signal_op(sem_state_mutex_id, 0);
-        return 0;
-    }
-
-    if (!t->is_valid) {
-        sem_signal_op(sem_state_mutex_id, 0);
-        return 0;
-    }
-
-    // Jednorazowy - tylko 1 przejazd
-    if (t->type == SINGLE) {
-        sem_signal_op(sem_state_mutex_id, 0);
-        return 0;
-    }
-
-    // Karnety czasowe - sprawdz waznosc
-    if (t->type == TK1 || t->type == TK2 || t->type == TK3) {
-        time_t now = time(NULL);
-        if (t->valid_until > 0 && now > t->valid_until) {
-            sem_signal_op(sem_state_mutex_id, 0);
-            log_msg("TURYSTA %d: Karnet czasowy wygasl, koncze przejazdy.", tourist_id);
-            return 0;
-        }
-    }
-
-    // DAILY lub wazny czasowy - mozna jechac ponownie
-    sem_signal_op(sem_state_mutex_id, 0);
-    return 1;
-}
-
-// Glowna procedura turysty
-void run_tourist() {
-    tourist_id = atoi(getenv("TOURIST_ID"));
-    srand(time(NULL) ^ getpid());
-
-    age = rand() % (AGE_MAX - AGE_MIN + 1) + AGE_MIN;
-    type = (rand() % 2 == 0) ? WALKER : BIKER;
-    is_vip = (rand() % 100 < VIP_PROBABILITY) ? 1 : 0;
-
-    // Losowy czas przybycia (skalowany z liczba turystow)
-    int max_delay = NUM_TOURISTS / 4;
-    if (max_delay < 20) max_delay = 20;
-    if (max_delay > CLOSING_TIME * 2 / 3) max_delay = CLOSING_TIME * 2 / 3;
-    int arrival_delay = rand() % max_delay;
-    if (arrival_delay > 0) {
-        sleep(arrival_delay);
-    }
-
-    // Czy dorosly z dziecmi?
-    if (age >= GUARDIAN_AGE_MIN && (rand() % 100 < 25)) {
-        num_children = rand() % MAX_CHILDREN_PER_GUARDIAN + 1;
-        sem_wait_op(sem_state_mutex_id, 0);
-        family_id = state->next_family_id++;
-        sem_signal_op(sem_state_mutex_id, 0);
-        create_family_threads();
-    }
-
-    // Czy dziecko wymagajace opiekuna?
-    int requires_guardian = (age < CHILD_NEEDS_GUARDIAN_MAX) ? 1 : 0;
-
-    log_msg("TURYSTA %d: Start (wiek:%d, %s, VIP:%d, family:%d, dzieci:%d, wymaga_opiekuna:%d)",
-            tourist_id, age, type == BIKER ? "Rowerzysta" : "Pieszy",
-            is_vip, family_id, num_children, requires_guardian);
-
-    // Dzieci <= 8 lat musza miec opiekuna - samotne dziecko nie moze korzystac z kolei
-    if (age < CHILD_NEEDS_GUARDIAN_MAX && family_id == 0) {
-        log_msg("TURYSTA %d: Dziecko (wiek:%d) bez opiekuna - nie moze korzystac z kolei.",
-                tourist_id, age);
-        usleep((rand() % 300000) + 100000);
-        goto cleanup;
-    }
-
-    // Niektory turyści nie korzystaja z kolei (wg opisu)
-    if (rand() % 100 < 10) {
-        log_msg("TURYSTA %d: Nie korzystam z kolei, spaceruje.", tourist_id);
-        usleep((rand() % 500000) + 200000);
-        goto cleanup;
-    }
-
-    // 1. Kupno biletu w kasie
-    buy_ticket();
-    if (!tourist_running) goto cleanup;
-
-    // Sprawdz czy bramki jeszcze otwarte
-    sem_wait_op(sem_state_mutex_id, 0);
-    int gates_open = !state->is_closing;
-    sem_signal_op(sem_state_mutex_id, 0);
-    if (!gates_open) {
-        log_msg("TURYSTA %d: Kolej zamknieta po kupnie biletu.", tourist_id);
-        goto cleanup;
-    }
-
-    // === PETLA WIELOKROTNYCH PRZEJAZDOW ===
-    int ride_count = 0;
-    while (tourist_running) {
-        ride_count++;
-
-        // 2. Przejscie przez bramki wejsciowe (walidacja biletu)
-        if (!enter_through_gates()) {
+    
+    g_ticket_id = msg.data;
+    g_ticket_type = (TicketType)msg.data2;
+    
+    // Ustaw czas ważności
+    time_t now = time(NULL);
+    switch (g_ticket_type) {
+        case TICKET_TK1:
+            g_ticket_valid_until = now + TK1_DURATION;
             break;
-        }
-        if (!tourist_running) break;
-
-        // 3. Wejscie na teren stacji dolnej
-        enter_station();
-        if (!tourist_running) goto leave_station;
-
-        // 4. Oczekiwanie na krzeslo - zgloszenie do pracownika1
-        //    (Pracownik1 kontroluje grupe i otwiera bramke peronowa)
-        if (!wait_for_chair()) {
-            goto leave_station;
-        }
-        if (!tourist_running) goto leave_station;
-
-        // 5. Przejscie przez bramke peronowa (otwarta przez pracownika1)
-        go_to_platform();
-
-        // 6. Przejazd w gore
-        ride_up();
-
-        // 7. Wyjscie ze stacji gornej (2 drogi)
-        exit_upper_station();
-
-        // 8. Zjazd/zejscie trasa
-        descend();
-
-        // 9. Zwolnij krzeslo i miejsce na stacji
-        leave_system();
-
-        // Sprawdz czy mozna jechac ponownie
-        if (!can_ride_again()) {
-            log_msg("TURYSTA %d: Zakonczylem przejazdy (laczna liczba: %d).", tourist_id, ride_count);
+        case TICKET_TK2:
+            g_ticket_valid_until = now + TK2_DURATION;
             break;
-        }
-
-        log_msg("TURYSTA %d: Karnet wazny, ide na kolejny przejazd (#%d).", tourist_id, ride_count + 1);
-        // Krotka przerwa przed kolejnym przejazdem
-        usleep((rand() % 500000) + 200000);
+        case TICKET_TK3:
+            g_ticket_valid_until = now + TK3_DURATION;
+            break;
+        case TICKET_SINGLE:
+        case TICKET_DAILY:
+        default:
+            g_ticket_valid_until = 0; // Brak ograniczenia czasowego
+            break;
     }
+    
+    return true;
+}
 
-    goto cleanup;
-
-leave_station:
-    {
-        int group_size = 1 + num_children;
-        sem_wait_op(sem_state_mutex_id, 0);
-        state->station_population -= group_size;
-        sem_signal_op(sem_state_mutex_id, 0);
-        for (int i = 0; i < group_size; i++) {
-            sem_signal_op(sem_station_id, 0);
-        }
-        log_msg("TURYSTA %d: Opuszczam stacje (przerwane).", tourist_id);
+// Sprawdź ważność biletu
+bool is_ticket_valid(void) {
+    if (g_ticket_type == TICKET_SINGLE) {
+        return true; // Jednorazowy - ważny do użycia
     }
+    if (g_ticket_type == TICKET_DAILY) {
+        return true; // Dzienny - ważny cały dzień
+    }
+    
+    // Czasowe - sprawdź czas
+    if (g_ticket_valid_until == 0) {
+        return true;
+    }
+    
+    return (time(NULL) <= g_ticket_valid_until);
+}
 
-cleanup:
-    // Czyszczenie watkow dzieci
-    if (num_children > 0) {
-        force_exit = 1;
-        for (int i = 0; i < num_children; i++) {
-            sem_signal_op(sem_ticket_bought_id, tourist_id - 1);
+// Przejście przez bramkę wejściową
+bool enter_station(void) {
+    // Sprawdź ważność biletu
+    if (!is_ticket_valid()) {
+        logger(LOG_TOURIST, "Turysta #%d - bilet wygasł! Nie mogę wejść.", g_tourist_id);
+        sem_opusc(g_sem_id, SEM_MAIN);
+        g_shm->rejected_expired++;
+        sem_podnies(g_sem_id, SEM_MAIN);
+        return false;
+    }
+    
+    // Czekaj na semafor stacji (limit N osób)
+    sem_opusc(g_sem_id, SEM_STATION);
+    
+    // Czekaj na bramkę wejściową (4 bramki)
+    sem_opusc(g_sem_id, SEM_GATE_ENTRY);
+    
+    // Przydziel numer bramki wejściowej (round-robin na podstawie licznika w pamięci dzielonej)
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_entry_gate = (g_shm->gate_passages_count % ENTRY_GATES) + 1;
+    g_shm->tourists_in_station++;
+    g_shm->gate_passages_count++;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    // Log przejścia przez bramkę wejściową
+    const char* vip_str = g_is_vip ? " [VIP]" : "";
+    logger(LOG_TOURIST, "Turysta #%d%s wpuszczony przez bramkę wejściową #%d",
+           g_tourist_id, vip_str, g_entry_gate);
+    
+    // Symulacja przejścia
+    usleep(10000 + rand() % 20000); // 10-30ms
+    
+    // Zwolnij bramkę (ale nie semafor stacji - to dopiero po wyjściu)
+    sem_podnies(g_sem_id, SEM_GATE_ENTRY);
+    
+    logger(LOG_TOURIST, "Turysta #%d%s wszedł na stację dolną (bilet #%d, typ: %s)",
+           g_tourist_id, vip_str, g_ticket_id, 
+           g_type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy");
+    
+    return true;
+}
+
+// Przejście na peron
+bool go_to_platform(void) {
+    // Czekaj na bramkę na peron (3 bramki)
+    sem_opusc(g_sem_id, SEM_GATE_PLATFORM);
+    
+    // Wyślij komunikat do worker1
+    Message msg;
+    msg.mtype = MSG_TOURIST_TO_PLATFORM;
+    msg.sender_pid = g_pid;
+    msg.tourist_id = g_tourist_id;
+    msg.tourist_type = g_type;
+    msg.children_count = g_children_count;
+    msg.child_ids[0] = 0;
+    msg.child_ids[1] = 0;
+    
+    if (!wyslij_komunikat(g_msg_id, &msg)) {
+        sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
+        return false;
+    }
+    
+    // Symulacja przejścia przez bramkę
+    usleep(5000 + rand() % 10000);
+    
+    // Zwolnij bramkę na peron
+    sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
+    
+    // Opuściliśmy stację - zwolnij miejsce
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->tourists_in_station--;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    // Zwolnij semafor limitu stacji
+    sem_podnies(g_sem_id, SEM_STATION);
+    
+    logger(LOG_TOURIST, "Turysta #%d przeszedł na peron", g_tourist_id);
+    
+    return true;
+}
+
+// Czekanie na krzesełko i jazda
+bool ride_chair(void) {
+    Message msg;
+    
+    // Czekaj na komunikat od worker1 (pozwolenie na wsiadanie)
+    // Komunikat jest adresowany do naszego PID
+    while (!shutdown_flag && !emergency_flag) {
+        if (odbierz_komunikat_timeout(g_msg_id, &msg, g_pid, 100)) {
+            if (msg.data == 1) {
+                // OK, wsiadamy!
+                break;
+            }
         }
-        for (int i = 0; i < num_children; i++) {
-            pthread_join(child_threads[i], NULL);
+        
+        // Sprawdź awarię
+        if (emergency_flag) {
+            logger(LOG_TOURIST, "Turysta #%d - awaria! Czekam na wznowienie...", g_tourist_id);
+            while (emergency_flag && !shutdown_flag) {
+                usleep(10000);
+            }
         }
     }
+    
+    if (shutdown_flag) return false;
+    
+    logger(LOG_TOURIST, "Turysta #%d wsiada na krzesełko!", g_tourist_id);
+    
+    // Czekaj na komunikat o dotarciu na górę (data == 2)
+    while (!shutdown_flag) {
+        if (odbierz_komunikat_timeout(g_msg_id, &msg, g_pid, 100)) {
+            if (msg.data == 2) {
+                // Dotarliśmy na górę!
+                break;
+            }
+        }
+        
+        if (emergency_flag) {
+            logger(LOG_TOURIST, "Turysta #%d - awaria w trakcie jazdy!", g_tourist_id);
+            while (emergency_flag && !shutdown_flag) {
+                usleep(10000);
+            }
+        }
+    }
+    
+    return !shutdown_flag;
+}
+
+// Zjazd trasą i powrót na stację dolną
+void descend_trail(void) {
+    // Wybierz trasę (losowo z wagami)
+    TrailType trail;
+    int r = rand() % 100;
+    if (r < 40) {
+        trail = TRAIL_T1; // 40% łatwa
+    } else if (r < 75) {
+        trail = TRAIL_T2; // 35% średnia
+    } else {
+        trail = TRAIL_T3; // 25% trudna
+    }
+    
+    const char* trail_names[] = {"T1 (łatwa)", "T2 (średnia)", "T3 (trudna)"};
+    logger(LOG_TOURIST, "Turysta #%d wybiera trasę zjazdową %s", 
+           g_tourist_id, trail_names[trail]);
+    
+    // Wyślij prośbę o wyjście do worker2
+    Message msg;
+    msg.mtype = MSG_TOURIST_EXIT;
+    msg.sender_pid = g_pid;
+    msg.tourist_id = g_tourist_id;
+    msg.data = trail;
+    
+    wyslij_komunikat(g_msg_id, &msg);
+    
+    // Czekaj na potwierdzenie zjazdu (worker2 symuluje zjazd, data == 3)
+    while (!shutdown_flag) {
+        if (odbierz_komunikat_timeout(g_msg_id, &msg, g_pid, 100)) {
+            if (msg.data == 3) {
+                // Zjazd zakończony
+                break;
+            }
+        }
+    }
+    
+    logger(LOG_TOURIST, "Turysta #%d zakończył trasę zjazdową i dotarł na stację dolną", g_tourist_id);
+}
+
+// Obsługa wielokrotnych przejazdów (dla biletów czasowych i dziennych)
+bool can_ride_again(void) {
+    if (g_ticket_type == TICKET_SINGLE) {
+        return false; // Jednorazowy - tylko jeden przejazd
+    }
+    
+    if (!is_ticket_valid()) {
+        logger(LOG_TOURIST, "Turysta #%d - bilet czasowy wygasł!", g_tourist_id);
+        return false;
+    }
+    
+    // Sprawdź czy bramki są otwarte
+    sem_opusc(g_sem_id, SEM_MAIN);
+    bool gates_closed = g_shm->gates_closed;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    if (gates_closed) {
+        return false;
+    }
+    
+    // Losowa szansa na kolejny przejazd (50%)
+    return (rand() % 100 < 50);
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Uzycie: %s <tourist_id>\n", argv[0]);
-        exit(1);
-    }
-
-    // Walidacja danych wejsciowych
-    int id = atoi(argv[1]);
-    if (id <= 0 || id > NUM_TOURISTS) {
-        fprintf(stderr, "BLAD: tourist_id musi byc w zakresie 1-%d, podano: %s\n",
-                NUM_TOURISTS, argv[1]);
-        exit(1);
-    }
-
-    process_role = ROLE_TOURIST;
-    setenv("TOURIST_ID", argv[1], 1);
-
+    // Konfiguracja sygnałów
     struct sigaction sa;
-    sa.sa_handler = tourist_sigterm_handler;
+    sa.sa_handler = tourist_signal_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sigaction(SIGTERM, &sa, NULL);
-    sigaction(SIGINT, &sa, NULL);
-
-    attach_ipc_resources();
-    run_tourist();
-
+    sigaction(SIGUSR1, &sa, NULL);
+    sigaction(SIGUSR2, &sa, NULL);
+    
+    g_pid = getpid();
+    srand(time(NULL) ^ g_pid);
+    
+    // Parsuj argumenty
+    if (argc < 2) {
+        fprintf(stderr, "Użycie: %s <tourist_id> [age] [type] [is_vip] [children_count]\n", argv[0]);
+        return 1;
+    }
+    
+    g_tourist_id = atoi(argv[1]);
+    g_age = (argc > 2) ? atoi(argv[2]) : (18 + rand() % 50);
+    g_type = (argc > 3) ? (TouristType)atoi(argv[3]) : (TouristType)(rand() % 2);
+    g_is_vip = (argc > 4) ? (atoi(argv[4]) != 0) : false;
+    g_children_count = (argc > 5) ? atoi(argv[5]) : 0;
+    
+    // Ogranicz dzieci do max 2
+    if (g_children_count > 2) g_children_count = 2;
+    
+    // Wygeneruj wiek dzieci (4-8 lat - wymagają opieki)
+    for (int i = 0; i < g_children_count; i++) {
+        g_child_ages[i] = 4 + rand() % 5; // 4-8 lat
+    }
+    
+    // Połącz z zasobami IPC
+    g_msg_id = polacz_kolejke();
+    g_sem_id = polacz_semafory();
+    int shm_id = polacz_pamiec();
+    g_shm = dolacz_pamiec(shm_id);
+    
+    // Sprawdź czy symulacja jeszcze trwa
+    sem_opusc(g_sem_id, SEM_MAIN);
+    bool is_running = g_shm->is_running;
+    bool gates_closed = g_shm->gates_closed;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    if (!is_running || gates_closed) {
+        odlacz_pamiec(g_shm);
+        return 0;
+    }
+    
+    // Uruchom wątki dzieci
+    if (g_children_count > 0) {
+        start_children_threads();
+    }
+    
+    const char* type_str = g_type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy";
+    const char* vip_str = g_is_vip ? " [VIP]" : "";
+    
+    if (g_children_count > 0) {
+        logger(LOG_TOURIST, "Turysta #%d%s przybywa (%s, %d lat, %d dzieci pod opieką)",
+               g_tourist_id, vip_str, type_str, g_age, g_children_count);
+    } else {
+        logger(LOG_TOURIST, "Turysta #%d%s przybywa (%s, %d lat)",
+               g_tourist_id, vip_str, type_str, g_age);
+    }
+    
+    // Niektórzy turyści nie korzystają z kolei (5%)
+    if (rand() % 100 < 5) {
+        logger(LOG_TOURIST, "Turysta #%d tylko ogląda i odchodzi", g_tourist_id);
+        
+        if (g_children_count > 0) {
+            finish_children_threads();
+        }
+        
+        sem_opusc(g_sem_id, SEM_MAIN);
+        g_shm->total_tourists_finished++;
+        sem_podnies(g_sem_id, SEM_MAIN);
+        
+        odlacz_pamiec(g_shm);
+        return 0;
+    }
+    
+    // 1. Kupno biletu
+    if (!buy_ticket()) {
+        logger(LOG_TOURIST, "Turysta #%d nie mógł kupić biletu - rezygnuje", g_tourist_id);
+        
+        if (g_children_count > 0) {
+            finish_children_threads();
+        }
+        
+        sem_opusc(g_sem_id, SEM_MAIN);
+        g_shm->total_tourists_finished++;
+        sem_podnies(g_sem_id, SEM_MAIN);
+        
+        odlacz_pamiec(g_shm);
+        return 0;
+    }
+    
+    int ride_count = 0;
+    
+    do {
+        // 2. Wejście na stację
+        if (!enter_station()) {
+            break;
+        }
+        
+        // 3. Przejście na peron
+        if (!go_to_platform()) {
+            break;
+        }
+        
+        // 4. Jazda krzesełkiem
+        if (!ride_chair()) {
+            break;
+        }
+        
+        // 5. Zjazd trasą
+        descend_trail();
+        
+        ride_count++;
+        
+        // Dla biletów jednorazowych - koniec
+        if (g_ticket_type == TICKET_SINGLE) {
+            break;
+        }
+        
+    } while (can_ride_again() && !shutdown_flag);
+    
+    // Zakończ wątki dzieci
+    if (g_children_count > 0) {
+        finish_children_threads();
+    }
+    
+    logger(LOG_TOURIST, "Turysta #%d kończy wizytę (przejazdy: %d)", g_tourist_id, ride_count);
+    
+    // Aktualizuj licznik
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->total_tourists_finished++;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    odlacz_pamiec(g_shm);
     return 0;
 }
