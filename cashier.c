@@ -15,6 +15,7 @@
 // Flagi sygnałów
 static volatile sig_atomic_t shutdown_flag = 0;
 static volatile sig_atomic_t emergency_flag = 0;
+static time_t g_sim_start_time = 0;
 
 // Handler sygnałów
 void cashier_signal_handler(int sig) {
@@ -107,7 +108,29 @@ int main(void) {
     
     srand(time(NULL) ^ getpid());
     
-    logger(LOG_CASHIER, "Rozpoczynam pracę - kasa otwarta!");
+    // Pobierz czas rozpoczęcia symulacji
+    sem_opusc(sem_id, SEM_MAIN);
+    g_sim_start_time = shm->simulation_start;
+    sem_podnies(sem_id, SEM_MAIN);
+    
+    // Czekaj do WORK_START_TIME przed otwarciem kasy
+    logger(LOG_CASHIER, "Czekam na godzinę otwarcia (WORK_START_TIME=%d sekund)...", WORK_START_TIME);
+    while (!shutdown_flag) {
+        time_t now = time(NULL);
+        time_t elapsed = now - g_sim_start_time;
+        if (elapsed >= WORK_START_TIME) {
+            break;
+        }
+        usleep(100000); // 100ms
+    }
+    
+    if (shutdown_flag) {
+        logger(LOG_CASHIER, "Zamykam kasę przed otwarciem");
+        odlacz_pamiec(shm);
+        return 0;
+    }
+    
+    logger(LOG_CASHIER, "Kasa otwarta - rozpoczynam sprzedaż biletów!");
     
     Message msg;
     

@@ -7,7 +7,7 @@
 #include <time.h>
 
 // ==== KONFIGURACJA SYMULACJI ====
-#define TOTAL_TOURISTS       10000   // Liczba turystów do obsłużenia
+#define TOTAL_TOURISTS       20   // Liczba turystów do obsłużenia
 #define MAX_CHAIRS           72      // Łączna liczba krzesełek
 #define MAX_ACTIVE_CHAIRS    36      // Maks krzesełek jednocześnie w ruchu
 #define CHAIR_CAPACITY       4       // Pojemność jednego krzesełka
@@ -24,8 +24,8 @@
 #define CHAIR_TRAVEL_TIME    2       // Czas przejazdu krzesełka
 
 // Godziny pracy (w sekundach symulacyjnych od startu)
-#define WORK_START_TIME      0       // Tp - start
-#define WORK_END_TIME        15     // Tk - koniec (sekundy)
+#define WORK_START_TIME      10       // Tp - start
+#define WORK_END_TIME        20     // Tk - koniec (sekundy)
 #define SHUTDOWN_DELAY       3       // Opóźnienie przed wyłączeniem po Tk
 
 // Szybkość generowania turystów

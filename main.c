@@ -223,13 +223,14 @@ int main(void) {
     int tourists_created = 0;
     time_t sim_start = time(NULL);
     
-    logger(LOG_SYSTEM, "Rozpoczynam generowanie turystów...");
+    logger(LOG_SYSTEM, "Rozpoczynam generowanie turystów (kolej zacznie działać za %d sekund)...", WORK_START_TIME);
     
     while (tourists_created < TOTAL_TOURISTS && !shutdown_flag) {
-        // Sprawdzanie czy nie minął czas pracy
+        // Sprawdzanie czy nie minął czas pracy (WORK_START_TIME + WORK_END_TIME)
         time_t now = time(NULL);
-        if (now - sim_start >= WORK_END_TIME) {
-            logger(LOG_SYSTEM, "Osiągnięto czas Tk - zamykam bramki wejściowe");
+        time_t elapsed = now - sim_start;
+        if (elapsed >= (WORK_START_TIME + WORK_END_TIME)) {
+            logger(LOG_SYSTEM, "Osiągnięto koniec czasu pracy - zamykam bramki wejściowe");
             
             sem_opusc(g_sem_id, SEM_MAIN);
             g_shm->gates_closed = true;
@@ -295,30 +296,42 @@ int main(void) {
     
     if (!shutdown_flag) {
         logger(LOG_SYSTEM, "Wygenerowano wszystkich %d turystów", tourists_created);
-        
-        // Zamknij bramki jeśli jeszcze nie zamknięte
-        sem_opusc(g_sem_id, SEM_MAIN);
-        g_shm->gates_closed = true;
-        sem_podnies(g_sem_id, SEM_MAIN);
+        time_t elapsed = time(NULL) - sim_start;
+        time_t total_work_time = WORK_START_TIME + WORK_END_TIME;
+        if (elapsed < total_work_time) {
+            logger(LOG_SYSTEM, "Kontynuuję pracę przez kolejne %ld sekund (do końca czasu pracy)...", 
+                   total_work_time - elapsed);
+        }
     }
     
-    // Czekaj na zakończenie turystów (z timeoutem)
-    logger(LOG_SYSTEM, "Czekam na zakończenie wszystkich turystów...");
+    // Pracuj przez pełny czas (WORK_START_TIME + WORK_END_TIME), niezależnie od ilości turystów
+    logger(LOG_SYSTEM, "Placówka pracuje - oczekiwanie na koniec czasu pracy...");
     
     int wait_cycles = 0;
-    int max_wait = 30000; // 30 sekund max
+    time_t total_work_time = WORK_START_TIME + WORK_END_TIME;
     
-    while (!shutdown_flag && wait_cycles < max_wait) {
-        pthread_mutex_lock(&tourist_mutex);
-        int remaining = tourist_pid_count;
-        pthread_mutex_unlock(&tourist_mutex);
+    while (!shutdown_flag) {
+        // Sprawdź czy minął czas pracy
+        time_t now = time(NULL);
+        time_t elapsed = now - sim_start;
         
-        if (remaining == 0) {
+        if (elapsed >= total_work_time) {
+            logger(LOG_SYSTEM, "Osiągnięto koniec czasu pracy (WORK_START_TIME + WORK_END_TIME = %ld sekund)", total_work_time);
+            
+            // Zamknij bramki na koniec czasu pracy
+            sem_opusc(g_sem_id, SEM_MAIN);
+            g_shm->gates_closed = true;
+            sem_podnies(g_sem_id, SEM_MAIN);
+            
             break;
         }
         
         if (wait_cycles % 1000 == 0) {
-            // Debug info - gdzie są turyści
+            // Debug info co sekundę
+            pthread_mutex_lock(&tourist_mutex);
+            int remaining = tourist_pid_count;
+            pthread_mutex_unlock(&tourist_mutex);
+            
             sem_opusc(g_sem_id, SEM_MAIN);
             int in_station = g_shm->tourists_in_station;
             int on_platform = g_shm->tourists_on_platform;
@@ -330,17 +343,17 @@ int main(void) {
             int finished = g_shm->total_tourists_finished;
             sem_podnies(g_sem_id, SEM_MAIN);
             
-            logger(LOG_SYSTEM, "Procesy: %d, pozostało: %d (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
-                   remaining, created - finished, at_cashier, in_station, on_platform, active_chairs, at_top, descending);
+            logger(LOG_SYSTEM, "Czas: %ld/%lds | Procesy: %d (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
+                   elapsed, total_work_time, remaining, at_cashier, in_station, on_platform, active_chairs, at_top, descending);
         }
         
         usleep(1000);
         wait_cycles++;
     }
     
-    // Opóźnienie przed wyłączeniem (3 sekundy)
+    // Czekaj dodatkowe 3 sekundy aby pracownicy obsłużyli ostatnich turystów
     if (!interrupt_flag) {
-        logger(LOG_SYSTEM, "Oczekiwanie %d sekund przed wyłączeniem...", SHUTDOWN_DELAY);
+        logger(LOG_SYSTEM, "Oczekiwanie %d sekund na obsłużenie ostatnich turystów...", SHUTDOWN_DELAY);
         sleep(SHUTDOWN_DELAY);
     }
     logger(LOG_SYSTEM, "Zamykanie symulacji...");
