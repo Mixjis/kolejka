@@ -126,7 +126,7 @@ int main(void) {
             break;
         }
         
-        usleep(100000); // Sprawdzaj co 100ms
+        //usleep(100000); // Sprawdzaj co 100ms
     }
     
     if (shutdown_flag) {
@@ -149,7 +149,7 @@ int main(void) {
         if (emergency_flag) {
             logger(LOG_CASHIER, "AWARIA - wstrzymuję sprzedaż biletów!");
             while (emergency_flag && !shutdown_flag) {
-                usleep(10000); // Czekaj na wznowienie
+                //usleep(10000); // Czekaj na wznowienie
             }
             if (!shutdown_flag) {
                 logger(LOG_CASHIER, "Wznawiam sprzedaż biletów");
@@ -202,7 +202,7 @@ int main(void) {
                 logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla turysty #%d (z kolejki wewnętrznej)", qt.tourist_id);
             }
             
-            usleep(10000);
+            //usleep(10000);
             continue;
         }
         
@@ -316,7 +316,7 @@ int main(void) {
         
         // Krótka pauza jeśli kolejka pusta
         if (queue_empty()) {
-            usleep(1000); // 1ms
+            //usleep(1000); // 1ms
         }
     }
     

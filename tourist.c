@@ -66,7 +66,7 @@ void* child_thread_func(void* arg) {
     
     // Dziecko czeka aż rodzic zakończy
     while (!child->finished && !shutdown_flag) {
-        usleep(10000);
+        //usleep(10000);
     }
     
     return NULL;
@@ -96,7 +96,7 @@ void finish_children_threads(void) {
     pthread_mutex_unlock(&children_mutex);
     
     // Danie wątkom chwilę na zakończenie
-    usleep(20000); // 20ms - 2 cykle pętli dziecka
+    //usleep(20000); // 20ms - 2 cykle pętli dziecka
     
     // Dołączenie do wątków (powinny już być zakończone)
     for (int i = 0; i < g_children_count; i++) {
@@ -115,10 +115,11 @@ bool buy_ticket(void) {
     sem_podnies(g_sem_id, SEM_MAIN);
     
     // Czekaj na otwarcie kasy (jeśli jeszcze nie otwarta)
-    int wait_counter = 0;
-    while (!cashier_open && !gates_closed && !shutdown_flag && wait_counter < 200) {
-        usleep(100000); // 100ms
-        wait_counter++;
+    //int wait_counter = 0;
+    //while (!cashier_open && !gates_closed && !shutdown_flag && wait_counter < 200) {
+    while (!cashier_open && !gates_closed && !shutdown_flag) {
+        //usleep(100000); // 100ms
+        //wait_counter++;
         
         sem_opusc(g_sem_id, SEM_MAIN);
         cashier_open = g_shm->cashier_open;
@@ -158,14 +159,13 @@ bool buy_ticket(void) {
         return false;
     }
     
-    // Czekaj na odpowiedź (adresowaną do naszego PID) - z timeoutem 30 sekund
-    int timeout_count = 0;
-    while (!shutdown_flag && timeout_count < 300) {
-        if (odbierz_komunikat_timeout(g_msg_id, &msg, g_pid, 100)) {
+    // Czekaj na odpowiedź (adresowaną do naszego PID) - nieblokujące żeby reagować na shutdown
+    while (!shutdown_flag) {
+        if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
             // Dostaliśmy odpowiedź
             break;
         }
-        timeout_count++;
+        //timeout_count++;
     }
     
     // Zmniejsz licznik czekających przy kasie (niezależnie od wyniku)
@@ -173,7 +173,7 @@ bool buy_ticket(void) {
     g_shm->tourists_at_cashier--;
     sem_podnies(g_sem_id, SEM_MAIN);
     
-    if (shutdown_flag || timeout_count >= 300) {
+    if (shutdown_flag) {
         return false;
     }
     
@@ -246,9 +246,10 @@ bool enter_station(void) {
     }
     
     // Czekaj na semafor stacji (limit N osób) - z timeoutem
-    int timeout = 0;
+    //int timeout = 0;
     while (sem_probuj_opusc(g_sem_id, SEM_STATION) != 1) {
-        if (shutdown_flag || timeout >= 300) {
+        //if (shutdown_flag || timeout >= 300) {
+        if (shutdown_flag) {
             return false;
         }
         // Sprawdź czy bramki nie zostały zamknięte w międzyczasie
@@ -263,8 +264,8 @@ bool enter_station(void) {
         }
         if (!running) return false;
         
-        usleep(100000); // 100ms
-        timeout++;
+        //usleep(100000); // 100ms
+        //timeout++;
     }
     
     // Jeszcze raz sprawdź bramki po uzyskaniu dostępu do stacji
@@ -280,9 +281,10 @@ bool enter_station(void) {
     }
     
     // Czekaj na bramkę wejściową (4 bramki) - z timeoutem
-    timeout = 0;
+    //timeout = 0;
     while (sem_probuj_opusc(g_sem_id, SEM_GATE_ENTRY) != 1) {
-        if (shutdown_flag || timeout >= 100) { // max 10 sekund
+        //if (shutdown_flag || timeout >= 100) { // max 10 sekund
+        if (shutdown_flag) {
             sem_podnies(g_sem_id, SEM_STATION); // Zwolnij stację
             return false;
         }
@@ -295,8 +297,8 @@ bool enter_station(void) {
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
-        usleep(100000);
-        timeout++;
+        //usleep(100000);
+        //timeout++;
     }
     
     // Przydziel numer bramki wejściowej (round-robin)
@@ -314,7 +316,7 @@ bool enter_station(void) {
            g_tourist_id, vip_str, g_entry_gate, g_ticket_id);
     
     // Symulacja przejścia
-    usleep(10000 + rand() % 20000); // 10-30ms
+    //usleep(10000 + rand() % 20000); // 10-30ms
     
     // Zwolnij bramkę (semafor stacji po dopiero po wyjściu zwolnie)
     sem_podnies(g_sem_id, SEM_GATE_ENTRY);
@@ -344,9 +346,10 @@ bool go_to_platform(void) {
     }
     
     // Czekaj na bramkę na peron (3 bramki) - z timeoutem
-    int timeout = 0;
+    //int timeout = 0;
     while (sem_probuj_opusc(g_sem_id, SEM_GATE_PLATFORM) != 1) {
-        if (shutdown_flag || timeout >= 100) { // max 10 sekund
+        //if (shutdown_flag || timeout >= 100) { // max 10 sekund
+        if (shutdown_flag) {
             // Zwolnij zasoby - opuszczamy stację bez przejścia na peron
             sem_opusc(g_sem_id, SEM_MAIN);
             g_shm->tourists_in_station--;
@@ -376,8 +379,8 @@ bool go_to_platform(void) {
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
-        usleep(100000);
-        timeout++;
+        //usleep(100000);
+        //timeout++;
     }
     
     // Wyślij komunikat do worker1
@@ -400,7 +403,7 @@ bool go_to_platform(void) {
     }
     
     // Symulacja przejścia przez bramkę
-    usleep(5000 + rand() % 10000);
+    //usleep(5000 + rand() % 10000);
     
     // Zwolnij bramkę na peron
     sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
@@ -423,12 +426,11 @@ bool go_to_platform(void) {
 // Czekanie na krzesełko i jazda
 bool ride_chair(void) {
     Message msg;
-    int timeout_count = 0;
+    //int timeout_count = 0;
     
-    // Czekaj na komunikat od worker1 (pozwolenie na wsiadanie)
-    // Komunikat jest adresowany do naszego PID
-    while (!shutdown_flag && !emergency_flag && timeout_count < 600) {
-        if (odbierz_komunikat_timeout(g_msg_id, &msg, g_pid, 100)) {
+    // Czekaj na komunikat od worker1 (pozwolenie na wsiadanie) - nieblokujące
+    while (!shutdown_flag && !emergency_flag) {
+        if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
             if (msg.data == 1) {
                 // wsiadanie
                 break;
@@ -443,23 +445,20 @@ bool ride_chair(void) {
         if (emergency_flag) {
             logger(LOG_TOURIST, "Turysta #%d - awaria! Czekam na wznowienie...", g_tourist_id);
             while (emergency_flag && !shutdown_flag) {
-                usleep(10000);
+                //usleep(10000);
             }
-            timeout_count = 0; // Reset timeout po awarii
         }
         
-        timeout_count++;
+        //timeout_count++;
     }
     
-    if (shutdown_flag || timeout_count >= 600) return false;
-    
+    //if (shutdown_flag || timeout_count >= 600) return false;
+    if(shutdown_flag) return false;
     //logger(LOG_TOURIST, "Turysta #%d wsiada na krzesełko!", g_tourist_id);
 
-    // Czekaj na komunikat o dotarciu na górę (data == 2)
-    // Timeout: max 30 sekund jazdy
-    timeout_count = 0;
-    while (!shutdown_flag && timeout_count < 300) {
-        if (odbierz_komunikat_timeout(g_msg_id, &msg, g_pid, 100)) {
+    // Czekaj na komunikat o dotarciu na górę (data == 2) - nieblokujące
+    while (!shutdown_flag) {
+        if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
             if (msg.data == 2) {
                 // dotarcie na góre
                 break;
@@ -469,15 +468,14 @@ bool ride_chair(void) {
         if (emergency_flag) {
             logger(LOG_TOURIST, "Turysta #%d - awaria w trakcie jazdy!", g_tourist_id);
             while (emergency_flag && !shutdown_flag) {
-                usleep(10000);
+                //usleep(10000);
             }
-            timeout_count = 0; // Reset timeout po awarii
         }
         
-        timeout_count++;
+        //timeout_count++;
     }
     
-    return !shutdown_flag && timeout_count < 300;
+    return !shutdown_flag; //&& timeout_count < 300;
 }
 
 // Opuścić system na górze (dla pieszych)
@@ -493,15 +491,14 @@ void exit_at_top(void) {
     
     wyslij_komunikat(g_msg_id, &msg);
     
-    // Czekaj na potwierdzenie wyjścia (z timeoutem)
-    int timeout_count = 0;
-    while (!shutdown_flag && timeout_count < 100) { // max 10 sekund
-        if (odbierz_komunikat_timeout(g_msg_id, &msg, g_pid, 100)) {
+    // Czekaj na potwierdzenie wyjścia - nieblokujące żeby reagować na shutdown
+    while (!shutdown_flag) {
+        if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
             if (msg.data == 3) {
                 break;
             }
         }
-        timeout_count++;
+        //timeout_count++;
     }
     
     // Rejestruj "zjazd" (właściwie wyjście na górze) dla pieszego - WEWNĄTRZ sekcji krytycznej
@@ -541,16 +538,15 @@ void descend_trail(void) {
     
     wyslij_komunikat(g_msg_id, &msg);
     
-    // Czekaj na potwierdzenie zjazdu (worker2 symuluje zjazd, data == 3)
-    int timeout_count = 0;
-    while (!shutdown_flag && timeout_count < 100) { // max 10 sekund
-        if (odbierz_komunikat_timeout(g_msg_id, &msg, g_pid, 100)) {
+    // Czekaj na potwierdzenie zjazdu - nieblokujące żeby reagować na shutdown
+    while (!shutdown_flag) {
+        if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
             if (msg.data == 3) {
                 // Zjazd zakończony
                 break;
             }
         }
-        timeout_count++;
+        //usleep(1000); // 1ms
     }
     
     // Rejestruj zjazd dla tego biletu - WEWNĄTRZ sekcji krytycznej

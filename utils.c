@@ -415,23 +415,23 @@ bool odbierz_komunikat(int msg_id, Message* msg, long mtype, bool blocking) {
     return true;
 }
 
-bool odbierz_komunikat_timeout(int msg_id, Message* msg, long mtype, int timeout_ms) {
-    int elapsed = 0;
-    int step = 1; // 1ms
+// bool odbierz_komunikat_timeout(int msg_id, Message* msg, long mtype, int timeout_ms) {
+//     int elapsed = 0;
+//     int step = 1; // 1ms
     
-    while (elapsed < timeout_ms) {
-        if (msgrcv(msg_id, msg, MSG_SIZE, mtype, IPC_NOWAIT) != -1) {
-            return true;
-        }
-        if (errno != ENOMSG && errno != EAGAIN && errno != EINTR) {
-            perror("Błąd msgrcv timeout");
-            return false;
-        }
-        usleep(step * 1000);
-        elapsed += step;
-    }
-    return false;
-}
+//     while (elapsed < timeout_ms) {
+//         if (msgrcv(msg_id, msg, MSG_SIZE, mtype, IPC_NOWAIT) != -1) {
+//             return true;
+//         }
+//         if (errno != ENOMSG && errno != EAGAIN && errno != EINTR) {
+//             perror("Błąd msgrcv timeout");
+//             return false;
+//         }
+//         usleep(step * 1000);
+//         elapsed += step;
+//     }
+//     return false;
+// }
 
 // ==== FUNKCJE POMOCNICZE ====
 const char* nazwa_biletu(TicketType type) {
