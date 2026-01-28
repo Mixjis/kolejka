@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 #include <errno.h>
+#include <sys/sem.h>
 #include "logger.h"
 #include "struktury.h"
 #include "operacje.h"
@@ -17,10 +18,8 @@
 #define LOG_FILE "kolej_log.txt"
 #define REPORT_FILE "raport_karnetow.txt"
 
-static FILE* file_log = NULL;
-static FILE* file_report = NULL;
-static pthread_mutex_t file_mutex = PTHREAD_MUTEX_INITIALIZER;
-static int log_sequence = 0;
+static int log_fd = -1;        // Deskryptor pliku logów (używamy write() zamiast fprintf dla atomowości)
+static int report_fd = -1;     // Deskryptor pliku raportu
 
 // Pobierz kolor dla typu nadawcy
 static const char* get_color(LogSender sender) {
@@ -79,82 +78,60 @@ static void get_timestamp(char* buffer, size_t size) {
 }
 
 void logger_init(void) {
-    pthread_mutex_lock(&file_mutex);
-    
-    if (file_log == NULL) {
-        file_log = fopen(LOG_FILE, "w");
-        if (file_log == NULL) {
-            perror("Nie można otworzyć pliku logów");
-        } else {
-            setvbuf(file_log, NULL, _IOLBF, 0);
-        }
+    // Otwórz plik logów w trybie zapisu (nadpisz) z O_APPEND dla atomowości
+    log_fd = open(LOG_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (log_fd < 0) {
+        perror("Nie można otworzyć pliku logów");
     }
     
-    if (file_report == NULL) {
-        file_report = fopen(REPORT_FILE, "w");
-        if (file_report == NULL) {
-            perror("Nie można otworzyć pliku raportu");
-        }
+    // Otwórz plik raportu
+    report_fd = open(REPORT_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (report_fd < 0) {
+        perror("Nie można otworzyć pliku raportu");
     }
-    
-    pthread_mutex_unlock(&file_mutex);
     
     // Nagłówek pliku logów
-    if (file_log != NULL) {
+    if (log_fd >= 0) {
         const char* header = "========== START SYMULACJI KOLEI LINOWEJ ==========\n";
-        fprintf(file_log, "%s", header);
-        fflush(file_log);
+        safe_write(log_fd, header, strlen(header));
     }
 }
 
 void logger_init_child(void) {
-    // Procesy potomne muszą ponownie otworzyć pliki
-    pthread_mutex_lock(&file_mutex);
-    
     // Zamknij stare deskryptory jeśli istnieją
-    if (file_log != NULL) {
-        fclose(file_log);
-        file_log = NULL;
+    if (log_fd >= 0) {
+        close(log_fd);
+        log_fd = -1;
     }
-    if (file_report != NULL) {
-        fclose(file_report);
-        file_report = NULL;
+    if (report_fd >= 0) {
+        close(report_fd);
+        report_fd = -1;
     }
     
-    // Otwórz ponownie w trybie append
-    file_log = fopen(LOG_FILE, "a");
-    if (file_log == NULL) {
+    // Otwórz ponownie w trybie append - O_APPEND zapewnia atomowe dopisywanie
+    log_fd = open(LOG_FILE, O_WRONLY | O_APPEND);
+    if (log_fd < 0) {
         perror("Nie można otworzyć pliku logów (child)");
-    } else {
-        // Wyłącz pełne buforowanie - używaj buforowania linii
-        setvbuf(file_log, NULL, _IOLBF, 0);
     }
     
-    file_report = fopen(REPORT_FILE, "a");
-    if (file_report == NULL) {
+    report_fd = open(REPORT_FILE, O_WRONLY | O_APPEND);
+    if (report_fd < 0) {
         perror("Nie można otworzyć pliku raportu (child)");
     }
-    
-    pthread_mutex_unlock(&file_mutex);
 }
 
 void logger_close(void) {
-    pthread_mutex_lock(&file_mutex);
-    
-    if (file_log != NULL) {
+    if (log_fd >= 0) {
         const char* footer = "========== KONIEC SYMULACJI ==========\n";
-        fprintf(file_log, "%s", footer);
-        fflush(file_log);
-        fclose(file_log);
-        file_log = NULL;
+        safe_write(log_fd, footer, strlen(footer));
+        close(log_fd);
+        log_fd = -1;
     }
     
-    if (file_report != NULL) {
-        fclose(file_report);
-        file_report = NULL;
+    if (report_fd >= 0) {
+        close(report_fd);
+        report_fd = -1;
     }
-    
-    pthread_mutex_unlock(&file_mutex);
 }
 
 void logger(LogSender sender, const char* format, ...) {
@@ -182,17 +159,14 @@ void logger(LogSender sender, const char* format, ...) {
     
     write(STDOUT_FILENO, console_line, strlen(console_line));
     
-    // Linia do pliku (bez kolorów)
-    snprintf(file_line, sizeof(file_line),
+    // Linia do pliku (bez kolorów) - O_APPEND zapewnia atomowość dla linii < PIPE_BUF
+    int len = snprintf(file_line, sizeof(file_line),
              "[%s] %s(%d): %s\n",
              timestamp, name, pid, message);
     
-    pthread_mutex_lock(&file_mutex);
-    if (file_log != NULL) {
-        fprintf(file_log, "%s", file_line);
-        fflush(file_log);  
+    if (log_fd >= 0 && len > 0) {
+        safe_write(log_fd, file_line, len);
     }
-    pthread_mutex_unlock(&file_mutex);
 }
 
 void logger_report(const char* format, ...) {
@@ -208,21 +182,18 @@ void logger_report(const char* format, ...) {
     va_end(args);
     
     // Zapisanie do pliku raportu
-    pthread_mutex_lock(&file_mutex);
-    if (file_report != NULL) {
-        fprintf(file_report, "%s\n", line);
-        fflush(file_report);
+    int report_len = snprintf(file_line, sizeof(file_line), "%s\n", line);
+    if (report_fd >= 0 && report_len > 0) {
+        safe_write(report_fd, file_line, report_len);
     }
     
     // Zapisanie również do pliku logów
-    snprintf(file_line, sizeof(file_line),
+    int log_len = snprintf(file_line, sizeof(file_line),
              "[%s] RAPORT: %s\n",
              timestamp, line);
-    if (file_log != NULL) {
-        fprintf(file_log, "%s", file_line);
-        fflush(file_log);
+    if (log_fd >= 0 && log_len > 0) {
+        safe_write(log_fd, file_line, log_len);
     }
-    pthread_mutex_unlock(&file_mutex);
     
     char console_line[1100];
     snprintf(console_line, sizeof(console_line), "%s[%s] RAPORT: %s%s\n", 
@@ -233,18 +204,17 @@ void logger_report(const char* format, ...) {
 // Zapis tylko do pliku raportu 
 void logger_report_file_only(const char* format, ...) {
     char line[1024];
+    char file_line[1100];
     
     va_list args;
     va_start(args, format);
     vsnprintf(line, sizeof(line), format, args);
     va_end(args);
     
-    pthread_mutex_lock(&file_mutex);
-    if (file_report != NULL) {
-        fprintf(file_report, "%s\n", line);
-        fflush(file_report);
+    int len = snprintf(file_line, sizeof(file_line), "%s\n", line);
+    if (report_fd >= 0 && len > 0) {
+        safe_write(report_fd, file_line, len);
     }
-    pthread_mutex_unlock(&file_mutex);
 }
 
 void logger_clear_files(void) {
@@ -256,42 +226,27 @@ void logger_clear_files(void) {
     if (fd != NULL) fclose(fd);
 }
 
-// Rejestrowanie przejścia przez bramkę
-void rejestruj_przejscie_bramki(int ticket_id, int gate_number, int gate_type) {
-    if (ticket_id <= 0 || gate_number <= 0 || gate_type <= 0) {
-        return;
-    }
-    int shm_id = polacz_pamiec();
-    SharedMemory* shm = dolacz_pamiec(shm_id);
-    int sem_id = polacz_semafory();
-    
-    sem_opusc(sem_id, SEM_MAIN);
-    
-    int idx = shm->gate_passages_count;
-    if (idx < MAX_GATE_PASSAGES) {
-        shm->gate_passages[idx].ticket_id = ticket_id;
-        shm->gate_passages[idx].timestamp = time(NULL);
-        shm->gate_passages[idx].gate_number = gate_type * 10 + gate_number; // np. 14 = bramka wejściowa #4, 23 = bramka peronowa #3
-        shm->gate_passages_count++;
-    }
-    
-    sem_podnies(sem_id, SEM_MAIN);
-    odlacz_pamiec(shm);
+// Rejestrowanie zjazdu dla danego biletu
+// UWAGA: Wołający musi SAM trzymać SEM_MAIN i przekazać shm
+void rejestruj_zjazd(int ticket_id) {
+    // Ta funkcja jest teraz pusta - logika przeniesiona do tourist.c
+    (void)ticket_id;
 }
 
-// Rejestrowanie zjazdu dla danego biletu
-void rejestruj_zjazd(int ticket_id) {
+// Rejestrowanie przejścia przez bramkę (id karnetu - godzina)
+void rejestruj_przejscie_bramki(int ticket_id) {
     int shm_id = polacz_pamiec();
     SharedMemory* shm = dolacz_pamiec(shm_id);
     int sem_id = polacz_semafory();
     
     sem_opusc(sem_id, SEM_MAIN);
-    
-    if (ticket_id > 0 && ticket_id < MAX_TICKETS) {
-        shm->ticket_rides[ticket_id]++;
+    if (shm->gate_entries_count < MAX_GATE_ENTRIES) {
+        shm->gate_entries[shm->gate_entries_count].ticket_id = ticket_id;
+        shm->gate_entries[shm->gate_entries_count].entry_time = time(NULL);
+        shm->gate_entries_count++;
     }
-    
     sem_podnies(sem_id, SEM_MAIN);
+    
     odlacz_pamiec(shm);
 }
 
@@ -303,27 +258,6 @@ void generuj_raport_koncowy(void) {
     
     sem_opusc(sem_id, SEM_MAIN);
     
-    // Oblicz statystyki
-    int total_tickets = 0;
-    for (int i = 0; i < TICKET_TYPE_COUNT; i++) {
-        total_tickets += shm->tickets_sold[i];
-    }
-    
-    double avg_per_chair = shm->chair_departures > 0 ?
-        (double)shm->passengers_transported / shm->chair_departures : 0.0;
-    
-    int total_trail = shm->trail_usage[TRAIL_T1] + shm->trail_usage[TRAIL_T2] + shm->trail_usage[TRAIL_T3];
-    
-    // Kopiuj dane do lokalnych zmiennych (żeby szybciej zwolnić semafor)
-    int passages_count = shm->gate_passages_count;
-    GatePassage* passages = NULL;
-    if (passages_count > 0) {
-        passages = malloc(passages_count * sizeof(GatePassage));
-        if (passages) {
-            memcpy(passages, shm->gate_passages, passages_count * sizeof(GatePassage));
-        }
-    }
-    
     // Kopiuj dane o zjazdach per bilet
     int max_ticket_id = shm->next_ticket_id;
     int* ticket_rides = NULL;
@@ -334,149 +268,72 @@ void generuj_raport_koncowy(void) {
         }
     }
     
-    // Zapisz resztę statystyk
-    int tickets_sold[TICKET_TYPE_COUNT];
-    memcpy(tickets_sold, shm->tickets_sold, sizeof(tickets_sold));
-    int chair_departures = shm->chair_departures;
-    int passengers_transported = shm->passengers_transported;
-    int cyclists_transported = shm->cyclists_transported;
-    int pedestrians_transported = shm->pedestrians_transported;
-    int vip_served = shm->vip_served;
-    int children_with_guardian = shm->children_with_guardian;
-    int rejected_expired = shm->rejected_expired;
-    int trail_usage[TRAIL_COUNT];
-    memcpy(trail_usage, shm->trail_usage, sizeof(trail_usage));
-    int total_tourists_created = shm->total_tourists_created;
-    int total_tourists_finished = shm->total_tourists_finished;
+    // Kopiuj dane o przejściach przez bramki
+    int gate_entries_count = shm->gate_entries_count;
+    struct {
+        int ticket_id;
+        time_t entry_time;
+    } *gate_entries = NULL;
+    
+    if (gate_entries_count > 0) {
+        gate_entries = malloc(gate_entries_count * sizeof(*gate_entries));
+        if (gate_entries) {
+            for (int i = 0; i < gate_entries_count; i++) {
+                gate_entries[i].ticket_id = shm->gate_entries[i].ticket_id;
+                gate_entries[i].entry_time = shm->gate_entries[i].entry_time;
+            }
+        }
+    }
     
     sem_podnies(sem_id, SEM_MAIN);
     
-    // Generowanie raportu
-    logger_report("");
-    logger_report("============================================================");
-    logger_report("         RAPORT KONCOWY SYMULACJI KOLEI LINOWEJ");
-    logger_report("============================================================");
-    logger_report("");
-    logger_report("1. SPRZEDAZ BILETOW:");
-    logger_report("   Jednorazowe (SINGLE):     %d szt.", tickets_sold[TICKET_SINGLE]);
-    logger_report("   Czasowe TK1 (1h):         %d szt.", tickets_sold[TICKET_TK1]);
-    logger_report("   Czasowe TK2 (2h):         %d szt.", tickets_sold[TICKET_TK2]);
-    logger_report("   Czasowe TK3 (3h):         %d szt.", tickets_sold[TICKET_TK3]);
-    logger_report("   Dzienne (DAILY):          %d szt.", tickets_sold[TICKET_DAILY]);
-    logger_report("   RAZEM:                    %d szt.", total_tickets);
-    logger_report("");
-    logger_report("2. STATYSTYKI PRZEJAZDOW:");
-    logger_report("   Odjazdy krzeselek:        %d", chair_departures);
-    logger_report("   Przewiezione osoby:       %d", passengers_transported);
-    logger_report("   - Rowerzysci:             %d", cyclists_transported);
-    logger_report("   - Piesi:                  %d", pedestrians_transported);
-    logger_report("   Sr. osob/krzeslo:         %.2f", avg_per_chair);
-    logger_report("");
-    logger_report("3. KATEGORIE SPECJALNE:");
-    logger_report("   VIP obsluzeni:            %d", vip_served);
-    logger_report("   Dzieci z opiekunem:       %d", children_with_guardian);
-    logger_report("   Odrzuceni (wygasly):      %d", rejected_expired);
-    logger_report("");
-    logger_report("4. TRASY ZJAZDOWE:");
-    logger_report("   T1 (latwa, %ds):          %d turystow", TRAIL_T1_TIME, trail_usage[TRAIL_T1]);
-    logger_report("   T2 (srednia, %ds):        %d turystow", TRAIL_T2_TIME, trail_usage[TRAIL_T2]);
-    logger_report("   T3 (trudna, %ds):         %d turystow", TRAIL_T3_TIME, trail_usage[TRAIL_T3]);
-    logger_report("   RAZEM na trasach:         %d turystow", total_trail);
-    logger_report("");
-    logger_report("5. PODSUMOWANIE TURYSTOW:");
-    logger_report("   Utworzonych turystow:     %d", total_tourists_created);
-    logger_report("   Zakonczonych wizyt:       %d", total_tourists_finished);
-    logger_report("");
+    // Generowanie prostego raportu - tylko do pliku, bez konsoli
+    logger_report_file_only("============================================================");
+    logger_report_file_only("         RAPORT KARNETOW - KOLEJ LINOWA");
+    logger_report_file_only("============================================================");
+    logger_report_file_only("");
     
-    // Rejestracja przejść bramkowych
-    logger_report("6. REJESTRACJA PRZEJSC BRAMKOWYCH:");
+    // Sekcja 1: Lista przejść przez bramki (id karnetu - godzina)
+    logger_report_file_only("PRZEJSCIA PRZEZ BRAMKI (ID KARNETU - GODZINA):");
+    logger_report_file_only("------------------------------------------------------------");
     
-    int valid_passages = 0;
-    if (passages) {
-        for (int i = 0; i < passages_count; i++) {
-            if (passages[i].ticket_id > 0 && passages[i].timestamp > 0) {
-                valid_passages++;
-            }
-        }
-    }
-    logger_report("   Zarejestrowanych przejsc: %d", valid_passages);
-    logger_report("");
-    
-    if (passages && valid_passages > 0) {
-        
-        // Szczegółowe przejścia do pliku
-        logger_report_file_only("   --- SZCZEGOLOWA HISTORIA PRZEJSC ---");
-        
-        for (int i = 0; i < passages_count; i++) {
-            if (passages[i].ticket_id <= 0 || passages[i].timestamp <= 0) {
-                continue;
-            }
-            
-            struct tm* tm_info = localtime(&passages[i].timestamp);
+    if (gate_entries && gate_entries_count > 0) {
+        for (int i = 0; i < gate_entries_count; i++) {
+            struct tm* tm_info = localtime(&gate_entries[i].entry_time);
             char time_str[32];
-            strftime(time_str, sizeof(time_str), "%H:%M:%S", tm_info);
-            
-            int gate_type = passages[i].gate_number / 10;
-            int gate_num = passages[i].gate_number % 10;
-            const char* gate_type_str = (gate_type == 1) ? "wejsciowa" : "peronowa";
-            
-            // Tylko do pliku - nie do konsoli
-            logger_report_file_only("   [%s] Bilet #%d - bramka %s #%d", 
-                         time_str, passages[i].ticket_id, gate_type_str, gate_num);
+            snprintf(time_str, sizeof(time_str), "%02d:%02d:%02d",
+                     tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec);
+            logger_report_file_only("Karnet #%d - %s", gate_entries[i].ticket_id, time_str);
         }
-        logger_report_file_only("");
-        logger_report("");
+    } else {
+        logger_report_file_only("Brak zarejestrowanych przejsc.");
     }
     
-    // Sekcja 7: Podsumowanie zjazdów per bilet
-    logger_report("7. ZJAZDY PER BILET/KARNET:");
+    logger_report_file_only("");
+    logger_report_file_only("============================================================");
+    logger_report_file_only("");
+    
+    // Sekcja 2: Podsumowanie liczby przejazdów per karnet
+    logger_report_file_only("PODSUMOWANIE LICZBY PRZEJAZDOW PER KARNET:");
+    logger_report_file_only("------------------------------------------------------------");
+    
     if (ticket_rides && max_ticket_id > 0) {
-        // Policz bilety z różną liczbą zjazdów
-        int tickets_0_rides = 0;
-        int tickets_1_ride = 0;
-        int tickets_2_rides = 0;
-        int tickets_3plus_rides = 0;
-        int max_rides = 0;
-        int max_rides_ticket = 0;
-        
         for (int i = 1; i < max_ticket_id; i++) {
-            if (ticket_rides[i] == 0) tickets_0_rides++;
-            else if (ticket_rides[i] == 1) tickets_1_ride++;
-            else if (ticket_rides[i] == 2) tickets_2_rides++;
-            else tickets_3plus_rides++;
-            
-            if (ticket_rides[i] > max_rides) {
-                max_rides = ticket_rides[i];
-                max_rides_ticket = i;
+            if (ticket_rides[i] > 0) {
+                logger_report_file_only("Karnet #%d: %d przejazd(ow)", i, ticket_rides[i]);
             }
         }
-        
-        logger_report("   Bilety z 0 zjazdami:      %d", tickets_0_rides);
-        logger_report("   Bilety z 1 zjazdem:       %d", tickets_1_ride);
-        logger_report("   Bilety z 2 zjazdami:      %d", tickets_2_rides);
-        logger_report("   Bilety z 3+ zjazdami:     %d", tickets_3plus_rides);
-        if (max_rides > 0) {
-            logger_report("   Najwiecej zjazdow:        Bilet #%d (%d zjazdow)", max_rides_ticket, max_rides);
-        }
-        logger_report("");
-        
-        // Wypisz szczegóły dla biletów z więcej niż 1 zjazdem (max 30)
-        logger_report("   --- BILETY Z WIELOMA ZJAZDAMI (max 30) ---");
-        int printed = 0;
-        for (int i = 1; i < max_ticket_id && printed < 30; i++) {
-            if (ticket_rides[i] > 1) {
-                logger_report("   Bilet #%d: %d zjazdow", i, ticket_rides[i]);
-                printed++;
-            }
-        }
+    } else {
+        logger_report_file_only("Brak danych o przejazdach.");
     }
-    logger_report("");
-    logger_report("============================================================");
-    logger_report("");
+    
+    logger_report_file_only("");
+    logger_report_file_only("============================================================");
+    logger_report_file_only("");
     
     // Zwolnij pamięć
-    if (passages) free(passages);
     if (ticket_rides) free(ticket_rides);
+    if (gate_entries) free(gate_entries);
     
     odlacz_pamiec(shm);
 }

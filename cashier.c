@@ -15,7 +15,6 @@
 // Flagi sygnałów
 static volatile sig_atomic_t shutdown_flag = 0;
 static volatile sig_atomic_t emergency_flag = 0;
-static time_t g_sim_start_time = 0;
 
 // Handler sygnałów
 void cashier_signal_handler(int sig) {
@@ -40,23 +39,26 @@ typedef struct {
 } QueuedTourist;
 
 // Kolejka priorytetowa (VIP na początku)
-#define MAX_QUEUE 1000
+#define MAX_QUEUE 15000
 static QueuedTourist normal_queue[MAX_QUEUE];
 static int normal_queue_size = 0;
 static QueuedTourist vip_queue[MAX_QUEUE];
 static int vip_queue_size = 0;
 
-// Dodawanie do kolejki
-void add_to_queue(QueuedTourist* tourist) {
+// Dodawanie do kolejki - zwraca true jeśli dodano, false jeśli kolejka pełna
+bool add_to_queue(QueuedTourist* tourist) {
     if (tourist->is_vip) {
         if (vip_queue_size < MAX_QUEUE) {
             vip_queue[vip_queue_size++] = *tourist;
+            return true;
         }
     } else {
         if (normal_queue_size < MAX_QUEUE) {
             normal_queue[normal_queue_size++] = *tourist;
+            return true;
         }
     }
+    return false;
 }
 
 // Pobieranie z kolejki (VIP ma priorytet)
@@ -110,27 +112,35 @@ int main(void) {
     
     // Pobierz czas rozpoczęcia symulacji
     sem_opusc(sem_id, SEM_MAIN);
-    g_sim_start_time = shm->simulation_start;
+    time_t sim_start = shm->simulation_start;
     sem_podnies(sem_id, SEM_MAIN);
     
-    // Czekaj do WORK_START_TIME przed otwarciem kasy
-    logger(LOG_CASHIER, "Czekam na godzinę otwarcia (WORK_START_TIME=%d sekund)...", WORK_START_TIME);
+    // Opóźnienie rozpoczęcia pracy kasjera o WORK_START_TIME sekund
+    logger(LOG_CASHIER, "Czekam %d sekund przed rozpoczęciem pracy...", WORK_START_TIME);
+    
     while (!shutdown_flag) {
         time_t now = time(NULL);
-        time_t elapsed = now - g_sim_start_time;
+        time_t elapsed = now - sim_start;
+        
         if (elapsed >= WORK_START_TIME) {
             break;
         }
-        usleep(100000); // 100ms
+        
+        usleep(100000); // Sprawdzaj co 100ms
     }
     
     if (shutdown_flag) {
-        logger(LOG_CASHIER, "Zamykam kasę przed otwarciem");
+        logger(LOG_CASHIER, "Przerwano przed rozpoczęciem pracy");
         odlacz_pamiec(shm);
         return 0;
     }
     
-    logger(LOG_CASHIER, "Kasa otwarta - rozpoczynam sprzedaż biletów!");
+    // Ustaw flagę że kasa jest otwarta
+    sem_opusc(sem_id, SEM_MAIN);
+    shm->cashier_open = true;
+    sem_podnies(sem_id, SEM_MAIN);
+    
+    logger(LOG_CASHIER, "Rozpoczynam pracę - kasa otwarta!");
     
     Message msg;
     
@@ -211,8 +221,19 @@ int main(void) {
             qt.child_ids[0] = msg.child_ids[0];
             qt.child_ids[1] = msg.child_ids[1];
             
-            add_to_queue(&qt);
-            logger(LOG_VIP, "VIP #%d dołączył do kolejki priorytetowej!", qt.tourist_id);
+            if (add_to_queue(&qt)) {
+                logger(LOG_VIP, "VIP #%d dołączył do kolejki priorytetowej!", qt.tourist_id);
+            } else {
+                // Kolejka pełna - wyślij odmowę
+                Message response;
+                response.mtype = qt.pid;
+                response.sender_pid = getpid();
+                response.tourist_id = qt.tourist_id;
+                response.data = -1;
+                response.data2 = -1;
+                wyslij_komunikat_nowait(msg_id, &response);
+                logger(LOG_CASHIER, "Kolejka pełna - odmowa dla VIP #%d", qt.tourist_id);
+            }
         }
         
         // zwykli turyści
@@ -229,7 +250,17 @@ int main(void) {
             qt.child_ids[0] = msg.child_ids[0];
             qt.child_ids[1] = msg.child_ids[1];
             
-            add_to_queue(&qt);
+            if (!add_to_queue(&qt)) {
+                // Kolejka pełna - wyślij odmowę
+                Message response;
+                response.mtype = qt.pid;
+                response.sender_pid = getpid();
+                response.tourist_id = qt.tourist_id;
+                response.data = -1;
+                response.data2 = -1;
+                wyslij_komunikat_nowait(msg_id, &response);
+                logger(LOG_CASHIER, "Kolejka pełna - odmowa dla turysty #%d", qt.tourist_id);
+            }
         }
         
         // Obsługa klientów z kolejki
@@ -258,7 +289,7 @@ int main(void) {
             }
             sem_podnies(sem_id, SEM_MAIN);
             
-            // Wysłanie potwierdzenia do turysty
+            // Wysłanie potwierdzenia do turysty (nowait żeby nie blokować kasjera)
             Message response;
             response.mtype = tourist.pid; // Adresowanie do konkretnego turysty
             response.sender_pid = getpid();
@@ -266,7 +297,7 @@ int main(void) {
             response.data = ticket_id;
             response.data2 = ticket_type;
             
-            if (wyslij_komunikat(msg_id, &response)) {
+            if (wyslij_komunikat_nowait(msg_id, &response)) {
                 const char* ticket_name = nazwa_biletu(ticket_type);
                 const char* discount_str = has_discount ? " (ze zniżką 25%)" : "";
                 const char* vip_str = tourist.is_vip ? " [VIP]" : "";

@@ -20,7 +20,6 @@ static int g_sem_id = -1;
 static int g_msg_id = -1;
 static int g_msg_worker_id = -1;
 static SharedMemory* g_shm = NULL;
-static time_t g_work_start_time = 0;
 
 // Handler sygnałów
 void worker1_signal_handler(int sig) {
@@ -55,7 +54,7 @@ typedef struct {
     int child_ids[2];
 } PlatformWaiter;
 
-#define MAX_WAITERS 2000
+#define MAX_WAITERS 15000
 static PlatformWaiter waiters[MAX_WAITERS];
 static int waiter_count = 0;
 static pthread_mutex_t waiter_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -312,33 +311,30 @@ int main(void) {
     int shm_id = polacz_pamiec();
     g_shm = dolacz_pamiec(shm_id);
     
-    // Zapisz czas rozpoczęcia pracy
-    g_work_start_time = time(NULL);
-    
     // Zapisz PID
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->worker1_pid = getpid();
+    time_t sim_start = g_shm->simulation_start;
     sem_podnies(g_sem_id, SEM_MAIN);
     
     srand(time(NULL) ^ getpid());
     
-    // Pobierz czas rozpoczęcia symulacji i czekaj na WORK_START_TIME
-    sem_opusc(g_sem_id, SEM_MAIN);
-    time_t sim_start = g_shm->simulation_start;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    // Opóźnienie rozpoczęcia pracy pracownika o WORK_START_TIME sekund
+    logger(LOG_WORKER1, "Czekam %d sekund przed rozpoczęciem pracy...", WORK_START_TIME);
     
-    logger(LOG_WORKER1, "Czekam na rozpoczęcie pracy (WORK_START_TIME=%d sekund)...", WORK_START_TIME);
     while (!shutdown_flag) {
         time_t now = time(NULL);
         time_t elapsed = now - sim_start;
+        
         if (elapsed >= WORK_START_TIME) {
             break;
         }
-        usleep(100000); // 100ms
+        
+        usleep(100000); // Sprawdzaj co 100ms
     }
     
     if (shutdown_flag) {
-        logger(LOG_WORKER1, "Kończę przed rozpoczęciem pracy");
+        logger(LOG_WORKER1, "Przerwano przed rozpoczęciem pracy");
         odlacz_pamiec(g_shm);
         return 0;
     }
@@ -360,8 +356,8 @@ int main(void) {
         if (!gates_closed_check) {
             emergency_timer++;
             if (!emergency_stop && emergency_timer >= next_emergency) {
-                // Losowa szansa na awarię (30%)
-                if (rand() % 100 < 30) {
+                // Losowa szansa na awarię (20%)
+                if (rand() % 100 < 20) {
                     should_trigger_emergency = true;
                 }
                 emergency_timer = 0;
@@ -432,19 +428,12 @@ int main(void) {
         sem_opusc(g_sem_id, SEM_MAIN);
         bool gates_closed = g_shm->gates_closed;
         int on_platform = g_shm->tourists_on_platform;
-        int in_station = g_shm->tourists_in_station;
-        bool is_running = g_shm->is_running;
         int active_chairs = g_shm->active_chairs;
         sem_podnies(g_sem_id, SEM_MAIN);
 
-        // Sprawdź czy minął czas pracy
-        time_t now = time(NULL);
-        time_t elapsed = now - g_work_start_time;
-        bool work_time_ended = (elapsed >= WORK_END_TIME);
-
         // Kończ dopiero gdy:
         // 1. Dostaliśmy SIGTERM (shutdown_flag)
-        // 2. Minął czas pracy I (peron pusty, kolejka pusta I wszystkie krzesełka wróciły)
+        // 2. Bramki zamknięte, peron pusty, kolejka pusta I wszystkie krzesełka wróciły
         if (shutdown_flag) {
             // Wymuszony shutdown - wyślij odmowy do pozostałych
             Message cleanup_msg;
@@ -473,9 +462,9 @@ int main(void) {
             break;
         }
 
-        // Normalne zakończenie - minął czas pracy I (peron pusty, kolejka pusta I wszystkie krzesełka wróciły)
-        if (work_time_ended && on_platform == 0 && waiter_count == 0 && active_chairs == 0) {
-            logger(LOG_WORKER1, "Koniec dnia pracy (%ld sekund) - wszyscy turyści obsłużeni, wszystkie krzesełka wróciły", elapsed);
+        // Normalne zakończenie - bramki zamknięte, peron pusty, kolejka pusta I wszystkie krzesełka wróciły
+        if (gates_closed && on_platform == 0 && waiter_count == 0 && active_chairs == 0) {
+            logger(LOG_WORKER1, "Koniec dnia - wszyscy turyści obsłużeni, wszystkie krzesełka wróciły");
             break;
         }
 
@@ -511,7 +500,6 @@ int main(void) {
             // Dodaj do kolejki
             if (add_waiter(&w)) {
                 sem_opusc(g_sem_id, SEM_MAIN);
-                g_shm->gate_passages_count++;
                 g_shm->tourists_on_platform++;
                 sem_podnies(g_sem_id, SEM_MAIN);
 

@@ -108,12 +108,26 @@ void finish_children_threads(void) {
 bool buy_ticket(void) {
     Message msg;
     
-    // Sprawdź czy bramki są otwarte przed próbą kupna biletu
+    // Sprawdź czy kasa jest otwarta przed próbą kupna biletu
     sem_opusc(g_sem_id, SEM_MAIN);
+    bool cashier_open = g_shm->cashier_open;
     bool gates_closed = g_shm->gates_closed;
     sem_podnies(g_sem_id, SEM_MAIN);
     
-    if (gates_closed) {
+    // Czekaj na otwarcie kasy (jeśli jeszcze nie otwarta)
+    int wait_counter = 0;
+    while (!cashier_open && !gates_closed && !shutdown_flag && wait_counter < 200) {
+        usleep(100000); // 100ms
+        wait_counter++;
+        
+        sem_opusc(g_sem_id, SEM_MAIN);
+        cashier_open = g_shm->cashier_open;
+        gates_closed = g_shm->gates_closed;
+        sem_podnies(g_sem_id, SEM_MAIN);
+    }
+    
+    // Jeśli bramki zamknięte lub nie otwarto kasy w rozsądnym czasie
+    if (gates_closed || !cashier_open) {
         return false;
     }
     
@@ -285,15 +299,14 @@ bool enter_station(void) {
         timeout++;
     }
     
-    // Przydziel numer bramki wejściowej (round-robin na podstawie licznika w pamięci dzielonej)
+    // Przydziel numer bramki wejściowej (round-robin)
     sem_opusc(g_sem_id, SEM_MAIN);
-    g_entry_gate = (g_shm->gate_passages_count % ENTRY_GATES) + 1;
+    g_entry_gate = (g_tourist_id % ENTRY_GATES) + 1;
     g_shm->tourists_in_station++;
-    g_shm->gate_passages_count++;
     sem_podnies(g_sem_id, SEM_MAIN);
     
-    // Rejestruj przejście przez bramkę wejściową (typ 1 = wejściowa)
-    rejestruj_przejscie_bramki(g_ticket_id, g_entry_gate, 1);
+    // Rejestruj przejście przez bramkę (id karnetu - godzina)
+    rejestruj_przejscie_bramki(g_ticket_id);
     
     // Log przejścia przez bramkę wejściową
     const char* vip_str = g_is_vip ? " [VIP]" : "";
@@ -389,14 +402,11 @@ bool go_to_platform(void) {
     // Symulacja przejścia przez bramkę
     usleep(5000 + rand() % 10000);
     
-    // Rejestruj przejście przez bramkę peronową (typ 2 = peronowa)
-    int platform_gate = (g_tourist_id % PLATFORM_GATES) + 1;
-    rejestruj_przejscie_bramki(g_ticket_id, platform_gate, 2);
-    
     // Zwolnij bramkę na peron
     sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
     
     // Opuściliśmy stację - zwolnij miejsce
+    int platform_gate = (g_tourist_id % PLATFORM_GATES) + 1;
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->tourists_in_station--;
     sem_podnies(g_sem_id, SEM_MAIN);
@@ -494,8 +504,12 @@ void exit_at_top(void) {
         timeout_count++;
     }
     
-    // Rejestruj "zjazd" (właściwie wyjście na górze) dla pieszego
-    rejestruj_zjazd(g_ticket_id);
+    // Rejestruj "zjazd" (właściwie wyjście na górze) dla pieszego - WEWNĄTRZ sekcji krytycznej
+    sem_opusc(g_sem_id, SEM_MAIN);
+    if (g_ticket_id > 0 && g_ticket_id < MAX_TICKETS) {
+        g_shm->ticket_rides[g_ticket_id]++;
+    }
+    sem_podnies(g_sem_id, SEM_MAIN);
     
     logger(LOG_TOURIST, "Turysta #%d (pieszy) zakończył wizytę na górnej stacji (bilet #%d)", 
            g_tourist_id, g_ticket_id);
@@ -539,8 +553,13 @@ void descend_trail(void) {
         timeout_count++;
     }
     
-    // Rejestruj zjazd dla tego biletu
-    rejestruj_zjazd(g_ticket_id);
+    // Rejestruj zjazd dla tego biletu - WEWNĄTRZ sekcji krytycznej
+    sem_opusc(g_sem_id, SEM_MAIN);
+    if (g_ticket_id > 0 && g_ticket_id < MAX_TICKETS) {
+        g_shm->ticket_rides[g_ticket_id]++;
+        g_shm->trail_usage[trail]++;
+    }
+    sem_podnies(g_sem_id, SEM_MAIN);
     
     logger(LOG_TOURIST, "Turysta #%d zakończył trasę zjazdową i dotarł na stację dolną (bilet #%d)", 
            g_tourist_id, g_ticket_id);

@@ -27,7 +27,7 @@ static pid_t worker1_pid = 0;
 static pid_t worker2_pid = 0;
 
 // Lista procesów turystów
-#define MAX_TOURIST_PROCESSES 10000
+#define MAX_TOURIST_PROCESSES 400
 static pid_t tourist_pids[MAX_TOURIST_PROCESSES];
 static int tourist_pid_count = 0;
 static pthread_mutex_t tourist_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -118,6 +118,7 @@ void init_shared_memory(void) {
     g_shm->is_running = true;
     g_shm->emergency_stop = false;
     g_shm->gates_closed = false;
+    g_shm->cashier_open = false;  // Kasa zamknięta na początku
     g_shm->simulation_start = time(NULL);
     g_shm->simulation_end = 0;
     
@@ -137,6 +138,7 @@ void init_shared_memory(void) {
     g_shm->next_tourist_id = 0;
     g_shm->next_ticket_id = 0;
     g_shm->next_chair_id = 0;
+    g_shm->gate_entries_count = 0;
 }
 
 int main(void) {
@@ -223,14 +225,13 @@ int main(void) {
     int tourists_created = 0;
     time_t sim_start = time(NULL);
     
-    logger(LOG_SYSTEM, "Rozpoczynam generowanie turystów (kolej zacznie działać za %d sekund)...", WORK_START_TIME);
+    logger(LOG_SYSTEM, "Rozpoczynam generowanie turystów...");
     
     while (tourists_created < TOTAL_TOURISTS && !shutdown_flag) {
-        // Sprawdzanie czy nie minął czas pracy (WORK_START_TIME + WORK_END_TIME)
+        // Sprawdzanie czy nie minął czas pracy
         time_t now = time(NULL);
-        time_t elapsed = now - sim_start;
-        if (elapsed >= (WORK_START_TIME + WORK_END_TIME)) {
-            logger(LOG_SYSTEM, "Osiągnięto koniec czasu pracy - zamykam bramki wejściowe");
+        if (now - sim_start >= WORK_END_TIME) {
+            logger(LOG_SYSTEM, "Osiągnięto czas Tk - zamykam bramki wejściowe");
             
             sem_opusc(g_sem_id, SEM_MAIN);
             g_shm->gates_closed = true;
@@ -245,7 +246,7 @@ int main(void) {
         pthread_mutex_unlock(&tourist_mutex);
         
         if (current_count >= MAX_TOURIST_PROCESSES) {
-            usleep(1000); // Czekanie na zwolnienie
+            //usleep(1000); // Czekanie na zwolnienie
             continue;
         }
         
@@ -294,44 +295,32 @@ int main(void) {
         usleep(rand() % TOURIST_SPAWN_DELAY_MAX);
     }
     
-    if (!shutdown_flag) {
-        logger(LOG_SYSTEM, "Wygenerowano wszystkich %d turystów", tourists_created);
-        time_t elapsed = time(NULL) - sim_start;
-        time_t total_work_time = WORK_START_TIME + WORK_END_TIME;
-        if (elapsed < total_work_time) {
-            logger(LOG_SYSTEM, "Kontynuuję pracę przez kolejne %ld sekund (do końca czasu pracy)...", 
-                   total_work_time - elapsed);
-        }
-    }
+    // if (!shutdown_flag) {
+    //     logger(LOG_SYSTEM, "Wygenerowano wszystkich %d turystów", tourists_created);
+        
+    //     // Zamknij bramki jeśli jeszcze nie zamknięte
+    //     sem_opusc(g_sem_id, SEM_MAIN);
+    //     g_shm->gates_closed = true;
+    //     sem_podnies(g_sem_id, SEM_MAIN);
+    // }
     
-    // Pracuj przez pełny czas (WORK_START_TIME + WORK_END_TIME), niezależnie od ilości turystów
-    logger(LOG_SYSTEM, "Placówka pracuje - oczekiwanie na koniec czasu pracy...");
+    // Czekaj na zakończenie turystów (z timeoutem)
+    //logger(LOG_SYSTEM, "Czekam na zakończenie wszystkich turystów...");
     
     int wait_cycles = 0;
-    time_t total_work_time = WORK_START_TIME + WORK_END_TIME;
+    int max_wait = 30000; // 30 sekund max
     
-    while (!shutdown_flag) {
-        // Sprawdź czy minął czas pracy
-        time_t now = time(NULL);
-        time_t elapsed = now - sim_start;
+    while (!shutdown_flag && wait_cycles < max_wait) {
+        pthread_mutex_lock(&tourist_mutex);
+        int remaining = tourist_pid_count;
+        pthread_mutex_unlock(&tourist_mutex);
         
-        if (elapsed >= total_work_time) {
-            logger(LOG_SYSTEM, "Osiągnięto koniec czasu pracy (WORK_START_TIME + WORK_END_TIME = %ld sekund)", total_work_time);
-            
-            // Zamknij bramki na koniec czasu pracy
-            sem_opusc(g_sem_id, SEM_MAIN);
-            g_shm->gates_closed = true;
-            sem_podnies(g_sem_id, SEM_MAIN);
-            
+        if (remaining == 0) {
             break;
         }
         
         if (wait_cycles % 1000 == 0) {
-            // Debug info co sekundę
-            pthread_mutex_lock(&tourist_mutex);
-            int remaining = tourist_pid_count;
-            pthread_mutex_unlock(&tourist_mutex);
-            
+            // Debug info - gdzie są turyści
             sem_opusc(g_sem_id, SEM_MAIN);
             int in_station = g_shm->tourists_in_station;
             int on_platform = g_shm->tourists_on_platform;
@@ -339,21 +328,20 @@ int main(void) {
             int at_top = g_shm->tourists_at_top;
             int at_cashier = g_shm->tourists_at_cashier;
             int descending = g_shm->tourists_descending;
-            int created = g_shm->total_tourists_created;
-            int finished = g_shm->total_tourists_finished;
             sem_podnies(g_sem_id, SEM_MAIN);
             
-            logger(LOG_SYSTEM, "Czas: %ld/%lds | Procesy: %d (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
-                   elapsed, total_work_time, remaining, at_cashier, in_station, on_platform, active_chairs, at_top, descending);
+            long elapsed = (long)(time(NULL) - sim_start);
+            logger(LOG_SYSTEM, "[%ld/%ds] Procesy: %d (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
+                   elapsed, WORK_END_TIME, remaining, at_cashier, in_station, on_platform, active_chairs, at_top, descending);
         }
         
         usleep(1000);
         wait_cycles++;
     }
     
-    // Czekaj dodatkowe 3 sekundy aby pracownicy obsłużyli ostatnich turystów
+    // Opóźnienie przed wyłączeniem (3 sekundy)
     if (!interrupt_flag) {
-        logger(LOG_SYSTEM, "Oczekiwanie %d sekund na obsłużenie ostatnich turystów...", SHUTDOWN_DELAY);
+        logger(LOG_SYSTEM, "Oczekiwanie %d sekund przed wyłączeniem...", SHUTDOWN_DELAY);
         sleep(SHUTDOWN_DELAY);
     }
     logger(LOG_SYSTEM, "Zamykanie symulacji...");
@@ -400,8 +388,6 @@ int main(void) {
             int at_top = g_shm->tourists_at_top;
             int at_cashier = g_shm->tourists_at_cashier;
             int descending = g_shm->tourists_descending;
-            int created = g_shm->total_tourists_created;
-            int finished = g_shm->total_tourists_finished;
             sem_podnies(g_sem_id, SEM_MAIN);
             
             logger(LOG_SYSTEM, "procesy: %d (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 

@@ -7,7 +7,7 @@
 #include <time.h>
 
 // ==== KONFIGURACJA SYMULACJI ====
-#define TOTAL_TOURISTS       20   // Liczba turystów do obsłużenia
+#define TOTAL_TOURISTS       10000   // Liczba turystów do obsłużenia
 #define MAX_CHAIRS           72      // Łączna liczba krzesełek
 #define MAX_ACTIVE_CHAIRS    36      // Maks krzesełek jednocześnie w ruchu
 #define CHAIR_CAPACITY       4       // Pojemność jednego krzesełka
@@ -24,7 +24,7 @@
 #define CHAIR_TRAVEL_TIME    2       // Czas przejazdu krzesełka
 
 // Godziny pracy (w sekundach symulacyjnych od startu)
-#define WORK_START_TIME      10       // Tp - start
+#define WORK_START_TIME      5       // Tp - start
 #define WORK_END_TIME        20     // Tk - koniec (sekundy)
 #define SHUTDOWN_DELAY       3       // Opóźnienie przed wyłączeniem po Tk
 
@@ -120,13 +120,6 @@ typedef struct {
     bool has_discount;
 } Ticket;
 
-// Przejście przez bramkę
-typedef struct {
-    int ticket_id;
-    time_t timestamp;
-    int gate_number;
-} GatePassage;
-
 // Turysta w pamięci dzielonej
 typedef struct {
     pid_t pid;
@@ -162,6 +155,7 @@ typedef struct {
     bool is_running;
     bool emergency_stop;
     bool gates_closed;          // Tk osiągnięte - bramki zamknięte
+    bool cashier_open;          // Kasa otwarta (po WORK_START_TIME)
     time_t simulation_start;
     time_t simulation_end;
     
@@ -183,14 +177,17 @@ typedef struct {
     // Trasy
     int trail_usage[TRAIL_COUNT];
     
-    // Przejścia bramkowe - historia
-    int gate_passages_count;
-    #define MAX_GATE_PASSAGES 20000
-    GatePassage gate_passages[MAX_GATE_PASSAGES];
-    
     // Statystyki per bilet (liczba zjazdów)
     #define MAX_TICKETS 20000
     int ticket_rides[MAX_TICKETS];  // ticket_rides[ticket_id] = liczba zjazdów
+    
+    // Rejestracja przejść przez bramki (id karnetu - godzina)
+    #define MAX_GATE_ENTRIES 50000
+    struct {
+        int ticket_id;
+        time_t entry_time;
+    } gate_entries[MAX_GATE_ENTRIES];
+    int gate_entries_count;
     
     // Kolejki i liczniki
     int tourists_in_station;    // Na dolnej stacji

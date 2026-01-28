@@ -20,7 +20,6 @@ static int g_sem_id = -1;
 static int g_msg_id = -1;
 static int g_msg_worker_id = -1;
 static SharedMemory* g_shm = NULL;
-static time_t g_work_start_time = 0;
 
 // Handler sygnałów
 void worker2_signal_handler(int sig) {
@@ -227,33 +226,30 @@ int main(void) {
     int shm_id = polacz_pamiec();
     g_shm = dolacz_pamiec(shm_id);
     
-    // Zapisz czas rozpoczęcia pracy
-    g_work_start_time = time(NULL);
-    
     // Zapisz PID
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->worker2_pid = getpid();
+    time_t sim_start = g_shm->simulation_start;
     sem_podnies(g_sem_id, SEM_MAIN);
     
     srand(time(NULL) ^ getpid());
     
-    // Pobierz czas rozpoczęcia symulacji i czekaj na WORK_START_TIME
-    sem_opusc(g_sem_id, SEM_MAIN);
-    time_t sim_start = g_shm->simulation_start;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    // Opóźnienie rozpoczęcia pracy pracownika o WORK_START_TIME sekund
+    logger(LOG_WORKER2, "Czekam %d sekund przed rozpoczęciem pracy...", WORK_START_TIME);
     
-    logger(LOG_WORKER2, "Czekam na rozpoczęcie pracy (WORK_START_TIME=%d sekund)...", WORK_START_TIME);
     while (!shutdown_flag) {
         time_t now = time(NULL);
         time_t elapsed = now - sim_start;
+        
         if (elapsed >= WORK_START_TIME) {
             break;
         }
-        usleep(100000); // 100ms
+        
+        usleep(100000); // Sprawdzaj co 100ms
     }
     
     if (shutdown_flag) {
-        logger(LOG_WORKER2, "Kończę przed rozpoczęciem pracy");
+        logger(LOG_WORKER2, "Przerwano przed rozpoczęciem pracy");
         odlacz_pamiec(g_shm);
         return 0;
     }
@@ -275,8 +271,8 @@ int main(void) {
         if (!gates_closed) {
             emergency_timer++;
             if (!emergency_stop && emergency_timer >= next_emergency) {
-                // Losowa szansa na awarię (50%)
-                if (rand() % 100 < 50) {
+                // Losowa szansa na awarię (20%)
+                if (rand() % 100 < 20) {
                     should_trigger_emergency = true;
                 }
                 emergency_timer = 0;
@@ -342,11 +338,6 @@ int main(void) {
                 continue;
             }
         }
-        
-        // Sprawdź czas pracy
-        time_t now = time(NULL);
-        time_t elapsed = now - g_work_start_time;
-        bool work_time_ended = (elapsed >= WORK_END_TIME);
         
         // Sprawdź koniec dnia - kończ tylko na SIGTERM
         // Obsłużenie wszystkich turystów którzy są jeszcze w systemie
