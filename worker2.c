@@ -257,9 +257,13 @@ int main(void) {
     logger(LOG_WORKER2, "Rozpoczynam pracę na stacji górnej!");
     
     Message msg;
-    int emergency_timer = 0;
     bool should_trigger_emergency = false;
-    int next_emergency = 3000 + (rand() % 2000); // Losowy czas do następnej awarii (3-5s)
+    
+    // System awarii oparty na rzeczywistym czasie
+    time_t last_emergency_check = time(NULL);
+    int next_emergency_delay = 3 + (rand() % 3);  // 3-5 sekund
+    const int EMERGENCY_DURATION = 5;  // Czas trwania awarii w sekundach
+    const int EMERGENCY_SAFETY_MARGIN = 8;  // Margines bezpieczeństwa przed końcem
     
     while (!shutdown_flag) {
         // Sprawdź czy bramki zamknięte (koniec dnia)
@@ -269,14 +273,21 @@ int main(void) {
         
         // Obsługa awarii - sprawdź czy trzeba zainicjować (tylko gdy bramki otwarte)
         if (!gates_closed) {
-            emergency_timer++;
-            if (!emergency_stop && emergency_timer >= next_emergency) {
-                // Losowa szansa na awarię (20%)
-                if (rand() % 100 < 20) {
-                    should_trigger_emergency = true;
+            time_t now = time(NULL);
+            time_t elapsed_since_start = now - sim_start;
+            time_t time_to_end = WORK_END_TIME - elapsed_since_start;
+            
+            // Sprawdź czy minął czas od ostatniej próby awarii
+            if (!emergency_stop && (now - last_emergency_check) >= next_emergency_delay) {
+                // Nie inicjuj awarii jeśli zostało mniej niż EMERGENCY_SAFETY_MARGIN sekund do końca
+                if (time_to_end > EMERGENCY_SAFETY_MARGIN) {
+                    // Losowa szansa na awarię (20%)
+                    if (rand() % 100 < 20) {
+                        should_trigger_emergency = true;
+                    }
                 }
-                emergency_timer = 0;
-                next_emergency = 3000 + (rand() % 2000); // Reset na 3-5s
+                last_emergency_check = now;
+                next_emergency_delay = 3 + (rand() % 3);  // Reset na 3-5 sekund
             }
             
             if (should_trigger_emergency && !emergency_stop) {
@@ -372,9 +383,9 @@ int main(void) {
         }
         
         // Odbieraj krzesełka przyjeżdżające na górną stację (tylko logowanie)
+        // UWAGA: Przetwarzamy komunikat ZANIM sprawdzimy flagi, bo odebrany komunikat
+        // już został usunięty z kolejki i musi być obsłużony!
         while (odbierz_komunikat(g_msg_worker_id, &msg, MSG_CHAIR_ARRIVAL, false)) {
-            if (shutdown_flag || emergency_stop) break;
-            
             int chair_id = msg.data;
             int passenger_count = msg.data2;
             
@@ -401,9 +412,8 @@ int main(void) {
         }
         
         // Odbieraj prośby turystów o wyjście
+        // UWAGA: Przetwarzamy komunikat ZANIM sprawdzimy flagi!
         while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_EXIT, false)) {
-            if (shutdown_flag || emergency_stop) break;
-            
             TouristExit* te = malloc(sizeof(TouristExit));
             te->tourist_pid = msg.sender_pid;
             te->tourist_id = msg.tourist_id;

@@ -453,8 +453,8 @@ bool ride_chair(void) {
     
     if (shutdown_flag || timeout_count >= 600) return false;
     
-    logger(LOG_TOURIST, "Turysta #%d wsiada na krzesełko!", g_tourist_id);
-    
+    //logger(LOG_TOURIST, "Turysta #%d wsiada na krzesełko!", g_tourist_id);
+
     // Czekaj na komunikat o dotarciu na górę (data == 2)
     // Timeout: max 30 sekund jazdy
     timeout_count = 0;

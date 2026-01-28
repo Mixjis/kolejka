@@ -40,6 +40,7 @@ typedef struct {
     int tourist_ids[CHAIR_CAPACITY];
     pid_t tourist_pids[CHAIR_CAPACITY];
     TouristType tourist_types[CHAIR_CAPACITY];
+    int children_counts[CHAIR_CAPACITY];
     int count;
     int cyclists;
     int pedestrians;
@@ -118,13 +119,19 @@ bool try_create_group(ChairGroup* group) {
         int new_pedestrians = group->pedestrians + (w->type == TOURIST_PEDESTRIAN ? 1 : 0);
         
         // Dodaj dzieci jako pieszych
-        new_pedestrians += w->children_count;
+        if (w->type == TOURIST_CYCLIST) {
+            new_cyclists += w->children_count;
+        } else {
+            new_pedestrians += w->children_count;
+        }
+
         
         if (is_valid_combination(new_cyclists, new_pedestrians)) {
             // Dodaj do grupy
             group->tourist_ids[group->count] = w->tourist_id;
             group->tourist_pids[group->count] = w->pid;
             group->tourist_types[group->count] = w->type;
+            group->children_counts[group->count] = w->children_count;
             group->count++;
             
             if (w->type == TOURIST_CYCLIST) {
@@ -134,7 +141,13 @@ bool try_create_group(ChairGroup* group) {
             }
             
             // Dodaj dzieci
-            group->pedestrians += w->children_count;
+            if (w->type == TOURIST_CYCLIST) {
+                // Dzieci rowerzysty też są rowerzystami
+                group->cyclists += w->children_count;
+            } else {
+                // Dzieci pieszego też są pieszymi
+                group->pedestrians += w->children_count;
+            }
             
             indices_to_remove[remove_count++] = i;
         }
@@ -174,16 +187,24 @@ void* chair_thread(void* arg) {
     // Log odjazdu
     char passengers_str[256] = "";
     for (int i = 0; i < group->count; i++) {
-        char tmp[32];
-        snprintf(tmp, sizeof(tmp), "%s#%d%s", 
-                 i > 0 ? ", " : "",
-                 group->tourist_ids[i],
-                 group->tourist_types[i] == TOURIST_CYCLIST ? "(R)" : "(P)");
+        char tmp[64];
+        if (group->children_counts[i] > 0) {
+            snprintf(tmp, sizeof(tmp), "%s#%d%s+%ddz", 
+                     i > 0 ? ", " : "",
+                     group->tourist_ids[i],
+                     group->tourist_types[i] == TOURIST_CYCLIST ? "(R)" : "(P)",
+                     group->children_counts[i]);
+        } else {
+            snprintf(tmp, sizeof(tmp), "%s#%d%s", 
+                     i > 0 ? ", " : "",
+                     group->tourist_ids[i],
+                     group->tourist_types[i] == TOURIST_CYCLIST ? "(R)" : "(P)");
+        }
         strcat(passengers_str, tmp);
     }
     
-    logger(LOG_CHAIR, "Krzesełko #%d odjeżdża z %d pasażerami: [%s] (R:%d, P:%d)",
-           chair_id, group->count, passengers_str, group->cyclists, group->pedestrians);
+    logger(LOG_CHAIR, "Krzesełko #%d odjeżdża z pasażerami: [%s] (R:%d, P:%d)",
+           chair_id, passengers_str, group->cyclists, group->pedestrians);
     
     // Symulacja przejazdu
     sleep(travel_time);
@@ -342,9 +363,13 @@ int main(void) {
     logger(LOG_WORKER1, "Rozpoczynam pracę na stacji dolnej!");
     
     Message msg;
-    int emergency_timer = 0;
     bool should_trigger_emergency = false;
-    int next_emergency = 3000 + (rand() % 2000); // Losowy czas do następnej awarii (3-5s)
+    
+    // System awarii oparty na rzeczywistym czasie
+    time_t last_emergency_check = time(NULL);
+    int next_emergency_delay = 3 + (rand() % 3);  // 3-5 sekund
+    const int EMERGENCY_DURATION = 5;  // Czas trwania awarii w sekundach
+    const int EMERGENCY_SAFETY_MARGIN = 8;  // Margines bezpieczeństwa przed końcem (awaria + bufor)
     
     while (!shutdown_flag) {
         // Sprawdź czy bramki zamknięte (koniec dnia) - NIE inicjuj awarii po zamknięciu!
@@ -354,14 +379,21 @@ int main(void) {
         
         // Obsługa awarii - sprawdź czy trzeba zainicjować (TYLKO gdy bramki otwarte)
         if (!gates_closed_check) {
-            emergency_timer++;
-            if (!emergency_stop && emergency_timer >= next_emergency) {
-                // Losowa szansa na awarię (20%)
-                if (rand() % 100 < 20) {
-                    should_trigger_emergency = true;
+            time_t now = time(NULL);
+            time_t elapsed_since_start = now - sim_start;
+            time_t time_to_end = WORK_END_TIME - elapsed_since_start;
+            
+            // Sprawdź czy minął czas od ostatniej próby awarii
+            if (!emergency_stop && (now - last_emergency_check) >= next_emergency_delay) {
+                // Nie inicjuj awarii jeśli zostało mniej niż EMERGENCY_SAFETY_MARGIN sekund do końca
+                if (time_to_end > EMERGENCY_SAFETY_MARGIN) {
+                    // Losowa szansa na awarię (20%)
+                    if (rand() % 100 < 20) {
+                        should_trigger_emergency = true;
+                    }
                 }
-                emergency_timer = 0;
-                next_emergency = 3000 + (rand() % 2000); // Reset na 3-5s
+                last_emergency_check = now;
+                next_emergency_delay = 3 + (rand() % 3);  // Reset na 3-5 sekund
             }
             
             if (should_trigger_emergency && !emergency_stop) {
@@ -547,6 +579,18 @@ int main(void) {
                         notify.data = 1; // OK wsiadaj
                         notify.tourist_id = group->tourist_ids[i];
                         wyslij_komunikat(g_msg_id, &notify);
+                        
+                        // Log wpuszczenia turysty
+                        if (group->children_counts[i] > 0) {
+                            logger(LOG_WORKER1, "Wpuszczam turyste #%d%s+%ddz na krzesełko",
+                                   group->tourist_ids[i],
+                                   group->tourist_types[i] == TOURIST_CYCLIST ? "(R)" : "(P)",
+                                   group->children_counts[i]);
+                        } else {
+                            logger(LOG_WORKER1, "Wpuszczam turyste #%d%s na krzesełko",
+                                   group->tourist_ids[i],
+                                   group->tourist_types[i] == TOURIST_CYCLIST ? "(R)" : "(P)");
+                        }
                     }
                     
                     // Aktualizuj licznik na peronie

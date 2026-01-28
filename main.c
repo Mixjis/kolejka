@@ -227,7 +227,7 @@ int main(void) {
     
     logger(LOG_SYSTEM, "Rozpoczynam generowanie turystów...");
     
-    while (tourists_created < TOTAL_TOURISTS && !shutdown_flag) {
+    while (!shutdown_flag) {
         // Sprawdzanie czy nie minął czas pracy
         time_t now = time(NULL);
         if (now - sim_start >= WORK_END_TIME) {
@@ -241,58 +241,64 @@ int main(void) {
         }
         
         // Sprawdzanie czy możemy utworzyć więcej procesów
-        pthread_mutex_lock(&tourist_mutex);
-        int current_count = tourist_pid_count;
-        pthread_mutex_unlock(&tourist_mutex);
-        
-        if (current_count >= MAX_TOURIST_PROCESSES) {
-            //usleep(1000); // Czekanie na zwolnienie
-            continue;
-        }
-        
-        // Generowanie turysty
-        tourists_created++;
-        
-        int tourist_id = tourists_created;
-        
-        // Losowe parametry turysty
-        int age;
-        int age_roll = rand() % 100;
-        if (age_roll < 15) {
-            age = 4 + rand() % 6; // 4-9 lat (dzieci)
-        } else if (age_roll < 25) {
-            age = 10 + rand() % 8; // 10-17 lat (młodzież)
-        } else if (age_roll < 85) {
-            age = 18 + rand() % 47; // 18-64 lat (dorośli)
-        } else {
-            age = 65 + rand() % 20; // 65-84 lat (seniorzy)
-        }
-        
-        TouristType type = (rand() % 2) ? TOURIST_CYCLIST : TOURIST_PEDESTRIAN;
-        bool is_vip = (rand() % 100) < VIP_PERCENT;
-        
-        // Dzieci z opiekunem (dorośli 18-64 lat mogą mieć dzieci)
-        int children_count = 0;
-        if (age >= 18 && age < 65 && rand() % 100 < 10) {
-            children_count = 1 + rand() % 2; // 1-2 dzieci
-        }
-        
-        pid_t pid = create_tourist(tourist_id, age, type, is_vip, children_count);
-        
-        if (pid > 0) {
+        if(tourists_created < TOTAL_TOURISTS){
             pthread_mutex_lock(&tourist_mutex);
-            if (tourist_pid_count < MAX_TOURIST_PROCESSES) {
-                tourist_pids[tourist_pid_count++] = pid;
-            }
+            int current_count = tourist_pid_count;
             pthread_mutex_unlock(&tourist_mutex);
             
-            sem_opusc(g_sem_id, SEM_MAIN);
-            g_shm->total_tourists_created++;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            if (current_count >= MAX_TOURIST_PROCESSES) {
+                //usleep(1000); // Czekanie na zwolnienie
+                continue;
+            }
+            
+            // Generowanie turysty
+            tourists_created++;
+            
+            int tourist_id = tourists_created;
+            
+            // Losowe parametry turysty
+            int age;
+            int age_roll = rand() % 100;
+            if (age_roll < 15) {
+                age = 4 + rand() % 6; // 4-9 lat (dzieci)
+            } else if (age_roll < 25) {
+                age = 10 + rand() % 8; // 10-17 lat (młodzież)
+            } else if (age_roll < 85) {
+                age = 18 + rand() % 47; // 18-64 lat (dorośli)
+            } else {
+                age = 65 + rand() % 20; // 65-84 lat (seniorzy)
+            }
+            
+            TouristType type = (rand() % 2) ? TOURIST_CYCLIST : TOURIST_PEDESTRIAN;
+            bool is_vip = (rand() % 100) < VIP_PERCENT;
+            
+            // Dzieci z opiekunem (dorośli 18-64 lat mogą mieć dzieci)
+            int children_count = 0;
+            if (age >= 18 && age < 65 && rand() % 100 < 10) {
+                if (type == TOURIST_CYCLIST) {
+                    children_count = 1;  // Rowerzysta może mieć max 1 dziecko
+                } else {
+                    children_count = 1 + rand() % 2;  // Pieszy może mieć 1-2 dzieci
+                }
+            }
+            
+            pid_t pid = create_tourist(tourist_id, age, type, is_vip, children_count);
+            
+            if (pid > 0) {
+                pthread_mutex_lock(&tourist_mutex);
+                if (tourist_pid_count < MAX_TOURIST_PROCESSES) {
+                    tourist_pids[tourist_pid_count++] = pid;
+                }
+                pthread_mutex_unlock(&tourist_mutex);
+                
+                sem_opusc(g_sem_id, SEM_MAIN);
+                g_shm->total_tourists_created++;
+                sem_podnies(g_sem_id, SEM_MAIN);
+            }
+            
+            // Losowe opóźnienie między turystami
+            usleep(rand() % TOURIST_SPAWN_DELAY_MAX);
         }
-        
-        // Losowe opóźnienie między turystami
-        usleep(rand() % TOURIST_SPAWN_DELAY_MAX);
     }
     
     // if (!shutdown_flag) {
