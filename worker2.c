@@ -353,7 +353,7 @@ int main(void) {
                     reply.mtype = tourist_pid;
                     reply.sender_pid = getpid();
                     reply.data = 2; // Dotarłeś na górę
-                    wyslij_komunikat_nowait(g_msg_id, &reply);
+                    wyslij_komunikat(g_msg_id, &reply);
                 }
             }
             
@@ -364,7 +364,7 @@ int main(void) {
                 reply.sender_pid = getpid();
                 reply.data = 3; // Zakończone
                 reply.tourist_id = cleanup_msg.tourist_id;
-                wyslij_komunikat_nowait(g_msg_id, &reply);
+                wyslij_komunikat(g_msg_id, &reply);
             }
             
             logger(LOG_WORKER2, "Symulacja zakończona");

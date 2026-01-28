@@ -10,7 +10,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 #include <errno.h>
-#include <sys/sem.h>
+#include <sys/stat.h>
 #include "logger.h"
 #include "struktury.h"
 #include "operacje.h"
@@ -78,8 +78,8 @@ static void get_timestamp(char* buffer, size_t size) {
 }
 
 void logger_init(void) {
-    // Otwórz plik logów w trybie zapisu (nadpisz) z O_APPEND dla atomowości
-    log_fd = open(LOG_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    // Otwórz plik logów w trybie dopisywania (append) dla atomowości
+    log_fd = open(LOG_FILE, O_WRONLY | O_CREAT | O_APPEND, 0644);
     if (log_fd < 0) {
         perror("Nie można otworzyć pliku logów");
     }
@@ -90,10 +90,13 @@ void logger_init(void) {
         perror("Nie można otworzyć pliku raportu");
     }
     
-    // Nagłówek pliku logów
+    // Nagłówek pliku logów tylko jeśli plik jest pusty
     if (log_fd >= 0) {
-        const char* header = "========== START SYMULACJI KOLEI LINOWEJ ==========\n";
-        safe_write(log_fd, header, strlen(header));
+        struct stat st;
+        if (fstat(log_fd, &st) == 0 && st.st_size == 0) {
+            const char* header = "========== START SYMULACJI KOLEI LINOWEJ ==========\n";
+            safe_write(log_fd, header, strlen(header));
+        }
     }
 }
 
@@ -335,5 +338,53 @@ void generuj_raport_koncowy(void) {
     if (ticket_rides) free(ticket_rides);
     if (gate_entries) free(gate_entries);
     
+    int total_tickets = 0;
+    for (int i = 0; i < TICKET_TYPE_COUNT; i++) {
+        total_tickets += shm->tickets_sold[i];
+    }
+
+    double avg_per_chair = shm->chair_departures > 0 ?
+        (double)shm->passengers_transported / shm->chair_departures : 0.0;
+
+    int total_trail = shm->trail_usage[TRAIL_T1] + shm->trail_usage[TRAIL_T2] + shm->trail_usage[TRAIL_T3];
+
+    logger_report("");
+    logger_report("============================================================");
+    logger_report("         RAPORT KONCOWY SYMULACJI KOLEI LINOWEJ");
+    logger_report("============================================================");
+    logger_report("");
+    logger_report("1. SPRZEDAZ BILETOW:");
+    logger_report("   Jednorazowe (SINGLE):     %d szt.", shm->tickets_sold[TICKET_SINGLE]);
+    logger_report("   Czasowe TK1 (1h):         %d szt.", shm->tickets_sold[TICKET_TK1]);
+    logger_report("   Czasowe TK2 (2h):         %d szt.", shm->tickets_sold[TICKET_TK2]);
+    logger_report("   Czasowe TK3 (3h):         %d szt.", shm->tickets_sold[TICKET_TK3]);
+    logger_report("   Dzienne (DAILY):          %d szt.", shm->tickets_sold[TICKET_DAILY]);
+    logger_report("   RAZEM:                    %d szt.", total_tickets);
+    logger_report("");
+    logger_report("2. STATYSTYKI PRZEJAZDOW:");
+    logger_report("   Odjazdy krzeselek:        %d", shm->chair_departures);
+    logger_report("   Przewiezione osoby:       %d", shm->passengers_transported);
+    logger_report("   - Rowerzysci:             %d", shm->cyclists_transported);
+    logger_report("   - Piesi:                  %d", shm->pedestrians_transported);
+    logger_report("   Sr. osob/krzeslo:         %.2f", avg_per_chair);
+    logger_report("");
+    logger_report("3. KATEGORIE SPECJALNE:");
+    logger_report("   VIP obsluzeni:            %d", shm->vip_served);
+    logger_report("   Dzieci z opiekunem:       %d", shm->children_with_guardian);
+    logger_report("   Odrzuceni (wygasly):      %d", shm->rejected_expired);
+    logger_report("");
+    logger_report("4. TRASY ZJAZDOWE:");
+    logger_report("   T1 (latwa, %ds):          %d turystow", TRAIL_T1_TIME, shm->trail_usage[TRAIL_T1]);
+    logger_report("   T2 (srednia, %ds):        %d turystow", TRAIL_T2_TIME, shm->trail_usage[TRAIL_T2]);
+    logger_report("   T3 (trudna, %ds):         %d turystow", TRAIL_T3_TIME, shm->trail_usage[TRAIL_T3]);
+    logger_report("   RAZEM na trasach:         %d turystow", total_trail);
+    logger_report("");
+    logger_report("5. PODSUMOWANIE TURYSTOW:");
+    logger_report("   Utworzonych turystow:     %d", shm->total_tourists_created);
+    logger_report("   Zakonczonych wizyt:       %d", shm->total_tourists_finished);
+    logger_report("");
+    logger_report("============================================================");
+    logger_report("");
+
     odlacz_pamiec(shm);
 }

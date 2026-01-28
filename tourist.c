@@ -638,6 +638,9 @@ int main(int argc, char* argv[]) {
     sem_podnies(g_sem_id, SEM_MAIN);
     
     if (!is_running || gates_closed) {
+        sem_opusc(g_sem_id, SEM_MAIN);
+        g_shm->total_tourists_finished++;
+        sem_podnies(g_sem_id, SEM_MAIN);
         odlacz_pamiec(g_shm);
         return 0;
     }

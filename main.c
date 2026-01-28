@@ -331,8 +331,8 @@ int main(void) {
             sem_podnies(g_sem_id, SEM_MAIN);
             
             long elapsed = (long)(time(NULL) - sim_start);
-            logger(LOG_SYSTEM, "[%ld/%ds] Procesy: %d (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
-                   elapsed, WORK_END_TIME, remaining, at_cashier, in_station, on_platform, active_chairs, at_top, descending);
+            logger(LOG_SYSTEM, "[%ld/%ds] (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
+                   elapsed, WORK_END_TIME , at_cashier, in_station, on_platform, active_chairs, at_top, descending);
         }
         
         usleep(1000);
@@ -390,8 +390,8 @@ int main(void) {
             int descending = g_shm->tourists_descending;
             sem_podnies(g_sem_id, SEM_MAIN);
             
-            logger(LOG_SYSTEM, "procesy: %d (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
-                   remaining, at_cashier, in_station, on_platform, active_chairs, at_top, descending);
+            logger(LOG_SYSTEM, "(kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
+                            at_cashier, in_station, on_platform, active_chairs, at_top, descending);
             last_remaining = remaining;
         }
         
@@ -442,6 +442,7 @@ int main(void) {
     printf("Logi zapisane do: kolej_log.txt\n");
     printf("Raport zapisany do: raport_karnetow.txt\n");
     printf("============================================================\n\n");
-    
+
+
     return 0;
 }

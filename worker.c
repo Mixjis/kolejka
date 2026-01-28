@@ -443,7 +443,7 @@ int main(void) {
                 refuse.sender_pid = getpid();
                 refuse.data = -1;
                 refuse.tourist_id = cleanup_msg.tourist_id;
-                wyslij_komunikat_nowait(g_msg_id, &refuse);
+                wyslij_komunikat(g_msg_id, &refuse);
             }
 
             pthread_mutex_lock(&waiter_mutex);
@@ -453,7 +453,7 @@ int main(void) {
                 refuse.sender_pid = getpid();
                 refuse.data = -1;
                 refuse.tourist_id = waiters[i].tourist_id;
-                wyslij_komunikat_nowait(g_msg_id, &refuse);
+                wyslij_komunikat(g_msg_id, &refuse);
             }
             waiter_count = 0;
             pthread_mutex_unlock(&waiter_mutex);
@@ -469,15 +469,15 @@ int main(void) {
         }
 
         // Diagnostyka
-        static int diag_counter = 0;
-        if (gates_closed) {
-            diag_counter++;
-            if (diag_counter % 2000 == 0) {  // Co ~2 sekundy (2000 * 1ms)
-                int sem_chairs_val = sem_pobierz_wartosc(g_sem_id, SEM_CHAIRS);
-                logger(LOG_WORKER1, "[DIAG] waiter_count=%d, on_platform=%d, active_chairs=%d, sem_chairs_val=%d, emergency_stop=%d",
-                       waiter_count, on_platform, active_chairs, sem_chairs_val, emergency_stop);
-            }
-        }
+        // static int diag_counter = 0;
+        // if (gates_closed) {
+        //     diag_counter++;
+        //     if (diag_counter % 2000 == 0) {  // Co ~2 sekundy (2000 * 1ms)
+        //         int sem_chairs_val = sem_pobierz_wartosc(g_sem_id, SEM_CHAIRS);
+        //         logger(LOG_WORKER1, "[DIAG] waiter_count=%d, on_platform=%d, active_chairs=%d, sem_chairs_val=%d, emergency_stop=%d",
+        //                waiter_count, on_platform, active_chairs, sem_chairs_val, emergency_stop);
+        //     }
+        // }
         
         // ZAWSZE odbieraj komunikaty od turystów którzy wysłali MSG_TOURIST_TO_PLATFORM
         // Ci turyści już przeszli przez bramkę na peron - muszą być obsłużeni
@@ -514,25 +514,25 @@ int main(void) {
                 refuse.sender_pid = getpid();
                 refuse.data = -1;  // Odmowa
                 refuse.tourist_id = w.tourist_id;
-                wyslij_komunikat_nowait(g_msg_id, &refuse);
+                wyslij_komunikat(g_msg_id, &refuse);
             }
         }
 
         // Log jeśli odebrano komunikaty po zamknięciu bramek
-        if (gates_closed && received_count > 0) {
-            logger(LOG_WORKER1, "[DIAG] Odebrano %d komunikatów po zamknięciu bramek, waiter_count=%d",
-                   received_count, waiter_count);
-        }
+        // if (gates_closed && received_count > 0) {
+        //     logger(LOG_WORKER1, "[DIAG] Odebrano %d komunikatów po zamknięciu bramek, waiter_count=%d",
+        //            received_count, waiter_count);
+        // }
 
         // Próbuj utworzyć grupę i wysłać krzesełko
         // Diagnostyka gdy bramki zamknięte i warunki nie są spełnione
-        if (gates_closed && (emergency_stop || waiter_count == 0)) {
-            static int skip_diag = 0;
-            if (++skip_diag % 5000 == 0) {  // Co ~5 sekund
-                logger(LOG_WORKER1, "[DIAG-SKIP] Nie wysyłam krzesełek: emergency=%d, waiter_count=%d",
-                       emergency_stop, waiter_count);
-            }
-        }
+        // if (gates_closed && (emergency_stop || waiter_count == 0)) {
+        //     static int skip_diag = 0;
+        //     if (++skip_diag % 5000 == 0) {  // Co ~5 sekund
+        //         logger(LOG_WORKER1, "[DIAG-SKIP] Nie wysyłam krzesełek: emergency=%d, waiter_count=%d",
+        //                emergency_stop, waiter_count);
+        //     }
+        // }
         if (!emergency_stop && waiter_count > 0) {
             // Sprawdź dostępność krzesełka
             int result = sem_probuj_opusc_bez_undo(g_sem_id, SEM_CHAIRS);

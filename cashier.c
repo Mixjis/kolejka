@@ -231,7 +231,7 @@ int main(void) {
                 response.tourist_id = qt.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                wyslij_komunikat_nowait(msg_id, &response);
+                wyslij_komunikat(msg_id, &response);
                 logger(LOG_CASHIER, "Kolejka pełna - odmowa dla VIP #%d", qt.tourist_id);
             }
         }
@@ -258,7 +258,7 @@ int main(void) {
                 response.tourist_id = qt.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                wyslij_komunikat_nowait(msg_id, &response);
+                wyslij_komunikat(msg_id, &response);
                 logger(LOG_CASHIER, "Kolejka pełna - odmowa dla turysty #%d", qt.tourist_id);
             }
         }
@@ -289,7 +289,7 @@ int main(void) {
             }
             sem_podnies(sem_id, SEM_MAIN);
             
-            // Wysłanie potwierdzenia do turysty (nowait żeby nie blokować kasjera)
+            // Wysłanie potwierdzenia do turysty 
             Message response;
             response.mtype = tourist.pid; // Adresowanie do konkretnego turysty
             response.sender_pid = getpid();
@@ -297,7 +297,7 @@ int main(void) {
             response.data = ticket_id;
             response.data2 = ticket_type;
             
-            if (wyslij_komunikat_nowait(msg_id, &response)) {
+            if (wyslij_komunikat(msg_id, &response)) {
                 const char* ticket_name = nazwa_biletu(ticket_type);
                 const char* discount_str = has_discount ? " (ze zniżką 25%)" : "";
                 const char* vip_str = tourist.is_vip ? " [VIP]" : "";

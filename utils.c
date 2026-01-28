@@ -391,16 +391,16 @@ bool wyslij_komunikat(int msg_id, Message* msg) {
     return true;
 }
 
-bool wyslij_komunikat_nowait(int msg_id, Message* msg) {
-    if (msgsnd(msg_id, msg, MSG_SIZE, IPC_NOWAIT) == -1) {
-        if (errno == EAGAIN) return false; // Kolejka pełna
-        if (errno != EINTR) {
-            perror("Błąd msgsnd nowait");
-        }
-        return false;
-    }
-    return true;
-}
+// bool wyslij_komunikat_nowait(int msg_id, Message* msg) {
+//     if (msgsnd(msg_id, msg, MSG_SIZE, IPC_NOWAIT) == -1) {
+//         if (errno == EAGAIN) return false; // Kolejka pełna
+//         if (errno != EINTR) {
+//             perror("Błąd msgsnd nowait");
+//         }
+//         return false;
+//     }
+//     return true;
+// }
 
 bool odbierz_komunikat(int msg_id, Message* msg, long mtype, bool blocking) {
     int flags = blocking ? 0 : IPC_NOWAIT;
