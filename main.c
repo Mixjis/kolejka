@@ -27,7 +27,7 @@ static pid_t worker1_pid = 0;
 static pid_t worker2_pid = 0;
 
 // Lista procesów turystów
-#define MAX_TOURIST_PROCESSES 400
+#define MAX_TOURIST_PROCESSES 10000
 static pid_t tourist_pids[MAX_TOURIST_PROCESSES];
 static int tourist_pid_count = 0;
 static pthread_mutex_t tourist_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -69,7 +69,7 @@ void* reaper_thread(void* arg) {
             pthread_mutex_unlock(&tourist_mutex);
         }
         
-        usleep(10000); // 10ms
+        // Aktywne czekanie - bez usleep
     }
     
     return NULL;
@@ -221,7 +221,7 @@ int main(void) {
     pthread_t reaper;
     pthread_create(&reaper, NULL, reaper_thread, NULL);
     
-    // Główna pętla - generowanie turystów
+    // generowanie turystów
     int tourists_created = 0;
     time_t sim_start = time(NULL);
     
@@ -297,85 +297,23 @@ int main(void) {
             }
             
             // Losowe opóźnienie między turystami
-            usleep(rand() % TOURIST_SPAWN_DELAY_MAX);
+            volatile int delay_count = 0;
+            int max_delay = rand() % 100000;
+            while (delay_count < max_delay) {
+                delay_count++;
+            }
         }
     }
-    
-    // if (!shutdown_flag) {
-    //     logger(LOG_SYSTEM, "Wygenerowano wszystkich %d turystów", tourists_created);
-        
-    //     // Zamknij bramki jeśli jeszcze nie zamknięte
-    //     sem_opusc(g_sem_id, SEM_MAIN);
-    //     g_shm->gates_closed = true;
-    //     sem_podnies(g_sem_id, SEM_MAIN);
-    // }
-    
-    // Czekaj na zakończenie turystów (z timeoutem)
-    //logger(LOG_SYSTEM, "Czekam na zakończenie wszystkich turystów...");
-    
-    int wait_cycles = 0;
-    int max_wait = 30000; // 30 sekund max
-    
-    while (!shutdown_flag && wait_cycles < max_wait) {
+
+
+    //pętla czekająca na zakończenie obchodu wszystkich turystów po końcu czasu
+    while(!shutdown_flag) {
         pthread_mutex_lock(&tourist_mutex);
         int remaining = tourist_pid_count;
         pthread_mutex_unlock(&tourist_mutex);
         
         if (remaining == 0) {
-            break;
-        }
-        
-        if (wait_cycles % 1000 == 0) {
-            // Debug info - gdzie są turyści
-            sem_opusc(g_sem_id, SEM_MAIN);
-            int in_station = g_shm->tourists_in_station;
-            int on_platform = g_shm->tourists_on_platform;
-            int active_chairs = g_shm->active_chairs;
-            int at_top = g_shm->tourists_at_top;
-            int at_cashier = g_shm->tourists_at_cashier;
-            int descending = g_shm->tourists_descending;
-            sem_podnies(g_sem_id, SEM_MAIN);
-            
-            long elapsed = (long)(time(NULL) - sim_start);
-            logger(LOG_SYSTEM, "[%ld/%ds] (kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
-                   elapsed, WORK_END_TIME , at_cashier, in_station, on_platform, active_chairs, at_top, descending);
-        }
-        
-        usleep(1000);
-        wait_cycles++;
-    }
-    
-    // Opóźnienie przed wyłączeniem (3 sekundy)
-    if (!interrupt_flag) {
-        logger(LOG_SYSTEM, "Oczekiwanie %d sekund przed wyłączeniem...", SHUTDOWN_DELAY);
-        sleep(SHUTDOWN_DELAY);
-    }
-    logger(LOG_SYSTEM, "Zamykanie symulacji...");
-    
-    sem_opusc(g_sem_id, SEM_MAIN);
-    g_shm->is_running = false;
-    g_shm->simulation_end = time(NULL);
-    sem_podnies(g_sem_id, SEM_MAIN);
-    
-    // Wysyłanie sygnału zakończenia do wszystkich
-    send_signal_to_all(SIGTERM);
-    
-    // Czekanie na zakończenie procesów głównych
-    int status;
-    if (cashier_pid > 0) waitpid(cashier_pid, &status, 0);
-    if (worker1_pid > 0) waitpid(worker1_pid, &status, 0);
-    if (worker2_pid > 0) waitpid(worker2_pid, &status, 0);
-    
-    logger(LOG_SYSTEM, "Oczekiwanie na zakończenie turystów po SIGTERM...");
-    int grace_wait = 0;
-    int last_remaining = -1;
-    while (grace_wait < 50) {
-        pthread_mutex_lock(&tourist_mutex);
-        int remaining = tourist_pid_count;
-        pthread_mutex_unlock(&tourist_mutex);
-        
-        if (remaining == 0) {
-            logger(LOG_SYSTEM, "Wszyscy turyści zakończyli pracę");
+            logger(LOG_SYSTEM, "Brak aktywnych turystów");
             break;
         }
         
@@ -385,26 +323,42 @@ int main(void) {
             break;
         }
         
-        // Loguj co sekundę z debug info
-        if (grace_wait % 10 == 0 && remaining != last_remaining) {
-            sem_opusc(g_sem_id, SEM_MAIN);
+    }
+
+    // Opóźnienie przed wyłączeniem
+    if (!interrupt_flag) {
+        logger(LOG_SYSTEM, "Oczekiwanie %d sekund przed wyłączeniem...", SHUTDOWN_DELAY);
+        time_t delay_start = time(NULL);
+        while ((time(NULL) - delay_start) < SHUTDOWN_DELAY && !interrupt_flag) {
+        }
+    }
+    logger(LOG_SYSTEM, "Zamykanie symulacji...");
+    
+    sem_opusc(g_sem_id, SEM_MAIN);
+    g_shm->is_running = false;
+    g_shm->simulation_end = time(NULL);
+    sem_podnies(g_sem_id, SEM_MAIN);
+
+    
+    send_signal_to_all(SIGTERM);
+    // Czekanie na zakończenie procesów głównych
+    int status;
+    if (cashier_pid > 0) waitpid(cashier_pid, &status, 0);
+    if (worker1_pid > 0) waitpid(worker1_pid, &status, 0);
+    if (worker2_pid > 0) waitpid(worker2_pid, &status, 0);
+
+    sem_opusc(g_sem_id, SEM_MAIN);
             int in_station = g_shm->tourists_in_station;
             int on_platform = g_shm->tourists_on_platform;
             int active_chairs = g_shm->active_chairs;
             int at_top = g_shm->tourists_at_top;
             int at_cashier = g_shm->tourists_at_cashier;
             int descending = g_shm->tourists_descending;
-            sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_MAIN);
             
-            logger(LOG_SYSTEM, "(kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
-                            at_cashier, in_station, on_platform, active_chairs, at_top, descending);
-            last_remaining = remaining;
-        }
-        
-        usleep(100000); // 100ms
-        grace_wait++;
-    }
-    
+    logger(LOG_SYSTEM, "(kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
+                        at_cashier, in_station, on_platform, active_chairs, at_top, descending);
+
     // Dobicie pozostałych procesów turystów
     int killed_count = 0;
     pthread_mutex_lock(&tourist_mutex);

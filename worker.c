@@ -171,7 +171,9 @@ bool try_create_group(ChairGroup* group) {
 void* chair_thread(void* arg) {
     ChairGroup* group = (ChairGroup*)arg;
     
-    // Symulacja przejazdu
+    // Symulacja przejazdu - używamy aktywnego czekania zamiast sleep
+    // Odczytujemy czas startu i czekamy aż minie CHAIR_TRAVEL_TIME
+    time_t start_time = time(NULL);
     int travel_time = CHAIR_TRAVEL_TIME;
     
     // Aktualizuj statystyki
@@ -206,8 +208,10 @@ void* chair_thread(void* arg) {
     logger(LOG_CHAIR, "Krzesełko #%d odjeżdża z pasażerami: [%s] (R:%d, P:%d)",
            chair_id, passengers_str, group->cyclists, group->pedestrians);
     
-    // Symulacja przejazdu
-    sleep(travel_time);
+    // Symulacja przejazdu - aktywne czekanie na upływ czasu
+    while ((time(NULL) - start_time) < travel_time) {
+        // Aktywne czekanie - sprawdzanie czasu
+    }
     
     // Przyjazd na górę - wyślij komunikat do worker2
     Message msg;
@@ -284,9 +288,8 @@ void resume_from_emergency(void) {
     bool worker2_ready = g_shm->worker2_ready;
     sem_podnies(g_sem_id, SEM_MAIN);
     
-    // Czekaj na worker2
+    // Czekaj na worker2 - aktywne czekanie
     while (!worker2_ready && !shutdown_flag) {
-        usleep(10000);
         sem_opusc(g_sem_id, SEM_MAIN);
         worker2_ready = g_shm->worker2_ready;
         sem_podnies(g_sem_id, SEM_MAIN);
@@ -351,7 +354,7 @@ int main(void) {
             break;
         }
         
-        usleep(100000); // Sprawdzaj co 100ms
+        // Aktywne czekanie - sprawdzanie warunku
     }
     
     if (shutdown_flag) {
@@ -404,6 +407,39 @@ int main(void) {
         
         // Obsługa zatrzymania awaryjnego
         if (emergency_stop) {
+            // WAŻNE: Nawet podczas awarii musimy odbierać komunikaty od turystów
+            // którzy już przeszli przez bramkę na peron - nie możemy ich zostawić w zawieszeniu!
+            while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
+                if (shutdown_flag) break;
+                
+                PlatformWaiter w;
+                w.pid = msg.sender_pid;
+                w.tourist_id = msg.tourist_id;
+                w.type = msg.tourist_type;
+                w.children_count = msg.children_count;
+                w.child_ids[0] = msg.child_ids[0];
+                w.child_ids[1] = msg.child_ids[1];
+            
+                int gate_num = get_next_platform_gate();
+
+                if (add_waiter(&w)) {
+                    sem_opusc(g_sem_id, SEM_MAIN);
+                    g_shm->tourists_on_platform++;
+                    sem_podnies(g_sem_id, SEM_MAIN);
+
+                    logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (zdążył przed awarią, typ: %s)",
+                           w.tourist_id, gate_num,
+                           w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy");
+                } else {
+                    Message refuse;
+                    refuse.mtype = w.pid;
+                    refuse.sender_pid = getpid();
+                    refuse.data = -1;
+                    refuse.tourist_id = w.tourist_id;
+                    wyslij_komunikat(g_msg_id, &refuse);
+                }
+            }
+            
             // Sprawdzanie kto zainicjował
             sem_opusc(g_sem_id, SEM_MAIN);
             int initiator = g_shm->emergency_initiator;
@@ -414,22 +450,56 @@ int main(void) {
                 // czekanie na worker2 i wznów
                 logger(LOG_EMERGENCY, "PRACOWNIK1: Awaria aktywna - czekam na worker2...");
                 
-                // Czekanie aż worker2 potwierdzi gotowość
+                // Czekanie aż worker2 potwierdzi gotowość - ale NADAL odbieraj komunikaty!
                 int wait_count = 0;
-                while (!w2_ready && !shutdown_flag && wait_count < 300) {
-                    usleep(10000);
+                while (!w2_ready && !shutdown_flag && wait_count < 3000000) {
                     wait_count++;
+                    
+                    // Odbieraj komunikaty od turystów podczas czekania
+                    while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
+                        if (shutdown_flag) break;
+                        
+                        PlatformWaiter w;
+                        w.pid = msg.sender_pid;
+                        w.tourist_id = msg.tourist_id;
+                        w.type = msg.tourist_type;
+                        w.children_count = msg.children_count;
+                        w.child_ids[0] = msg.child_ids[0];
+                        w.child_ids[1] = msg.child_ids[1];
+                    
+                        int gate_num = get_next_platform_gate();
+
+                        if (add_waiter(&w)) {
+                            sem_opusc(g_sem_id, SEM_MAIN);
+                            g_shm->tourists_on_platform++;
+                            sem_podnies(g_sem_id, SEM_MAIN);
+
+                            logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (zdążył przed awarią, typ: %s)",
+                                   w.tourist_id, gate_num,
+                                   w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy");
+                        } else {
+                            Message refuse;
+                            refuse.mtype = w.pid;
+                            refuse.sender_pid = getpid();
+                            refuse.data = -1;
+                            refuse.tourist_id = w.tourist_id;
+                            wyslij_komunikat(g_msg_id, &refuse);
+                        }
+                    }
+                    
                     sem_opusc(g_sem_id, SEM_MAIN);
                     w2_ready = g_shm->worker2_ready;
                     sem_podnies(g_sem_id, SEM_MAIN);
                 }
                 
-                if (w2_ready || wait_count >= 300) {
+                if (w2_ready || wait_count >= 3000000) {
                     // Worker2 gotowy lub timeout - wznów
-                    logger(LOG_EMERGENCY, "PRACOWNIK1: Worker2 gotowy - wznawiamy po 5s...");
+                    logger(LOG_EMERGENCY, "PRACOWNIK1: Worker2 gotowy - wznawiamy...");
                     
-                    for (int i = 0; i < 50 && !shutdown_flag; i++) {
-                        usleep(100000);
+                    // Krótkie aktywne czekanie zamiast sleep
+                    volatile int delay_count = 0;
+                    while (delay_count < 50000000 && !shutdown_flag) {
+                        delay_count++;
                     }
                     
                     resume_from_emergency();
@@ -442,9 +512,39 @@ int main(void) {
                 
                 logger(LOG_WORKER1, "Potwierdzam gotowość do wznowienia (awaria od worker2)");
                 
-                // Czekaj na sygnał wznowienia
+                // Czekaj na sygnał wznowienia - ale NADAL odbieraj komunikaty od turystów!
                 while (emergency_stop && !emergency_resume && !shutdown_flag) {
-                    usleep(10000);
+                    // Odbieraj komunikaty od turystów podczas czekania na wznowienie
+                    while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
+                        if (shutdown_flag) break;
+                        
+                        PlatformWaiter w;
+                        w.pid = msg.sender_pid;
+                        w.tourist_id = msg.tourist_id;
+                        w.type = msg.tourist_type;
+                        w.children_count = msg.children_count;
+                        w.child_ids[0] = msg.child_ids[0];
+                        w.child_ids[1] = msg.child_ids[1];
+                    
+                        int gate_num = get_next_platform_gate();
+
+                        if (add_waiter(&w)) {
+                            sem_opusc(g_sem_id, SEM_MAIN);
+                            g_shm->tourists_on_platform++;
+                            sem_podnies(g_sem_id, SEM_MAIN);
+
+                            logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (zdążył przed awarią, typ: %s)",
+                                   w.tourist_id, gate_num,
+                                   w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy");
+                        } else {
+                            Message refuse;
+                            refuse.mtype = w.pid;
+                            refuse.sender_pid = getpid();
+                            refuse.data = -1;
+                            refuse.tourist_id = w.tourist_id;
+                            wyslij_komunikat(g_msg_id, &refuse);
+                        }
+                    }
                 }
                 
                 if (emergency_resume) {
@@ -516,7 +616,8 @@ int main(void) {
         int received_count = 0;
         while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
             received_count++;
-            if (shutdown_flag || emergency_stop) break;
+            if (shutdown_flag) break;
+            // NIE przerywamy przy emergency_stop - turyści muszą być dodani do kolejki!
             
             PlatformWaiter w;
             w.pid = msg.sender_pid;
@@ -618,7 +719,7 @@ int main(void) {
             }
         }
         
-        usleep(1000); // 1ms
+        // Aktywne czekanie - bez usleep
     }
     
     logger(LOG_WORKER1, "Kończę pracę na stacji dolnej");

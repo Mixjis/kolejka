@@ -64,9 +64,9 @@ void* child_thread_func(void* arg) {
     logger(LOG_TOURIST, "Dziecko #%d (wiek %d) turysty #%d - podąża z opiekunem",
            child->child_index, child->child_age, g_tourist_id);
     
-    // Dziecko czeka aż rodzic zakończy
+    // Dziecko czeka aż rodzic zakończy - aktywne czekanie
     while (!child->finished && !shutdown_flag) {
-        //usleep(10000);
+        // Aktywne czekanie - spin loop
     }
     
     return NULL;
@@ -95,10 +95,7 @@ void finish_children_threads(void) {
     }
     pthread_mutex_unlock(&children_mutex);
     
-    // Danie wątkom chwilę na zakończenie
-    //usleep(20000); // 20ms - 2 cykle pętli dziecka
-    
-    // Dołączenie do wątków (powinny już być zakończone)
+    // Dołączenie do wątków - flaga finished je wybudzi
     for (int i = 0; i < g_children_count; i++) {
         pthread_join(g_children[i].thread, NULL);
     }
@@ -345,10 +342,8 @@ bool go_to_platform(void) {
         return false;
     }
     
-    // Czekaj na bramkę na peron (3 bramki) - z timeoutem
-    //int timeout = 0;
+    // Czekaj na bramkę na peron (3 bramki) - ale najpierw sprawdź awarię
     while (sem_probuj_opusc(g_sem_id, SEM_GATE_PLATFORM) != 1) {
-        //if (shutdown_flag || timeout >= 100) { // max 10 sekund
         if (shutdown_flag) {
             // Zwolnij zasoby - opuszczamy stację bez przejścia na peron
             sem_opusc(g_sem_id, SEM_MAIN);
@@ -379,8 +374,41 @@ bool go_to_platform(void) {
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
-        //usleep(100000);
-        //timeout++;
+    }
+    
+    // WAŻNE: Mamy bramkę - ale sprawdź czy nie ma awarii przed wysłaniem komunikatu
+    // Jeśli jest awaria - czekaj aż się skończy (nie wysyłaj komunikatu podczas awarii!)
+    sem_opusc(g_sem_id, SEM_MAIN);
+    bool emergency = g_shm->emergency_stop;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
+    while (emergency && !shutdown_flag) {
+        // Sprawdź czy bramki nie zostały zamknięte podczas czekania na koniec awarii
+        sem_opusc(g_sem_id, SEM_MAIN);
+        gates_closed = g_shm->gates_closed;
+        emergency = g_shm->emergency_stop;
+        bool running = g_shm->is_running;
+        sem_podnies(g_sem_id, SEM_MAIN);
+        
+        if (gates_closed || !running) {
+            // Zwolnij bramkę i opuść stację
+            sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
+            sem_opusc(g_sem_id, SEM_MAIN);
+            g_shm->tourists_in_station--;
+            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_STATION);
+            return false;
+        }
+        // Aktywne czekanie na koniec awarii
+    }
+    
+    if (shutdown_flag) {
+        sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
+        sem_opusc(g_sem_id, SEM_MAIN);
+        g_shm->tourists_in_station--;
+        sem_podnies(g_sem_id, SEM_MAIN);
+        sem_podnies(g_sem_id, SEM_STATION);
+        return false;
     }
     
     // Wyślij komunikat do worker1
@@ -426,56 +454,55 @@ bool go_to_platform(void) {
 // Czekanie na krzesełko i jazda
 bool ride_chair(void) {
     Message msg;
-    //int timeout_count = 0;
     
-    // Czekaj na komunikat od worker1 (pozwolenie na wsiadanie) - nieblokujące
-    while (!shutdown_flag && !emergency_flag) {
+    // Faza 1: Czekaj na komunikat od worker1 (pozwolenie na wsiadanie)
+    // Komunikat data==1 oznacza "wsiadaj", data==-1 oznacza "odmowa"
+    while (!shutdown_flag) {
+        // Sprawdzenie awarii
+        if (emergency_flag) {
+            logger(LOG_TOURIST, "Turysta #%d - awaria! Czekam na wznowienie...", g_tourist_id);
+            while (emergency_flag && !shutdown_flag) {
+                // Aktywne czekanie na wznowienie
+            }
+            if (shutdown_flag) return false;
+        }
+        
         if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
             if (msg.data == 1) {
-                // wsiadanie
+                // Pozwolenie na wsiadanie - przechodzimy do fazy 2
                 break;
             } else if (msg.data == -1) {
                 // Odmowa - system się zamyka
                 logger(LOG_TOURIST, "Turysta #%d - odmowa wsiadania (system się zamyka)", g_tourist_id);
                 return false;
             }
+            // Ignorujemy inne komunikaty (mogą to być stare komunikaty data==2 lub data==3)
         }
-        
-        // Sprawdzenie awarii
-        if (emergency_flag) {
-            logger(LOG_TOURIST, "Turysta #%d - awaria! Czekam na wznowienie...", g_tourist_id);
-            while (emergency_flag && !shutdown_flag) {
-                //usleep(10000);
-            }
-        }
-        
-        //timeout_count++;
     }
     
-    //if (shutdown_flag || timeout_count >= 600) return false;
-    if(shutdown_flag) return false;
-    //logger(LOG_TOURIST, "Turysta #%d wsiada na krzesełko!", g_tourist_id);
+    if (shutdown_flag) return false;
 
-    // Czekaj na komunikat o dotarciu na górę (data == 2) - nieblokujące
+    // Faza 2: Czekaj na komunikat o dotarciu na górę (data == 2)
+    // Ten komunikat przyjdzie od worker2 gdy krzesełko dotrze
     while (!shutdown_flag) {
-        if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
-            if (msg.data == 2) {
-                // dotarcie na góre
-                break;
-            }
-        }
-        
         if (emergency_flag) {
             logger(LOG_TOURIST, "Turysta #%d - awaria w trakcie jazdy!", g_tourist_id);
             while (emergency_flag && !shutdown_flag) {
-                //usleep(10000);
+                // Aktywne czekanie na wznowienie
             }
+            if (shutdown_flag) return false;
         }
         
-        //timeout_count++;
+        if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
+            if (msg.data == 2) {
+                // Dotarliśmy na górę
+                break;
+            }
+            // Ignorujemy inne komunikaty
+        }
     }
     
-    return !shutdown_flag; //&& timeout_count < 300;
+    return !shutdown_flag;
 }
 
 // Opuścić system na górze (dla pieszych)
@@ -491,12 +518,13 @@ void exit_at_top(void) {
     
     wyslij_komunikat(g_msg_id, &msg);
     
-    // Czekaj na potwierdzenie wyjścia - nieblokujące żeby reagować na shutdown
+    // Czekaj na potwierdzenie wyjścia - aktywne czekanie
     while (!shutdown_flag) {
         if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
             if (msg.data == 3) {
                 break;
             }
+            // Ignorujemy inne komunikaty
         }
         //timeout_count++;
     }
@@ -538,15 +566,15 @@ void descend_trail(void) {
     
     wyslij_komunikat(g_msg_id, &msg);
     
-    // Czekaj na potwierdzenie zjazdu - nieblokujące żeby reagować na shutdown
+    // Czekaj na potwierdzenie zjazdu - aktywne czekanie
     while (!shutdown_flag) {
         if (odbierz_komunikat(g_msg_id, &msg, g_pid, false)) {
             if (msg.data == 3) {
                 // Zjazd zakończony
                 break;
             }
+            // Ignorujemy inne komunikaty
         }
-        //usleep(1000); // 1ms
     }
     
     // Rejestruj zjazd dla tego biletu - WEWNĄTRZ sekcji krytycznej

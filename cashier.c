@@ -65,7 +65,7 @@ bool add_to_queue(QueuedTourist* tourist) {
 bool get_from_queue(QueuedTourist* tourist) {
     if (vip_queue_size > 0) {
         *tourist = vip_queue[0];
-        // Przesuń kolejkę
+        // Przesunięcie kolejki
         for (int i = 0; i < vip_queue_size - 1; i++) {
             vip_queue[i] = vip_queue[i + 1];
         }
@@ -83,10 +83,6 @@ bool get_from_queue(QueuedTourist* tourist) {
     }
     
     return false;
-}
-
-bool queue_empty(void) {
-    return (vip_queue_size == 0 && normal_queue_size == 0);
 }
 
 int main(void) {
@@ -110,7 +106,7 @@ int main(void) {
     
     srand(time(NULL) ^ getpid());
     
-    // Pobierz czas rozpoczęcia symulacji
+    // Pobranie czasu rozpoczęcia symulacji
     sem_opusc(sem_id, SEM_MAIN);
     time_t sim_start = shm->simulation_start;
     sem_podnies(sem_id, SEM_MAIN);
@@ -125,8 +121,6 @@ int main(void) {
         if (elapsed >= WORK_START_TIME) {
             break;
         }
-        
-        //usleep(100000); // Sprawdzaj co 100ms
     }
     
     if (shutdown_flag) {
@@ -135,7 +129,7 @@ int main(void) {
         return 0;
     }
     
-    // Ustaw flagę że kasa jest otwarta
+    // Ustawienie flagi że kasa jest otwarta
     sem_opusc(sem_id, SEM_MAIN);
     shm->cashier_open = true;
     sem_podnies(sem_id, SEM_MAIN);
@@ -149,7 +143,7 @@ int main(void) {
         if (emergency_flag) {
             logger(LOG_CASHIER, "AWARIA - wstrzymuję sprzedaż biletów!");
             while (emergency_flag && !shutdown_flag) {
-                //usleep(10000); // Czekaj na wznowienie
+                // Aktywne czekanie na wznowienie
             }
             if (!shutdown_flag) {
                 logger(LOG_CASHIER, "Wznawiam sprzedaż biletów");
@@ -162,11 +156,11 @@ int main(void) {
         bool gates_closed = shm->gates_closed;
         sem_podnies(sem_id, SEM_MAIN);
         
-        // Gdy bramki zamknięte - opróżnij kolejki i odrzuć wszystkich czekających
+        // Gdy bramki zamknięte - opróżnienie kolejek i odrzucenie wszystkich czekających
         if (gates_closed) {
             // Opróżnij kolejkę VIP komunikatów
             while (odbierz_komunikat(msg_id, &msg, MSG_VIP_PRIORITY + MSG_TOURIST_TO_CASHIER, false)) {
-                // Wyślij odmowę
+                // Wysłanie odmowy
                 Message response;
                 response.mtype = msg.sender_pid;
                 response.sender_pid = getpid();
@@ -202,7 +196,7 @@ int main(void) {
                 logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla turysty #%d (z kolejki wewnętrznej)", qt.tourist_id);
             }
             
-            //usleep(10000);
+            // Aktywne czekanie gdy bramki zamknięte
             continue;
         }
         
@@ -314,10 +308,6 @@ int main(void) {
             }
         }
         
-        // Krótka pauza jeśli kolejka pusta
-        if (queue_empty()) {
-            //usleep(1000); // 1ms
-        }
     }
     
     logger(LOG_CASHIER, "Zamykam kasę - koniec pracy!");

@@ -15,6 +15,7 @@ przesłanie jej za pomocą wiadomości w systemie Moodle proszeni są starostowi
 grupy lub osoby wybrane przez daną grupę. W przypadku braku takiej listy decyzję o
 przyznaniu lub nie danego tematu (z puli dostępnych poniżej) danej osobie podejmie
 prowadzący do dnia 1 grudnia 2025.
+
 2. Zasady opisu i zgłoszenia danego zadania
 2.1. Opis zadań i testów powinien być analogiczny do zamieszczonych w poniższym dokumencie
 2.2. Wybrany temat (zarówno ten z dostępnej poniżej puli jak i indywidualny) musi być opisany w
@@ -26,12 +27,14 @@ KOWALSKA_ANNA_123456_opis_REJS.md).
 w zadaniu pt. „Wybór tematu projektu”
 2.5. Dla każdego projektu należy stworzyć jego repozytorium (publiczne) w systemie GitHub oraz
 zamieścić link do niego w przesyłanym opisie.
+
 3. Zasady oddawania projektów
 3.1. Ostateczny termin oddania projektu (odesłania na deltę po prezentacji) to 21 stycznia 2026r.
 Za każdy dzień zwłoki odejmowany jest 1% z oceny końcowej.
 3.2. Raport z projektu spakowany wraz ze źródłami (skopiowanymi z GitHub-a) należy przesłać
 w systemie Moodle (delta.pk.edu.pl) w zadaniu pt. „Projekt” do 21 stycznia 2026r.
 3.3. Przed odesłaniem na deltę obowiązkowa prezentacja u prowadzącego zajęcia projektowe.
+
 4. Wymagania w stosunku do projektów oraz raportu
 4.1. Wymagania obowiązkowe:
 a. Konieczne jest udokumentowanie wymaganych przypadków użycia mieszczących się w
@@ -42,7 +45,6 @@ w razie wpisania niepoprawnych wartości powinna zostać wyświetlona wiadomoś�
 informująca użytkownika.
 c. Dla wszystkich funkcji systemowych zaimplementuj obsługę błędów używając funkcji
 bibliotecznej perror() i zmiennej errno.
-3
 d. Do tworzonych struktur (np.: pamięć dzielona, semafory, kolejki komunikatów, …, itp.)
 ustawić minimalne prawa dostępu, konieczne do wykonania zadania.
 e. Po zakończeniu zadania wszystkie używane struktury muszą być usunięte chyba, że w
@@ -50,10 +52,12 @@ zadaniu wyraźnie określono która z nich ma pozostać (np.: segment pamięci d
 f. Program napisany w C/C++.
 g. Należy unikać rozwiązań scentralizowanych – symulacja działa na procesach -
 obowiązkowe użycie funkcji fork() i exec().
+
 5. Zawartość raportu oraz sposób oceny projektu
 5.1. Raport ma być treściwy i w miarę krótki. Ma zawierać założenia projektowe kodu, ogólny opis
 kodu, co udało się zrobić, z czym były problemy, dodane elementy specjalne, zauważone
 problemy z testami.
+
 5.2. Na końcu raportu muszą się znaleźć opisane linki do istotnych fragmentów kodu (w źródłach
 na GitHub) który obrazuje wymagane w projekcie użyte konstrukcje (funkcje systemowe)
 takie jak:
@@ -69,10 +73,12 @@ f. Łącza nazwane i nienazwane (mkfifo(), pipe(), dup(), dup2(), popen());
 g. Segmenty pamięci dzielonej (ftok(), shmget(), shmat(), shmdt(), shmctl());
 h. Kolejki komunikatów (ftok(), msgget(), msgsnd(), msgrcv(), msgctl());
 i. Gniazda (socket(), bind(), listen(), accept(), connect(),
+
 • Linki mogą zostać stworzone np. tak jak opisano to w:
 https://help.github.com/en/github/managing-your-work-ongithub/creating-apermanent-link-to-a-code-snippet
 • Idea linków do kodu zakłada, że osoba oceniająca projekt szybko się po ich
 zawartości zorientuje jak zgodny z założeniami jest projekt i ułatwi jego ocenę.
+
 5.3. Punktacja:
 a. 10% - zgodność programu z opisem w temacie zadania
 • Wygląd/interfejs/ programu może być inny niż w opisie, pod warunkiem, że wszystkie

@@ -70,11 +70,12 @@ void initiate_emergency_stop_w2(void) {
 
 // Wznowienie po awarii (gdy worker2 jest inicjatorem)
 void resume_from_emergency_w2(void) {
-    logger(LOG_EMERGENCY, "PRACOWNIK2: Worker1 gotowy - wznawiamy po 5s...");
+    logger(LOG_EMERGENCY, "PRACOWNIK2: Worker1 gotowy - wznawiamy...");
     
-    // Poczekaj 5 sekund przed wznowieniem
-    for (int i = 0; i < 50 && !shutdown_flag; i++) {
-        usleep(100000);
+    // Krótkie aktywne czekanie zamiast sleep(5)
+    volatile int delay_count = 0;
+    while (delay_count < 50000000 && !shutdown_flag) {
+        delay_count++;
     }
     
     if (shutdown_flag) return;
@@ -183,8 +184,11 @@ void* tourist_exit_thread(void* arg) {
     g_shm->tourists_descending++;
     sem_podnies(g_sem_id, SEM_MAIN);
     
-    // Symulacja zjazdu
-    sleep(trail_time);
+    // Symulacja zjazdu - aktywne czekanie na upływ czasu
+    time_t start_time = time(NULL);
+    while ((time(NULL) - start_time) < trail_time) {
+        // Aktywne czekanie
+    }
     
     // Zmniejsz licznik zjeżdżających
     sem_opusc(g_sem_id, SEM_MAIN);
@@ -245,7 +249,7 @@ int main(void) {
             break;
         }
         
-        usleep(100000); // Sprawdzaj co 100ms
+        // Aktywne czekanie
     }
     
     if (shutdown_flag) {
@@ -308,17 +312,16 @@ int main(void) {
                 // My zainicjowaliśmy - czekaj na worker1 i wznów
                 logger(LOG_EMERGENCY, "PRACOWNIK2: Awaria aktywna - czekam na worker1...");
                 
-                // Czekaj aż worker1 potwierdzi gotowość
+                // Czekaj aż worker1 potwierdzi gotowość - aktywne czekanie z limitem
                 int wait_count = 0;
-                while (!w1_ready && !shutdown_flag && wait_count < 300) {
-                    usleep(10000); // 10ms
+                while (!w1_ready && !shutdown_flag && wait_count < 3000000) {
                     wait_count++;
                     sem_opusc(g_sem_id, SEM_MAIN);
                     w1_ready = g_shm->worker1_ready;
                     sem_podnies(g_sem_id, SEM_MAIN);
                 }
                 
-                if (w1_ready || wait_count >= 300) {
+                if (w1_ready || wait_count >= 3000000) {
                     // Worker1 gotowy lub timeout - wznów
                     resume_from_emergency_w2();
                 }
@@ -332,9 +335,9 @@ int main(void) {
                 
                 logger(LOG_WORKER2, "Potwierdzam gotowość do wznowienia (awaria od worker1)");
                 
-                // Czekaj na sygnał wznowienia
+                // Czekaj na sygnał wznowienia - aktywne czekanie
                 while (emergency_stop && !emergency_resume && !shutdown_flag) {
-                    usleep(10000);
+                    // Aktywne czekanie
                 }
                 
                 if (emergency_resume) {
@@ -345,7 +348,7 @@ int main(void) {
             }
             
             if (emergency_stop) {
-                usleep(10000);
+                // Aktywne czekanie w trakcie awarii
                 continue;
             }
         }
@@ -432,7 +435,7 @@ int main(void) {
             pthread_attr_destroy(&attr);
         }
         
-        usleep(1000); // 1ms
+        // Aktywne czekanie - bez usleep
     }
     
     logger(LOG_WORKER2, "Kończę pracę na stacji górnej");
