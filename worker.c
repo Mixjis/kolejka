@@ -171,8 +171,7 @@ bool try_create_group(ChairGroup* group) {
 void* chair_thread(void* arg) {
     ChairGroup* group = (ChairGroup*)arg;
     
-    // Symulacja przejazdu - używamy aktywnego czekania zamiast sleep
-    // Odczytujemy czas startu i czekamy aż minie CHAIR_TRAVEL_TIME
+    // Symulacja przejazdu
     time_t start_time = time(NULL);
     int travel_time = CHAIR_TRAVEL_TIME;
     
@@ -208,10 +207,8 @@ void* chair_thread(void* arg) {
     logger(LOG_CHAIR, "Krzesełko #%d odjeżdża z pasażerami: [%s] (R:%d, P:%d)",
            chair_id, passengers_str, group->cyclists, group->pedestrians);
     
-    // Symulacja przejazdu - aktywne czekanie na upływ czasu
-    while ((time(NULL) - start_time) < travel_time) {
-        // Aktywne czekanie - sprawdzanie czasu
-    }
+    // Symulacja przejazdu
+    while ((time(NULL) - start_time) < travel_time) {}
     
     // Przyjazd na górę - wyślij komunikat do worker2
     Message msg;
@@ -274,21 +271,18 @@ void initiate_emergency_stop(void) {
     
     // Zablokuj semafor awaryjny (blokuje wypuszczanie krzesełek)
     sem_ustaw_wartosc(g_sem_id, SEM_EMERGENCY, 0);
-    
-    logger(LOG_EMERGENCY, "PRACOWNIK1: Kolej ZATRZYMANA - czekam na gotowość worker2");
 }
 
 // Wznowienie po awarii
 void resume_from_emergency(void) {
-    logger(LOG_EMERGENCY, "PRACOWNIK1: Sprawdzam gotowość do wznowienia...");
-    
+
     // Oznacz gotowość
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->worker1_ready = true;
     bool worker2_ready = g_shm->worker2_ready;
     sem_podnies(g_sem_id, SEM_MAIN);
     
-    // Czekaj na worker2 - aktywne czekanie
+    // Czekaj na worker2
     while (!worker2_ready && !shutdown_flag) {
         sem_opusc(g_sem_id, SEM_MAIN);
         worker2_ready = g_shm->worker2_ready;
@@ -353,8 +347,6 @@ int main(void) {
         if (elapsed >= WORK_START_TIME) {
             break;
         }
-        
-        // Aktywne czekanie - sprawdzanie warunku
     }
     
     if (shutdown_flag) {
@@ -371,16 +363,15 @@ int main(void) {
     // System awarii oparty na rzeczywistym czasie
     time_t last_emergency_check = time(NULL);
     int next_emergency_delay = 3 + (rand() % 3);  // 3-5 sekund
-    const int EMERGENCY_DURATION = 5;  // Czas trwania awarii w sekundach
-    const int EMERGENCY_SAFETY_MARGIN = 8;  // Margines bezpieczeństwa przed końcem (awaria + bufor)
+    const int EMERGENCY_SAFETY_MARGIN = 8;  // Margines bezpieczeństwa przed końcem
     
     while (!shutdown_flag) {
-        // Sprawdź czy bramki zamknięte (koniec dnia) - NIE inicjuj awarii po zamknięciu!
+        // Sprawdź czy bramki zamknięte (koniec dnia)
         sem_opusc(g_sem_id, SEM_MAIN);
         bool gates_closed_check = g_shm->gates_closed;
         sem_podnies(g_sem_id, SEM_MAIN);
         
-        // Obsługa awarii - sprawdź czy trzeba zainicjować (TYLKO gdy bramki otwarte)
+        // Obsługa awarii - sprawdź czy trzeba zainicjować
         if (!gates_closed_check) {
             time_t now = time(NULL);
             time_t elapsed_since_start = now - sim_start;
@@ -407,8 +398,7 @@ int main(void) {
         
         // Obsługa zatrzymania awaryjnego
         if (emergency_stop) {
-            // WAŻNE: Nawet podczas awarii musimy odbierać komunikaty od turystów
-            // którzy już przeszli przez bramkę na peron - nie możemy ich zostawić w zawieszeniu!
+            // podczas awarii musimy odbierać komunikaty od turystów
             while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
                 if (shutdown_flag) break;
                 
@@ -447,13 +437,8 @@ int main(void) {
             sem_podnies(g_sem_id, SEM_MAIN);
             
             if (initiator == 1) {
-                // czekanie na worker2 i wznów
-                logger(LOG_EMERGENCY, "PRACOWNIK1: Awaria aktywna - czekam na worker2...");
-                
                 // Czekanie aż worker2 potwierdzi gotowość - ale NADAL odbieraj komunikaty!
-                int wait_count = 0;
-                while (!w2_ready && !shutdown_flag && wait_count < 3000000) {
-                    wait_count++;
+                while (!w2_ready && !shutdown_flag) {
                     
                     // Odbieraj komunikaty od turystów podczas czekania
                     while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
@@ -492,27 +477,26 @@ int main(void) {
                     sem_podnies(g_sem_id, SEM_MAIN);
                 }
                 
-                if (w2_ready || wait_count >= 3000000) {
-                    // Worker2 gotowy lub timeout - wznów
-                    logger(LOG_EMERGENCY, "PRACOWNIK1: Worker2 gotowy - wznawiamy...");
+                if (w2_ready && !shutdown_flag) {
+                    // Worker2 gotowy
+                    logger(LOG_EMERGENCY, "PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...");
                     
-                    // Krótkie aktywne czekanie zamiast sleep
-                    volatile int delay_count = 0;
-                    while (delay_count < 50000000 && !shutdown_flag) {
-                        delay_count++;
-                    }
+                    time_t start_time = time(NULL);
+                    while(time(NULL) - start_time < EMERGENCY_DURATION && !shutdown_flag) {}
                     
                     resume_from_emergency();
                 }
             } else if (initiator == 2) {
                 // Worker2 zainicjował - odpowiedz gotowością i czekaj
+                logger(LOG_EMERGENCY, "PRACOWNIK1: Odebrano sygnał AWARII od worker2!");
+
                 sem_opusc(g_sem_id, SEM_MAIN);
                 g_shm->worker1_ready = true;
                 sem_podnies(g_sem_id, SEM_MAIN);
                 
-                logger(LOG_WORKER1, "Potwierdzam gotowość do wznowienia (awaria od worker2)");
+                logger(LOG_EMERGENCY, "PRACOWNIK1: Potwierdzam gotowość (awaria od worker2)");
                 
-                // Czekaj na sygnał wznowienia - ale NADAL odbieraj komunikaty od turystów!
+                // Czekanie na sygnał wznowienia - NADAL odbieraj komunikaty od turystów!
                 while (emergency_stop && !emergency_resume && !shutdown_flag) {
                     // Odbieraj komunikaty od turystów podczas czekania na wznowienie
                     while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
@@ -550,7 +534,7 @@ int main(void) {
                 if (emergency_resume) {
                     emergency_stop = 0;
                     emergency_resume = 0;
-                    logger(LOG_WORKER1, "Otrzymano sygnał wznowienia od worker2");
+                    logger(LOG_EMERGENCY, "Otrzymano sygnał wznowienia od worker2");
                 }
             }
             continue;
@@ -563,11 +547,9 @@ int main(void) {
         int active_chairs = g_shm->active_chairs;
         sem_podnies(g_sem_id, SEM_MAIN);
 
-        // Kończ dopiero gdy:
-        // 1. Dostaliśmy SIGTERM (shutdown_flag)
-        // 2. Bramki zamknięte, peron pusty, kolejka pusta I wszystkie krzesełka wróciły
+        // Sprawdź czy zakończyć pracę
         if (shutdown_flag) {
-            // Wymuszony shutdown - wyślij odmowy do pozostałych
+            // Wymuszony shutdown - wysłanie odmow do pozostałych
             Message cleanup_msg;
             while (odbierz_komunikat(g_msg_id, &cleanup_msg, MSG_TOURIST_TO_PLATFORM, false)) {
                 Message refuse;
@@ -594,30 +576,18 @@ int main(void) {
             break;
         }
 
-        // Normalne zakończenie - bramki zamknięte, peron pusty, kolejka pusta I wszystkie krzesełka wróciły
+        // Normalne zakończenie - bramki zamknięte, peron pusty, kolejka pusta
         if (gates_closed && on_platform == 0 && waiter_count == 0 && active_chairs == 0) {
-            logger(LOG_WORKER1, "Koniec dnia - wszyscy turyści obsłużeni, wszystkie krzesełka wróciły");
+            logger(LOG_WORKER1, "Koniec dnia - wszyscy turyści obsłużeni");
             break;
         }
-
-        // Diagnostyka
-        // static int diag_counter = 0;
-        // if (gates_closed) {
-        //     diag_counter++;
-        //     if (diag_counter % 2000 == 0) {  // Co ~2 sekundy (2000 * 1ms)
-        //         int sem_chairs_val = sem_pobierz_wartosc(g_sem_id, SEM_CHAIRS);
-        //         logger(LOG_WORKER1, "[DIAG] waiter_count=%d, on_platform=%d, active_chairs=%d, sem_chairs_val=%d, emergency_stop=%d",
-        //                waiter_count, on_platform, active_chairs, sem_chairs_val, emergency_stop);
-        //     }
-        // }
         
-        // ZAWSZE odbieraj komunikaty od turystów którzy wysłali MSG_TOURIST_TO_PLATFORM
-        // Ci turyści już przeszli przez bramkę na peron - muszą być obsłużeni
+        // Odbieranie komunikatów od turystów którzy wysłali MSG_TOURIST_TO_PLATFORM
         int received_count = 0;
         while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
             received_count++;
             if (shutdown_flag) break;
-            // NIE przerywamy przy emergency_stop - turyści muszą być dodani do kolejki!
+            // brak przerwania przy emergency_stop - turyści muszą być dodani do kolejki
             
             PlatformWaiter w;
             w.pid = msg.sender_pid;
@@ -651,21 +621,6 @@ int main(void) {
             }
         }
 
-        // Log jeśli odebrano komunikaty po zamknięciu bramek
-        // if (gates_closed && received_count > 0) {
-        //     logger(LOG_WORKER1, "[DIAG] Odebrano %d komunikatów po zamknięciu bramek, waiter_count=%d",
-        //            received_count, waiter_count);
-        // }
-
-        // Próbuj utworzyć grupę i wysłać krzesełko
-        // Diagnostyka gdy bramki zamknięte i warunki nie są spełnione
-        // if (gates_closed && (emergency_stop || waiter_count == 0)) {
-        //     static int skip_diag = 0;
-        //     if (++skip_diag % 5000 == 0) {  // Co ~5 sekund
-        //         logger(LOG_WORKER1, "[DIAG-SKIP] Nie wysyłam krzesełek: emergency=%d, waiter_count=%d",
-        //                emergency_stop, waiter_count);
-        //     }
-        // }
         if (!emergency_stop && waiter_count > 0) {
             // Sprawdź dostępność krzesełka
             int result = sem_probuj_opusc_bez_undo(g_sem_id, SEM_CHAIRS);
@@ -718,8 +673,6 @@ int main(void) {
                 }
             }
         }
-        
-        // Aktywne czekanie - bez usleep
     }
     
     logger(LOG_WORKER1, "Kończę pracę na stacji dolnej");

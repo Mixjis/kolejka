@@ -64,8 +64,6 @@ void initiate_emergency_stop_w2(void) {
     
     // Powiadom worker1
     send_signal_to_worker1(SIGUSR1);
-    
-    logger(LOG_EMERGENCY, "PRACOWNIK2: Kolej ZATRZYMANA - czekam na gotowość worker1");
 }
 
 // Wznowienie po awarii (gdy worker2 jest inicjatorem)
@@ -73,7 +71,7 @@ void resume_from_emergency_w2(void) {
     logger(LOG_EMERGENCY, "PRACOWNIK2: Worker1 gotowy - Zatrzymanie ruchu kolei");
     
     time_t start_time = time(NULL);
-    while (time(NULL) - start_time < 5 && !shutdown_flag) {}
+    while (time(NULL) - start_time < EMERGENCY_DURATION && !shutdown_flag) {}
     if (shutdown_flag) return;
     
     // Wznów działanie
@@ -180,7 +178,7 @@ void* tourist_exit_thread(void* arg) {
     g_shm->tourists_descending++;
     sem_podnies(g_sem_id, SEM_MAIN);
     
-    // Symulacja zjazdu - aktywne czekanie na upływ czasu
+    // Symulacja zjazdu
     time_t start_time = time(NULL);
     while ((time(NULL) - start_time) < trail_time) {}
     
@@ -241,8 +239,6 @@ int main(void) {
         if (elapsed >= WORK_START_TIME) {
             break;
         }
-        
-        // Aktywne czekanie
     }
     
     if (shutdown_flag) {
@@ -259,7 +255,6 @@ int main(void) {
     // System awarii oparty na rzeczywistym czasie
     time_t last_emergency_check = time(NULL);
     int next_emergency_delay = 3 + (rand() % 9);  // 3-11 sekund
-    const int EMERGENCY_DURATION = 5;  // Czas trwania awarii w sekundach
     const int EMERGENCY_SAFETY_MARGIN = 8;  // Margines bezpieczeństwa przed końcem
     
     while (!shutdown_flag) {
@@ -302,22 +297,14 @@ int main(void) {
             sem_podnies(g_sem_id, SEM_MAIN);
             
             if (initiator == 2) {
-                // My zainicjowaliśmy - czekaj na worker1 i wznów
-                logger(LOG_EMERGENCY, "PRACOWNIK2: Awaria aktywna - czekam na worker1...");
-                
                 // Czekaj aż worker1 potwierdzi gotowość
-                //int wait_count = 0;
-                //while (!w1_ready && !shutdown_flag && wait_count < 3000000) {
                 while (!w1_ready && !shutdown_flag) {
-                    //wait_count++;
                     sem_opusc(g_sem_id, SEM_MAIN);
                     w1_ready = g_shm->worker1_ready;
                     sem_podnies(g_sem_id, SEM_MAIN);
                 }
                 
-                //if (w1_ready || wait_count >= 3000000) {
-                if (w1_ready) {
-                    // Worker1 gotowy lub timeout - wznów
+                if (w1_ready && !shutdown_flag) {
                     resume_from_emergency_w2();
                 }
             } else if (initiator == 1) {
@@ -328,7 +315,7 @@ int main(void) {
                 g_shm->worker2_ready = true;
                 sem_podnies(g_sem_id, SEM_MAIN);
                 
-                logger(LOG_WORKER2, "Potwierdzam gotowość do wznowienia (awaria od worker1)");
+                logger(LOG_EMERGENCY, "PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)");
                 
                 // Czekaj na sygnał wznowienia
                 while (emergency_stop && !emergency_resume && !shutdown_flag) {}

@@ -16,6 +16,7 @@
 #define ENTRY_GATES          4       // Bramki wejściowe (kontrola biletów)
 #define PLATFORM_GATES       3       // Bramki na peron (kontrola grup)
 #define EXIT_GATES           2       // Wyjścia ze stacji górnej
+#define EMERGENCY_DURATION   5       // Czas trwania zatrzymania awaryjnego (sekundy)
 
 // Czasy przejazdu trasami (sekundy symulacyjne)
 #define TRAIL_T1_TIME        1       // Łatwa
