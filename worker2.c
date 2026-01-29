@@ -70,14 +70,10 @@ void initiate_emergency_stop_w2(void) {
 
 // Wznowienie po awarii (gdy worker2 jest inicjatorem)
 void resume_from_emergency_w2(void) {
-    logger(LOG_EMERGENCY, "PRACOWNIK2: Worker1 gotowy - wznawiamy...");
+    logger(LOG_EMERGENCY, "PRACOWNIK2: Worker1 gotowy - Zatrzymanie ruchu kolei");
     
-    // Krótkie aktywne czekanie zamiast sleep(5)
-    volatile int delay_count = 0;
-    while (delay_count < 50000000 && !shutdown_flag) {
-        delay_count++;
-    }
-    
+    time_t start_time = time(NULL);
+    while (time(NULL) - start_time < 5 && !shutdown_flag) {}
     if (shutdown_flag) return;
     
     // Wznów działanie
@@ -118,12 +114,12 @@ typedef struct {
 void* tourist_exit_thread(void* arg) {
     TouristExit* te = (TouristExit*)arg;
     
-    // Zmniejsz licznik turystów na górnej stacji
+    // Zmniejszenie licznika turystów na górnej stacji
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->tourists_at_top--;
     sem_podnies(g_sem_id, SEM_MAIN);
     
-    // Sprawdź czy to pieszy opuszczający system na górze (trail == -1)
+    // Sprawdzanie czy to pieszy opuszcza system na górze (trail == -1)
     if (te->trail == (TrailType)(-1)) {
         // Pieszy - opuszcza system bez zjazdu trasą
         int gate_num = get_next_exit_gate();
@@ -178,7 +174,7 @@ void* tourist_exit_thread(void* arg) {
     logger(LOG_WORKER2, "Turysta #%d zjeżdża trasą %s (%ds)", 
            te->tourist_id, trail_name, trail_time);
     
-    // Aktualizuj statystyki tras i licznik zjeżdżających
+    // Aktualizacja statystyk tras i licznika zjeżdżających
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->trail_usage[te->trail]++;
     g_shm->tourists_descending++;
@@ -186,16 +182,14 @@ void* tourist_exit_thread(void* arg) {
     
     // Symulacja zjazdu - aktywne czekanie na upływ czasu
     time_t start_time = time(NULL);
-    while ((time(NULL) - start_time) < trail_time) {
-        // Aktywne czekanie
-    }
+    while ((time(NULL) - start_time) < trail_time) {}
     
     // Zmniejsz licznik zjeżdżających
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->tourists_descending--;
     sem_podnies(g_sem_id, SEM_MAIN);
     
-    // Wyślij powiadomienie do turysty, że zjazd zakończony i może wrócić (blokujące)
+    // Wyślij powiadomienie do turysty, że zjazd zakończony i może wrócić
     Message msg;
     msg.mtype = te->tourist_pid;
     msg.sender_pid = getpid();
@@ -205,7 +199,6 @@ void* tourist_exit_thread(void* arg) {
     
     logger(LOG_WORKER2, "Turysta #%d zakończył zjazd trasą %s i zjeżdża na dół", 
            te->tourist_id, trail_name);
-    
     free(te);
     return NULL;
 }
@@ -265,7 +258,7 @@ int main(void) {
     
     // System awarii oparty na rzeczywistym czasie
     time_t last_emergency_check = time(NULL);
-    int next_emergency_delay = 3 + (rand() % 3);  // 3-5 sekund
+    int next_emergency_delay = 3 + (rand() % 9);  // 3-11 sekund
     const int EMERGENCY_DURATION = 5;  // Czas trwania awarii w sekundach
     const int EMERGENCY_SAFETY_MARGIN = 8;  // Margines bezpieczeństwa przed końcem
     
@@ -275,7 +268,7 @@ int main(void) {
         bool gates_closed = g_shm->gates_closed;
         sem_podnies(g_sem_id, SEM_MAIN);
         
-        // Obsługa awarii - sprawdź czy trzeba zainicjować (tylko gdy bramki otwarte)
+        // Obsługa awarii - sprawdź czy trzeba zainicjować
         if (!gates_closed) {
             time_t now = time(NULL);
             time_t elapsed_since_start = now - sim_start;
@@ -291,7 +284,7 @@ int main(void) {
                     }
                 }
                 last_emergency_check = now;
-                next_emergency_delay = 3 + (rand() % 3);  // Reset na 3-5 sekund
+                next_emergency_delay = 3 + (rand() % 9);  // Reset na 3-11 sekund
             }
             
             if (should_trigger_emergency && !emergency_stop) {
@@ -312,16 +305,18 @@ int main(void) {
                 // My zainicjowaliśmy - czekaj na worker1 i wznów
                 logger(LOG_EMERGENCY, "PRACOWNIK2: Awaria aktywna - czekam na worker1...");
                 
-                // Czekaj aż worker1 potwierdzi gotowość - aktywne czekanie z limitem
-                int wait_count = 0;
-                while (!w1_ready && !shutdown_flag && wait_count < 3000000) {
-                    wait_count++;
+                // Czekaj aż worker1 potwierdzi gotowość
+                //int wait_count = 0;
+                //while (!w1_ready && !shutdown_flag && wait_count < 3000000) {
+                while (!w1_ready && !shutdown_flag) {
+                    //wait_count++;
                     sem_opusc(g_sem_id, SEM_MAIN);
                     w1_ready = g_shm->worker1_ready;
                     sem_podnies(g_sem_id, SEM_MAIN);
                 }
                 
-                if (w1_ready || wait_count >= 3000000) {
+                //if (w1_ready || wait_count >= 3000000) {
+                if (w1_ready) {
                     // Worker1 gotowy lub timeout - wznów
                     resume_from_emergency_w2();
                 }
@@ -335,10 +330,8 @@ int main(void) {
                 
                 logger(LOG_WORKER2, "Potwierdzam gotowość do wznowienia (awaria od worker1)");
                 
-                // Czekaj na sygnał wznowienia - aktywne czekanie
-                while (emergency_stop && !emergency_resume && !shutdown_flag) {
-                    // Aktywne czekanie
-                }
+                // Czekaj na sygnał wznowienia
+                while (emergency_stop && !emergency_resume && !shutdown_flag) {}
                 
                 if (emergency_resume) {
                     emergency_stop = 0;
@@ -348,12 +341,11 @@ int main(void) {
             }
             
             if (emergency_stop) {
-                // Aktywne czekanie w trakcie awarii
                 continue;
             }
         }
         
-        // Sprawdź koniec dnia - kończ tylko na SIGTERM
+        // Sprawdź koniec dnia - koniec tylko na SIGTERM
         // Obsłużenie wszystkich turystów którzy są jeszcze w systemie
         if (shutdown_flag) {
             //Obsłużenie wszystkich pozostałych komunikatów MSG_CHAIR_ARRIVAL
@@ -385,9 +377,7 @@ int main(void) {
             break;
         }
         
-        // Odbieraj krzesełka przyjeżdżające na górną stację (tylko logowanie)
-        // UWAGA: Przetwarzamy komunikat ZANIM sprawdzimy flagi, bo odebrany komunikat
-        // już został usunięty z kolejki i musi być obsłużony!
+        // Odbieraj krzesełka przyjeżdżające na górną stację
         while (odbierz_komunikat(g_msg_worker_id, &msg, MSG_CHAIR_ARRIVAL, false)) {
             int chair_id = msg.data;
             int passenger_count = msg.data2;
@@ -400,7 +390,7 @@ int main(void) {
             logger(LOG_CHAIR, "Krzesełko #%d dotarło na górną stację z %d pasażerami",
                    chair_id, passenger_count);
             
-            // Wyślij powiadomienie do pasażerów że dotarli (data == 2) - blokujące!
+            // Wyślij powiadomienie do pasażerów że dotarli (data == 2)
             for (int i = 0; i < passenger_count && i < CHAIR_CAPACITY; i++) {
                 pid_t tourist_pid = msg.child_ids[i];
                 if (tourist_pid <= 0) continue;
@@ -414,13 +404,12 @@ int main(void) {
             }
         }
         
-        // Odbieraj prośby turystów o wyjście
-        // UWAGA: Przetwarzamy komunikat ZANIM sprawdzimy flagi!
+        // Odbieranie próśb turystów o wyjście
         while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_EXIT, false)) {
             TouristExit* te = malloc(sizeof(TouristExit));
             te->tourist_pid = msg.sender_pid;
             te->tourist_id = msg.tourist_id;
-            te->trail = (TrailType)msg.data; // Wybrana trasa
+            te->trail = (TrailType)msg.data;
             
             pthread_t thread;
             pthread_attr_t attr;
@@ -435,7 +424,6 @@ int main(void) {
             pthread_attr_destroy(&attr);
         }
         
-        // Aktywne czekanie - bez usleep
     }
     
     logger(LOG_WORKER2, "Kończę pracę na stacji górnej");

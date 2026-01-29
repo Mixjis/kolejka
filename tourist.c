@@ -1,3 +1,5 @@
+// tourist.c - proces turysty korzystającego z kolei linowej
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -148,6 +150,7 @@ bool buy_ticket(void) {
     msg.children_count = g_children_count;
     msg.child_ids[0] = g_child_ages[0];
     msg.child_ids[1] = g_child_ages[1];
+    msg.ticket_type = g_ticket_type;
     
     if (!wyslij_komunikat(g_msg_id, &msg)) {
         sem_opusc(g_sem_id, SEM_MAIN);
@@ -648,6 +651,9 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < g_children_count; i++) {
         g_child_ages[i] = 4 + rand() % 5; // 4-8 lat
     }
+    
+    // Losuj typ biletu
+    g_ticket_type = rand() % TICKET_TYPE_COUNT;
     
     // Połącz z zasobami IPC
     g_msg_id = polacz_kolejke();

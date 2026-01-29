@@ -237,6 +237,7 @@ typedef struct {
     bool is_vip;
     int children_count;
     int child_ids[CHAIR_CAPACITY];
+    TicketType ticket_type;  // Żądany typ biletu
 } Message;
 
 #define MSG_SIZE (sizeof(Message) - sizeof(long))

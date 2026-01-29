@@ -36,6 +36,7 @@ typedef struct {
     bool is_vip;
     int children_count;
     int child_ids[2];
+    TicketType ticket_type;
 } QueuedTourist;
 
 // Kolejka priorytetowa (VIP na początku)
@@ -214,6 +215,7 @@ int main(void) {
             qt.children_count = msg.children_count;
             qt.child_ids[0] = msg.child_ids[0];
             qt.child_ids[1] = msg.child_ids[1];
+            qt.ticket_type = msg.ticket_type;
             
             if (add_to_queue(&qt)) {
                 logger(LOG_VIP, "VIP #%d dołączył do kolejki priorytetowej!", qt.tourist_id);
@@ -243,6 +245,7 @@ int main(void) {
             qt.children_count = msg.children_count;
             qt.child_ids[0] = msg.child_ids[0];
             qt.child_ids[1] = msg.child_ids[1];
+            qt.ticket_type = msg.ticket_type;
             
             if (!add_to_queue(&qt)) {
                 // Kolejka pełna - wyślij odmowę
@@ -260,8 +263,8 @@ int main(void) {
         // Obsługa klientów z kolejki
         QueuedTourist tourist;
         while (get_from_queue(&tourist) && !shutdown_flag && !emergency_flag) {
-            // Losowy typ biletu
-            TicketType ticket_type = rand() % TICKET_TYPE_COUNT;
+            // Typ biletu z żądania turysty
+            TicketType ticket_type = tourist.ticket_type;
             
             // Sprawdzanie zniżki (dzieci <10, seniorzy >65)
             bool has_discount = (tourist.age < 10 || tourist.age > 65);
