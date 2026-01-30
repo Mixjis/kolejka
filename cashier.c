@@ -310,8 +310,9 @@ int main(void) {
                        tourist.age, discount_str, vip_str, price);
                 
                 if (tourist.children_count > 0) {
-                    logger(LOG_CASHIER, "  -> Turysta #%d ma pod opieką %d dzieci", 
-                           tourist.tourist_id, tourist.children_count);
+                    int child_price  = cena_biletu(ticket_type, true) * tourist.children_count;
+                    logger(LOG_CASHIER, "  -> Turysta #%d ma pod opieką %d dzieci (bilety ze zniżką 25%%, suma za dzieci: %d)", 
+                                            tourist.tourist_id, tourist.children_count, child_price);
                 }
             }
         }

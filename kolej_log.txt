@@ -1,0 +1,1738 @@
+========== START SYMULACJI KOLEI LINOWEJ ==========
+[23:01:30.096] SYSTEM(1407): Symulacja rozpoczęta - zasoby IPC utworzone
+[23:01:30.097] SYSTEM(1407): Uruchomiono pracownika 1 (stacja dolna) PID: 1408
+[23:01:30.099] SYSTEM(1407): Uruchomiono pracownika 2 (stacja górna) PID: 1409
+[23:01:30.099] SYSTEM(1407): Uruchomiono kasjera PID: 1410
+[23:01:30.100] SYSTEM(1407): Rozpoczynam generowanie turystów...
+[23:01:30.124] PRACOWNIK1(1408): Czekam 5 sekund przed rozpoczęciem pracy...
+[23:01:30.125] TURYSTA(1420): Turysta #9 przybywa (pieszy, 20 lat)
+[23:01:30.125] TURYSTA(1417): Turysta #6 przybywa (rowerzysta, 27 lat)
+[23:01:30.125] TURYSTA(1422): Turysta #11 przybywa (rowerzysta, 9 lat)
+[23:01:30.126] TURYSTA(1421): Turysta #10 przybywa (pieszy, 8 lat)
+[23:01:30.124] TURYSTA(1412): Turysta #1 przybywa (rowerzysta, 46 lat)
+[23:01:30.128] TURYSTA(1413): Turysta #2 przybywa (pieszy, 66 lat)
+[23:01:30.128] TURYSTA(1420): Turysta #9 tylko ogląda i odchodzi
+[23:01:30.130] TURYSTA(1416): Turysta #5 przybywa (pieszy, 8 lat)
+[23:01:30.130] TURYSTA(1425): Turysta #14 przybywa (pieszy, 9 lat)
+[23:01:30.130] TURYSTA(1426): Turysta #15 przybywa (pieszy, 9 lat)
+[23:01:30.130] PRACOWNIK2(1409): Czekam 5 sekund przed rozpoczęciem pracy...
+[23:01:30.131] KASJER(1410): Czekam 5 sekund przed rozpoczęciem pracy...
+[23:01:30.133] TURYSTA(1424): Turysta #13 przybywa (rowerzysta, 9 lat)
+[23:01:30.135] TURYSTA(1434): Turysta #23 przybywa (pieszy, 22 lat)
+[23:01:30.134] TURYSTA(1414): Turysta #3 przybywa (pieszy, 57 lat)
+[23:01:30.138] TURYSTA(1429): Turysta #18 przybywa (pieszy, 8 lat)
+[23:01:30.138] TURYSTA(1419): Turysta #8 przybywa (pieszy, 39 lat)
+[23:01:30.138] TURYSTA(1437): Turysta #26 przybywa (rowerzysta, 37 lat)
+[23:01:30.138] TURYSTA(1430): Turysta #19 przybywa (rowerzysta, 28 lat)
+[23:01:30.139] TURYSTA(1433): Turysta #22 przybywa (rowerzysta, 77 lat)
+[23:01:30.138] TURYSTA(1427): Turysta #16 przybywa (rowerzysta, 9 lat)
+[23:01:30.138] TURYSTA(1423): Turysta #12 przybywa (rowerzysta, 8 lat)
+[23:01:30.139] TURYSTA(1428): Turysta #17 przybywa (rowerzysta, 31 lat)
+[23:01:30.139] TURYSTA(1415): Turysta #4 przybywa (rowerzysta, 57 lat)
+[23:01:30.139] TURYSTA(1418): Turysta #7 przybywa (rowerzysta, 56 lat)
+[23:01:30.143] TURYSTA(1436): Turysta #25 przybywa (pieszy, 67 lat)
+[23:01:30.144] TURYSTA(1431): Turysta #20 przybywa (rowerzysta, 29 lat)
+[23:01:30.150] TURYSTA(1432): Turysta #21 przybywa (pieszy, 9 lat)
+[23:01:30.163] TURYSTA(1438): Turysta #27 przybywa (pieszy, 9 lat)
+[23:01:30.164] TURYSTA(1443): Turysta #32 przybywa (pieszy, 43 lat)
+[23:01:30.169] TURYSTA(1446): Turysta #35 przybywa (pieszy, 78 lat)
+[23:01:30.179] TURYSTA(1448): Turysta #37 przybywa (rowerzysta, 50 lat)
+[23:01:30.179] TURYSTA(1439): Turysta #28 przybywa (rowerzysta, 40 lat)
+[23:01:30.179] TURYSTA(1447): Turysta #36 przybywa (pieszy, 8 lat)
+[23:01:30.179] TURYSTA(1445): Turysta #34 przybywa (rowerzysta, 29 lat, 1 dzieci pod opieką)
+[23:01:30.179] TURYSTA(1442): Turysta #31 przybywa (pieszy, 62 lat, 2 dzieci pod opieką)
+[23:01:30.179] TURYSTA(1435): Turysta #24 przybywa (pieszy, 24 lat)
+[23:01:30.179] TURYSTA(1440): Turysta #29 przybywa (pieszy, 44 lat)
+[23:01:30.179] TURYSTA(1444): Turysta #33 przybywa (rowerzysta, 24 lat)
+[23:01:30.179] TURYSTA(1445): Dziecko #0 (wiek 5) turysty #34 - podąża z opiekunem
+[23:01:30.179] TURYSTA(1442): Dziecko #0 (wiek 5) turysty #31 - podąża z opiekunem
+[23:01:30.183] TURYSTA(1450): Turysta #39 przybywa (rowerzysta, 55 lat)
+[23:01:30.179] TURYSTA(1442): Dziecko #1 (wiek 7) turysty #31 - podąża z opiekunem
+[23:01:30.184] TURYSTA(1441): Turysta #30 przybywa (rowerzysta, 24 lat, 1 dzieci pod opieką)
+[23:01:30.185] TURYSTA(1441): Dziecko #0 (wiek 5) turysty #30 - podąża z opiekunem
+[23:01:30.198] TURYSTA(1449): Turysta #38 przybywa (rowerzysta, 38 lat)
+[23:01:30.213] TURYSTA(1462): Turysta #51 przybywa (pieszy, 61 lat)
+[23:01:30.232] TURYSTA(1457): Turysta #46 przybywa (rowerzysta, 34 lat, 1 dzieci pod opieką)
+[23:01:30.232] TURYSTA(1455): Turysta #44 przybywa (rowerzysta, 8 lat)
+[23:01:30.232] TURYSTA(1460): Turysta #49 przybywa (pieszy, 44 lat)
+[23:01:30.233] TURYSTA(1463): Turysta #52 przybywa (pieszy, 56 lat)
+[23:01:30.233] TURYSTA(1470): Turysta #55 przybywa (rowerzysta, 9 lat)
+[23:01:30.235] TURYSTA(1457): Dziecko #0 (wiek 6) turysty #46 - podąża z opiekunem
+[23:01:30.235] TURYSTA(1456): Turysta #45 przybywa (rowerzysta, 22 lat, 1 dzieci pod opieką)
+[23:01:30.235] TURYSTA(1454): Turysta #43 przybywa (rowerzysta, 77 lat)
+[23:01:30.238] TURYSTA(1456): Turysta #45 tylko ogląda i odchodzi
+[23:01:30.239] TURYSTA(1468): Turysta #53 przybywa (rowerzysta, 10 lat)
+[23:01:30.239] TURYSTA(1461): Turysta #50 przybywa (pieszy, 73 lat)
+[23:01:30.240] TURYSTA(1456): Dziecko #0 (wiek 5) turysty #45 - podąża z opiekunem
+[23:01:30.240] TURYSTA(1458): Turysta #47 przybywa (pieszy, 29 lat)
+[23:01:30.243] TURYSTA(1458): Turysta #47 tylko ogląda i odchodzi
+[23:01:30.235] TURYSTA(1459): Turysta #48 przybywa (rowerzysta, 13 lat)
+[23:01:30.256] TURYSTA(1451): Turysta #40 przybywa (rowerzysta, 46 lat)
+[23:01:30.256] TURYSTA(1469): Turysta #54 przybywa (pieszy, 37 lat)
+[23:01:30.256] TURYSTA(1472): Turysta #57 przybywa (rowerzysta, 31 lat)
+[23:01:30.256] TURYSTA(1471): Turysta #56 przybywa (rowerzysta, 8 lat)
+[23:01:30.256] TURYSTA(1452): Turysta #41 przybywa (pieszy, 35 lat)
+[23:01:30.256] TURYSTA(1453): Turysta #42 przybywa (pieszy, 15 lat)
+[23:01:30.314] TURYSTA(1475): Turysta #58 przybywa (rowerzysta, 9 lat)
+[23:01:30.314] TURYSTA(1476): Turysta #59 przybywa (rowerzysta, 18 lat)
+[23:01:30.358] TURYSTA(1477): Turysta #60 przybywa (rowerzysta, 64 lat, 1 dzieci pod opieką)
+[23:01:30.358] TURYSTA(1477): Dziecko #0 (wiek 7) turysty #60 - podąża z opiekunem
+[23:01:30.364] TURYSTA(1478): Turysta #61 przybywa (rowerzysta, 65 lat)
+[23:01:30.379] TURYSTA(1478): Turysta #61 tylko ogląda i odchodzi
+[23:01:30.436] TURYSTA(1479): Turysta #62 przybywa (pieszy, 8 lat)
+[23:01:30.519] TURYSTA(1482): Turysta #64 przybywa (rowerzysta, 33 lat)
+[23:01:30.520] TURYSTA(1481): Turysta #63 przybywa (rowerzysta, 62 lat)
+[23:01:30.630] TURYSTA(1482): Turysta #64 tylko ogląda i odchodzi
+[23:01:30.682] TURYSTA(1489): Turysta #71 przybywa (rowerzysta, 67 lat)
+[23:01:30.683] TURYSTA(1483): Turysta #65 przybywa (rowerzysta, 57 lat, 1 dzieci pod opieką)
+[23:01:30.699] TURYSTA(1483): Dziecko #0 (wiek 7) turysty #65 - podąża z opiekunem
+[23:01:30.696] TURYSTA(1493): Turysta #75 przybywa (pieszy, 38 lat)
+[23:01:30.709] TURYSTA(1496): Turysta #78 przybywa (pieszy, 36 lat, 1 dzieci pod opieką)
+[23:01:30.725] TURYSTA(1512): Turysta #94 przybywa (pieszy, 30 lat)
+[23:01:30.731] TURYSTA(1499): Turysta #81 przybywa (pieszy, 29 lat)
+[23:01:30.719] TURYSTA(1501): Turysta #83 przybywa (pieszy, 14 lat)
+[23:01:30.742] TURYSTA(1485): Turysta #67 przybywa (rowerzysta, 50 lat)
+[23:01:30.770] TURYSTA(1486): Turysta #68 przybywa (rowerzysta, 43 lat)
+[23:01:30.715] TURYSTA(1496): Dziecko #0 (wiek 4) turysty #78 - podąża z opiekunem
+[23:01:30.781] TURYSTA(1507): Turysta #89 przybywa (pieszy, 47 lat)
+[23:01:30.780] TURYSTA(1504): Turysta #86 przybywa (pieszy, 46 lat)
+[23:01:30.780] TURYSTA(1492): Turysta #74 przybywa (pieszy, 36 lat)
+[23:01:30.860] TURYSTA(1518): Turysta #100 przybywa (pieszy, 9 lat)
+[23:01:30.927] TURYSTA(1488): Turysta #70 przybywa (rowerzysta, 23 lat)
+[23:01:30.927] TURYSTA(1502): Turysta #84 przybywa (rowerzysta, 62 lat)
+[23:01:30.932] TURYSTA(1494): Turysta #76 przybywa (rowerzysta, 9 lat)
+[23:01:30.932] TURYSTA(1503): Turysta #85 przybywa (rowerzysta, 62 lat, 1 dzieci pod opieką)
+[23:01:30.934] TURYSTA(1505): Turysta #87 przybywa (rowerzysta, 8 lat)
+[23:01:30.943] TURYSTA(1516): Turysta #98 przybywa (pieszy, 83 lat)
+[23:01:30.943] TURYSTA(1484): Turysta #66 przybywa (pieszy, 13 lat)
+[23:01:30.944] TURYSTA(1510): Turysta #92 przybywa (pieszy, 8 lat)
+[23:01:30.944] TURYSTA(1500): Turysta #82 przybywa (pieszy, 57 lat)
+[23:01:30.944] TURYSTA(1517): Turysta #99 przybywa (pieszy, 8 lat)
+[23:01:30.947] TURYSTA(1511): Dziecko #0 (wiek 7) turysty #93 - podąża z opiekunem
+[23:01:30.956] TURYSTA(1491): Turysta #73 przybywa (pieszy, 49 lat)
+[23:01:30.963] TURYSTA(1506): Turysta #88 przybywa (pieszy, 82 lat)
+[23:01:30.963] TURYSTA(1509): Turysta #91 przybywa (pieszy, 39 lat)
+[23:01:30.970] TURYSTA(1513): Turysta #95 przybywa (pieszy, 8 lat)
+[23:01:30.969] TURYSTA(1515): Turysta #97 przybywa (rowerzysta, 32 lat)
+[23:01:30.976] TURYSTA(1490): Turysta #72 przybywa (rowerzysta, 35 lat)
+[23:01:30.976] TURYSTA(1514): Turysta #96 przybywa (pieszy, 29 lat)
+[23:01:30.976] TURYSTA(1497): Turysta #79 przybywa (pieszy, 63 lat)
+[23:01:30.975] TURYSTA(1495): Turysta #77 przybywa (rowerzysta, 33 lat)
+[23:01:30.950] TURYSTA(1511): Turysta #93 przybywa (rowerzysta, 62 lat, 1 dzieci pod opieką)
+[23:01:30.943] TURYSTA(1503): Dziecko #0 (wiek 4) turysty #85 - podąża z opiekunem
+[23:01:30.995] TURYSTA(1487): Turysta #69 przybywa (pieszy, 39 lat)
+[23:01:30.995] TURYSTA(1498): Turysta #80 przybywa (pieszy, 40 lat)
+[23:01:31.015] TURYSTA(1498): Turysta #80 tylko ogląda i odchodzi
+[23:01:31.024] TURYSTA(1508): Turysta #90 przybywa (pieszy, 27 lat)
+[23:01:35.007] PRACOWNIK1(1408): Rozpoczynam pracę na stacji dolnej!
+[23:01:35.011] PRACOWNIK2(1409): Rozpoczynam pracę na stacji górnej!
+[23:01:35.012] KASJER(1410): Rozpoczynam pracę - kasa otwarta!
+[23:01:37.227] KASJER(1410): Sprzedano bilet #1 (DZIENNY) turyscie #56 (rowerzysta, 8 lat) (ze zniżką 25%) - cena: 60
+[23:01:37.231] KASJER(1410): Sprzedano bilet #2 (CZASOWY TK3 (3h)) turyscie #39 (rowerzysta, 55 lat) - cena: 55
+[23:01:37.233] KASJER(1410): Sprzedano bilet #3 (CZASOWY TK3 (3h)) turyscie #26 (rowerzysta, 37 lat) - cena: 55
+[23:01:37.233] TURYSTA(1471): Turysta #56 wpuszczony przez bramkę wejściową #1 (bilet #1)
+[23:01:37.233] TURYSTA(1471): Turysta #56 wszedł na stację dolną (bilet #1, typ: rowerzysta)
+[23:01:37.251] KASJER(1410): Sprzedano bilet #4 (DZIENNY) turyscie #34 (rowerzysta, 29 lat) - cena: 80
+[23:01:37.255] KASJER(1410):   -> Turysta #34 ma pod opieką 1 dzieci (bilety ze zniżką 25%, suma za dzieci: 60)
+[23:01:37.256] TURYSTA(1471): Turysta #56 przeszedł na peron (bramka peronowa #3, bilet #1)
+[23:01:37.259] PRACOWNIK1(1408): Turysta #56 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:37.263] KASJER(1410): Sprzedano bilet #5 (JEDNORAZOWY) turyscie #1 (rowerzysta, 46 lat) - cena: 10
+[23:01:37.267] KASJER(1410): Sprzedano bilet #6 (CZASOWY TK2 (2h)) turyscie #91 (pieszy, 39 lat) - cena: 40
+[23:01:37.268] PRACOWNIK1(1408): Wpuszczam turyste #56(R) na krzesełko
+[23:01:37.269] TURYSTA(1437): Turysta #26 - pozostały czas biletu: 45 sekund
+[23:01:37.271] KASJER(1410): Sprzedano bilet #7 (JEDNORAZOWY) turyscie #27 (pieszy, 9 lat) (ze zniżką 25%) - cena: 8
+[23:01:37.275] KASJER(1410): Sprzedano bilet #8 (DZIENNY) turyscie #25 (pieszy, 67 lat) (ze zniżką 25%) - cena: 60
+[23:01:37.279] KASJER(1410): Sprzedano bilet #9 (DZIENNY) turyscie #12 (rowerzysta, 8 lat) (ze zniżką 25%) - cena: 60
+[23:01:37.283] KASJER(1410): Sprzedano bilet #10 (CZASOWY TK2 (2h)) turyscie #17 (rowerzysta, 31 lat) - cena: 40
+[23:01:37.283] TURYSTA(1437): Turysta #26 wpuszczony przez bramkę wejściową #3 (bilet #3)
+[23:01:37.291] TURYSTA(1437): Turysta #26 wszedł na stację dolną (bilet #3, typ: rowerzysta)
+[23:01:37.291] KASJER(1410): Sprzedano bilet #11 (CZASOWY TK2 (2h)) turyscie #21 (pieszy, 9 lat) (ze zniżką 25%) - cena: 30
+[23:01:37.303] KASJER(1410): Sprzedano bilet #12 (CZASOWY TK1 (1h)) turyscie #60 (rowerzysta, 64 lat) - cena: 25
+[23:01:37.307] KASJER(1410):   -> Turysta #60 ma pod opieką 1 dzieci (bilety ze zniżką 25%, suma za dzieci: 19)
+[23:01:37.319] KRZESEŁKO(1408): Krzesełko #1 odjeżdża z pasażerami: [#56(R)] (R:1, P:0)
+[23:01:37.320] KASJER(1410): Sprzedano bilet #13 (CZASOWY TK1 (1h)) turyscie #82 (pieszy, 57 lat) - cena: 25
+[23:01:37.323] TURYSTA(1437): Turysta #26 przeszedł na peron (bramka peronowa #3, bilet #3)
+[23:01:37.327] TURYSTA(1412): Turysta #1 wpuszczony przez bramkę wejściową #2 (bilet #5)
+[23:01:37.331] TURYSTA(1412): Turysta #1 wszedł na stację dolną (bilet #5, typ: rowerzysta)
+[23:01:37.343] KASJER(1410): Sprzedano bilet #14 (JEDNORAZOWY) turyscie #15 (pieszy, 9 lat) (ze zniżką 25%) - cena: 8
+[23:01:37.355] TURYSTA(1450): Turysta #39 - pozostały czas biletu: 45 sekund
+[23:01:37.358] TURYSTA(1450): Turysta #39 wpuszczony przez bramkę wejściową #4 (bilet #2)
+[23:01:37.358] TURYSTA(1450): Turysta #39 wszedł na stację dolną (bilet #2, typ: rowerzysta)
+[23:01:37.371] TURYSTA(1438): Turysta #27 wpuszczony przez bramkę wejściową #4 (bilet #7)
+[23:01:37.375] TURYSTA(1438): Turysta #27 wszedł na stację dolną (bilet #7, typ: pieszy)
+[23:01:37.418] KASJER(1410): Sprzedano bilet #15 (CZASOWY TK1 (1h)) turyscie #93 (rowerzysta, 62 lat) - cena: 25
+[23:01:37.427] KASJER(1410):   -> Turysta #93 ma pod opieką 1 dzieci (bilety ze zniżką 25%, suma za dzieci: 19)
+[23:01:37.495] PRACOWNIK1(1408): Turysta #26 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:37.503] TURYSTA(1445): Turysta #34 wpuszczony przez bramkę wejściową #3 (bilet #4)
+[23:01:37.507] KASJER(1410): Sprzedano bilet #16 (CZASOWY TK2 (2h)) turyscie #53 (rowerzysta, 10 lat) - cena: 40
+[23:01:37.507] TURYSTA(1445): Turysta #34 wszedł na stację dolną (bilet #4, typ: rowerzysta)
+[23:01:37.511] TURYSTA(1412): Turysta #1 przeszedł na peron (bramka peronowa #2, bilet #5)
+[23:01:37.524] PRACOWNIK1(1408): Turysta #1 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:37.527] KASJER(1410): Sprzedano bilet #17 (CZASOWY TK2 (2h)) turyscie #44 (rowerzysta, 8 lat) (ze zniżką 25%) - cena: 30
+[23:01:37.527] TURYSTA(1436): Turysta #25 wpuszczony przez bramkę wejściową #2 (bilet #8)
+[23:01:37.529] TURYSTA(1423): Turysta #12 wpuszczony przez bramkę wejściową #1 (bilet #9)
+[23:01:37.529] TURYSTA(1450): Turysta #39 przeszedł na peron (bramka peronowa #1, bilet #2)
+[23:01:37.530] TURYSTA(1438): Turysta #27 przeszedł na peron (bramka peronowa #1, bilet #7)
+[23:01:37.530] PRACOWNIK1(1408): Turysta #39 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:37.530] TURYSTA(1436): Turysta #25 wszedł na stację dolną (bilet #8, typ: pieszy)
+[23:01:37.535] TURYSTA(1423): Turysta #12 wszedł na stację dolną (bilet #9, typ: rowerzysta)
+[23:01:37.539] KASJER(1410): Sprzedano bilet #18 (CZASOWY TK2 (2h)) turyscie #14 (pieszy, 9 lat) (ze zniżką 25%) - cena: 30
+[23:01:37.559] PRACOWNIK1(1408): Turysta #27 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:37.563] TURYSTA(1445): Turysta #34 przeszedł na peron (bramka peronowa #2, bilet #4)
+[23:01:37.563] TURYSTA(1477): Turysta #60 - pozostały czas biletu: 15 sekund
+[23:01:37.564] TURYSTA(1428): Turysta #17 - pozostały czas biletu: 30 sekund
+[23:01:37.565] KASJER(1410): Sprzedano bilet #19 (DZIENNY) turyscie #41 (pieszy, 35 lat) - cena: 80
+[23:01:37.567] TURYSTA(1428): Turysta #17 wpuszczony przez bramkę wejściową #2 (bilet #10)
+[23:01:37.567] TURYSTA(1477): Turysta #60 wpuszczony przez bramkę wejściową #1 (bilet #12)
+[23:01:37.567] TURYSTA(1477): Turysta #60 wszedł na stację dolną (bilet #12, typ: rowerzysta)
+[23:01:37.567] TURYSTA(1511): Turysta #93 - pozostały czas biletu: 15 sekund
+[23:01:37.567] TURYSTA(1428): Turysta #17 wszedł na stację dolną (bilet #10, typ: rowerzysta)
+[23:01:37.567] TURYSTA(1509): Turysta #91 - pozostały czas biletu: 30 sekund
+[23:01:37.568] TURYSTA(1511): Turysta #93 wpuszczony przez bramkę wejściową #2 (bilet #15)
+[23:01:37.568] PRACOWNIK1(1408): Turysta #34 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 1)
+[23:01:37.568] KASJER(1410): Sprzedano bilet #20 (CZASOWY TK3 (3h)) turyscie #38 (rowerzysta, 38 lat) - cena: 55
+[23:01:37.569] TURYSTA(1511): Turysta #93 wszedł na stację dolną (bilet #15, typ: rowerzysta)
+[23:01:37.569] TURYSTA(1509): Turysta #91 wpuszczony przez bramkę wejściową #4 (bilet #6)
+[23:01:37.571] TURYSTA(1509): Turysta #91 wszedł na stację dolną (bilet #6, typ: pieszy)
+[23:01:37.571] TURYSTA(1423): Turysta #12 przeszedł na peron (bramka peronowa #1, bilet #9)
+[23:01:37.571] TURYSTA(1436): Turysta #25 przeszedł na peron (bramka peronowa #2, bilet #8)
+[23:01:37.572] PRACOWNIK1(1408): Turysta #25 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:37.572] KASJER(1410): Sprzedano bilet #21 (JEDNORAZOWY) turyscie #19 (rowerzysta, 28 lat) - cena: 10
+[23:01:37.583] PRACOWNIK1(1408): Turysta #12 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:37.587] TURYSTA(1432): Turysta #21 - pozostały czas biletu: 30 sekund
+[23:01:37.587] TURYSTA(1500): Turysta #82 - pozostały czas biletu: 15 sekund
+[23:01:37.587] TURYSTA(1468): Turysta #53 - pozostały czas biletu: 30 sekund
+[23:01:37.588] KASJER(1410): Sprzedano bilet #22 (CZASOWY TK2 (2h)) turyscie #69 (pieszy, 39 lat) - cena: 40
+[23:01:37.588] TURYSTA(1426): Turysta #15 wpuszczony przez bramkę wejściową #4 (bilet #14)
+[23:01:37.588] TURYSTA(1477): Turysta #60 przeszedł na peron (bramka peronowa #1, bilet #12)
+[23:01:37.591] TURYSTA(1428): Turysta #17 przeszedł na peron (bramka peronowa #3, bilet #10)
+[23:01:37.591] TURYSTA(1511): Turysta #93 przeszedł na peron (bramka peronowa #1, bilet #15)
+[23:01:37.591] PRACOWNIK1(1408): Turysta #60 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 1)
+[23:01:37.593] TURYSTA(1500): Turysta #82 wpuszczony przez bramkę wejściową #3 (bilet #13)
+[23:01:37.600] TURYSTA(1426): Turysta #15 wszedł na stację dolną (bilet #14, typ: pieszy)
+[23:01:37.607] TURYSTA(1500): Turysta #82 wszedł na stację dolną (bilet #13, typ: pieszy)
+[23:01:37.607] TURYSTA(1432): Turysta #21 wpuszczony przez bramkę wejściową #2 (bilet #11)
+[23:01:37.607] TURYSTA(1468): Turysta #53 wpuszczony przez bramkę wejściową #2 (bilet #16)
+[23:01:37.610] TURYSTA(1468): Turysta #53 wszedł na stację dolną (bilet #16, typ: rowerzysta)
+[23:01:37.610] TURYSTA(1432): Turysta #21 wszedł na stację dolną (bilet #11, typ: pieszy)
+[23:01:37.611] TURYSTA(1509): Turysta #91 przeszedł na peron (bramka peronowa #2, bilet #6)
+[23:01:37.615] PRACOWNIK1(1408): Turysta #17 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:37.628] KASJER(1410): Sprzedano bilet #23 (DZIENNY) turyscie #72 (rowerzysta, 35 lat) - cena: 80
+[23:01:37.631] PRACOWNIK1(1408): Turysta #93 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 1)
+[23:01:37.675] KASJER(1410): Sprzedano bilet #24 (JEDNORAZOWY) turyscie #7 (rowerzysta, 56 lat) - cena: 10
+[23:01:37.675] TURYSTA(1425): Turysta #14 - pozostały czas biletu: 30 sekund
+[23:01:37.675] TURYSTA(1449): Turysta #38 - pozostały czas biletu: 45 sekund
+[23:01:37.675] TURYSTA(1425): Turysta #14 wpuszczony przez bramkę wejściową #3 (bilet #18)
+[23:01:37.676] TURYSTA(1425): Turysta #14 wszedł na stację dolną (bilet #18, typ: pieszy)
+[23:01:37.679] TURYSTA(1449): Turysta #38 wpuszczony przez bramkę wejściową #3 (bilet #20)
+[23:01:37.679] TURYSTA(1455): Turysta #44 - pozostały czas biletu: 30 sekund
+[23:01:37.680] TURYSTA(1455): Turysta #44 wpuszczony przez bramkę wejściową #1 (bilet #17)
+[23:01:37.680] TURYSTA(1449): Turysta #38 wszedł na stację dolną (bilet #20, typ: rowerzysta)
+[23:01:37.680] TURYSTA(1426): Turysta #15 przeszedł na peron (bramka peronowa #1, bilet #14)
+[23:01:37.680] TURYSTA(1455): Turysta #44 wszedł na stację dolną (bilet #17, typ: rowerzysta)
+[23:01:37.680] PRACOWNIK1(1408): Turysta #91 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:37.712] TURYSTA(1468): Turysta #53 przeszedł na peron (bramka peronowa #3, bilet #16)
+[23:01:37.712] TURYSTA(1500): Turysta #82 przeszedł na peron (bramka peronowa #2, bilet #13)
+[23:01:37.712] KASJER(1410): Sprzedano bilet #25 (CZASOWY TK2 (2h)) turyscie #78 (pieszy, 36 lat) - cena: 40
+[23:01:37.712] KASJER(1410):   -> Turysta #78 ma pod opieką 1 dzieci (bilety ze zniżką 25%, suma za dzieci: 30)
+[23:01:37.731] PRACOWNIK1(1408): Turysta #15 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:37.739] TURYSTA(1487): Turysta #69 - pozostały czas biletu: 30 sekund
+[23:01:37.741] TURYSTA(1487): Turysta #69 wpuszczony przez bramkę wejściową #2 (bilet #22)
+[23:01:37.741] TURYSTA(1487): Turysta #69 wszedł na stację dolną (bilet #22, typ: pieszy)
+[23:01:37.743] TURYSTA(1432): Turysta #21 przeszedł na peron (bramka peronowa #1, bilet #11)
+[23:01:37.743] KASJER(1410): Sprzedano bilet #26 (CZASOWY TK2 (2h)) turyscie #100 (pieszy, 9 lat) (ze zniżką 25%) - cena: 30
+[23:01:37.743] TURYSTA(1452): Turysta #41 wpuszczony przez bramkę wejściową #2 (bilet #19)
+[23:01:37.743] PRACOWNIK1(1408): Turysta #53 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:37.747] TURYSTA(1425): Turysta #14 przeszedł na peron (bramka peronowa #3, bilet #18)
+[23:01:37.747] TURYSTA(1452): Turysta #41 wszedł na stację dolną (bilet #19, typ: pieszy)
+[23:01:37.751] TURYSTA(1455): Turysta #44 przeszedł na peron (bramka peronowa #3, bilet #17)
+[23:01:37.751] TURYSTA(1449): Turysta #38 przeszedł na peron (bramka peronowa #3, bilet #20)
+[23:01:37.751] KASJER(1410): Sprzedano bilet #27 (JEDNORAZOWY) turyscie #40 (rowerzysta, 46 lat) - cena: 10
+[23:01:37.751] PRACOWNIK1(1408): Turysta #82 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:37.759] TURYSTA(1430): Turysta #19 wpuszczony przez bramkę wejściową #4 (bilet #21)
+[23:01:37.759] TURYSTA(1487): Turysta #69 przeszedł na peron (bramka peronowa #1, bilet #22)
+[23:01:37.760] PRACOWNIK1(1408): Turysta #21 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:37.760] KASJER(1410): Sprzedano bilet #28 (CZASOWY TK2 (2h)) turyscie #5 (pieszy, 8 lat) (ze zniżką 25%) - cena: 30
+[23:01:37.763] TURYSTA(1490): Turysta #72 wpuszczony przez bramkę wejściową #1 (bilet #23)
+[23:01:37.763] TURYSTA(1430): Turysta #19 wszedł na stację dolną (bilet #21, typ: rowerzysta)
+[23:01:37.763] TURYSTA(1418): Turysta #7 wpuszczony przez bramkę wejściową #4 (bilet #24)
+[23:01:37.764] TURYSTA(1418): Turysta #7 wszedł na stację dolną (bilet #24, typ: rowerzysta)
+[23:01:37.767] KASJER(1410): Sprzedano bilet #29 (CZASOWY TK2 (2h)) turyscie #68 (rowerzysta, 43 lat) - cena: 40
+[23:01:37.767] PRACOWNIK1(1408): Turysta #14 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:37.767] TURYSTA(1452): Turysta #41 przeszedł na peron (bramka peronowa #3, bilet #19)
+[23:01:37.767] TURYSTA(1490): Turysta #72 wszedł na stację dolną (bilet #23, typ: rowerzysta)
+[23:01:37.768] KASJER(1410): Sprzedano bilet #30 (CZASOWY TK1 (1h)) turyscie #65 (rowerzysta, 57 lat) - cena: 25
+[23:01:37.771] KASJER(1410):   -> Turysta #65 ma pod opieką 1 dzieci (bilety ze zniżką 25%, suma za dzieci: 19)
+[23:01:37.771] PRACOWNIK1(1408): Turysta #44 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:37.787] TURYSTA(1418): Turysta #7 przeszedł na peron (bramka peronowa #2, bilet #24)
+[23:01:37.787] TURYSTA(1496): Turysta #78 - pozostały czas biletu: 30 sekund
+[23:01:37.791] TURYSTA(1496): Turysta #78 wpuszczony przez bramkę wejściową #3 (bilet #25)
+[23:01:37.793] TURYSTA(1496): Turysta #78 wszedł na stację dolną (bilet #25, typ: pieszy)
+[23:01:37.796] TURYSTA(1430): Turysta #19 przeszedł na peron (bramka peronowa #2, bilet #21)
+[23:01:37.796] PRACOWNIK1(1408): Turysta #38 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:37.803] KASJER(1410): Sprzedano bilet #31 (CZASOWY TK2 (2h)) turyscie #3 (pieszy, 57 lat) - cena: 40
+[23:01:37.807] PRACOWNIK1(1408): Turysta #69 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:37.807] TURYSTA(1490): Turysta #72 przeszedł na peron (bramka peronowa #1, bilet #23)
+[23:01:37.823] KASJER(1410): Sprzedano bilet #32 (CZASOWY TK1 (1h)) turyscie #30 (rowerzysta, 24 lat) - cena: 25
+[23:01:37.823] TURYSTA(1451): Turysta #40 wpuszczony przez bramkę wejściową #1 (bilet #27)
+[23:01:37.823] PRACOWNIK1(1408): Turysta #41 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:37.824] KASJER(1410):   -> Turysta #30 ma pod opieką 1 dzieci (bilety ze zniżką 25%, suma za dzieci: 19)
+[23:01:37.824] TURYSTA(1451): Turysta #40 wszedł na stację dolną (bilet #27, typ: rowerzysta)
+[23:01:37.827] TURYSTA(1496): Turysta #78 przeszedł na peron (bramka peronowa #1, bilet #25)
+[23:01:37.828] PRACOWNIK1(1408): Turysta #7 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:37.828] KASJER(1410): Sprzedano bilet #33 (DZIENNY) turyscie #74 (pieszy, 36 lat) - cena: 80
+[23:01:37.831] PRACOWNIK1(1408): Turysta #19 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:37.831] KASJER(1410): Sprzedano bilet #34 (DZIENNY) turyscie #52 (pieszy, 56 lat) - cena: 80
+[23:01:37.833] TURYSTA(1416): Turysta #5 - pozostały czas biletu: 30 sekund
+[23:01:37.833] PRACOWNIK1(1408): Turysta #72 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:37.834] TURYSTA(1518): Turysta #100 - pozostały czas biletu: 30 sekund
+[23:01:37.834] PRACOWNIK1(1408): Turysta #78 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 1)
+[23:01:37.835] TURYSTA(1416): Turysta #5 wpuszczony przez bramkę wejściową #2 (bilet #28)
+[23:01:37.835] TURYSTA(1451): Turysta #40 przeszedł na peron (bramka peronowa #2, bilet #27)
+[23:01:37.836] KASJER(1410): Sprzedano bilet #35 (DZIENNY) turyscie #70 (rowerzysta, 23 lat) - cena: 80
+[23:01:37.836] PRACOWNIK1(1408): Turysta #40 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:37.836] TURYSTA(1518): Turysta #100 wpuszczony przez bramkę wejściową #1 (bilet #26)
+[23:01:37.837] PRACOWNIK1(1408): Wpuszczam turyste #26(R) na krzesełko
+[23:01:37.837] PRACOWNIK1(1408): Wpuszczam turyste #1(R) na krzesełko
+[23:01:37.837] TURYSTA(1518): Turysta #100 wszedł na stację dolną (bilet #26, typ: pieszy)
+[23:01:37.837] PRACOWNIK1(1408): Wpuszczam turyste #39(R) na krzesełko
+[23:01:37.837] TURYSTA(1518): Turysta #100 przeszedł na peron (bramka peronowa #2, bilet #26)
+[23:01:37.838] PRACOWNIK1(1408): Wpuszczam turyste #27(P) na krzesełko
+[23:01:37.838] TURYSTA(1486): Turysta #68 - pozostały czas biletu: 30 sekund
+[23:01:37.838] PRACOWNIK1(1408): Wpuszczam turyste #25(P) na krzesełko
+[23:01:37.843] TURYSTA(1416): Turysta #5 wszedł na stację dolną (bilet #28, typ: pieszy)
+[23:01:37.843] PRACOWNIK1(1408): Turysta #100 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:37.844] TURYSTA(1416): Turysta #5 przeszedł na peron (bramka peronowa #3, bilet #28)
+[23:01:37.847] PRACOWNIK1(1408): Turysta #5 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:37.847] TURYSTA(1486): Turysta #68 wpuszczony przez bramkę wejściową #1 (bilet #29)
+[23:01:37.849] PRACOWNIK1(1408): Wpuszczam turyste #34(R)+1dz na krzesełko
+[23:01:37.850] PRACOWNIK1(1408): Wpuszczam turyste #12(R) na krzesełko
+[23:01:37.850] TURYSTA(1486): Turysta #68 wszedł na stację dolną (bilet #29, typ: rowerzysta)
+[23:01:37.851] TURYSTA(1414): Turysta #3 - pozostały czas biletu: 30 sekund
+[23:01:37.855] TURYSTA(1486): Turysta #68 przeszedł na peron (bramka peronowa #3, bilet #29)
+[23:01:37.856] KASJER(1410): Sprzedano bilet #36 (CZASOWY TK3 (3h)) turyscie #96 (pieszy, 29 lat) - cena: 55
+[23:01:37.855] TURYSTA(1414): Turysta #3 wpuszczony przez bramkę wejściową #4 (bilet #31)
+[23:01:37.859] KASJER(1410): Sprzedano bilet #37 (CZASOWY TK3 (3h)) turyscie #13 (rowerzysta, 9 lat) (ze zniżką 25%) - cena: 42
+[23:01:37.859] TURYSTA(1483): Turysta #65 - pozostały czas biletu: 15 sekund
+[23:01:37.859] PRACOWNIK1(1408): Wpuszczam turyste #17(R) na krzesełko
+[23:01:37.860] TURYSTA(1483): Turysta #65 wpuszczony przez bramkę wejściową #2 (bilet #30)
+[23:01:37.860] KASJER(1410): Sprzedano bilet #38 (CZASOWY TK1 (1h)) turyscie #88 (pieszy, 82 lat) (ze zniżką 25%) - cena: 19
+[23:01:37.860] TURYSTA(1414): Turysta #3 wszedł na stację dolną (bilet #31, typ: pieszy)
+[23:01:37.863] TURYSTA(1483): Turysta #65 wszedł na stację dolną (bilet #30, typ: rowerzysta)
+[23:01:37.865] TURYSTA(1414): Turysta #3 przeszedł na peron (bramka peronowa #1, bilet #31)
+[23:01:37.866] TURYSTA(1488): Turysta #70 wpuszczony przez bramkę wejściową #3 (bilet #35)
+[23:01:37.866] KASJER(1410): Sprzedano bilet #39 (CZASOWY TK3 (3h)) turyscie #71 (rowerzysta, 67 lat) (ze zniżką 25%) - cena: 42
+[23:01:37.866] TURYSTA(1488): Turysta #70 wszedł na stację dolną (bilet #35, typ: rowerzysta)
+[23:01:37.867] PRACOWNIK1(1408): Turysta #68 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:37.895] KRZESEŁKO(1408): Krzesełko #2 odjeżdża z pasażerami: [#26(R), #1(R)] (R:2, P:0)
+[23:01:37.903] KRZESEŁKO(1408): Krzesełko #3 odjeżdża z pasażerami: [#39(R), #27(P), #25(P)] (R:1, P:2)
+[23:01:37.911] KRZESEŁKO(1408): Krzesełko #4 odjeżdża z pasażerami: [#34(R)+1dz] (R:2, P:0)
+[23:01:37.911] KASJER(1410): Sprzedano bilet #40 (JEDNORAZOWY) turyscie #24 (pieszy, 24 lat) - cena: 10
+[23:01:37.915] TURYSTA(1463): Turysta #52 wpuszczony przez bramkę wejściową #1 (bilet #34)
+[23:01:37.911] PRACOWNIK1(1408): Turysta #3 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:37.919] TURYSTA(1488): Turysta #70 przeszedł na peron (bramka peronowa #2, bilet #35)
+[23:01:37.923] TURYSTA(1463): Turysta #52 wszedł na stację dolną (bilet #34, typ: pieszy)
+[23:01:37.927] KRZESEŁKO(1408): Krzesełko #5 odjeżdża z pasażerami: [#12(R), #17(R)] (R:2, P:0)
+[23:01:37.935] KASJER(1410): Sprzedano bilet #41 (DZIENNY) turyscie #49 (pieszy, 44 lat) - cena: 80
+[23:01:37.951] PRACOWNIK1(1408): Turysta #70 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:37.955] PRACOWNIK1(1408): Wpuszczam turyste #60(R)+1dz na krzesełko
+[23:01:37.959] KASJER(1410): Sprzedano bilet #42 (CZASOWY TK1 (1h)) turyscie #99 (pieszy, 8 lat) (ze zniżką 25%) - cena: 19
+[23:01:37.975] TURYSTA(1483): Turysta #65 przeszedł na peron (bramka peronowa #3, bilet #30)
+[23:01:37.983] TURYSTA(1514): Turysta #96 - pozostały czas biletu: 45 sekund
+[23:01:37.983] KASJER(1410): Sprzedano bilet #43 (CZASOWY TK1 (1h)) turyscie #95 (pieszy, 8 lat) (ze zniżką 25%) - cena: 19
+[23:01:37.983] TURYSTA(1514): Turysta #96 wpuszczony przez bramkę wejściową #1 (bilet #36)
+[23:01:37.983] TURYSTA(1441): Turysta #30 - pozostały czas biletu: 15 sekund
+[23:01:37.983] TURYSTA(1463): Turysta #52 przeszedł na peron (bramka peronowa #2, bilet #34)
+[23:01:37.984] TURYSTA(1441): Turysta #30 wpuszczony przez bramkę wejściową #3 (bilet #32)
+[23:01:37.987] TURYSTA(1441): Turysta #30 wszedł na stację dolną (bilet #32, typ: rowerzysta)
+[23:01:37.984] TURYSTA(1514): Turysta #96 wszedł na stację dolną (bilet #36, typ: pieszy)
+[23:01:37.991] TURYSTA(1506): Turysta #88 - pozostały czas biletu: 15 sekund
+[23:01:37.992] KASJER(1410): Sprzedano bilet #44 (DZIENNY) turyscie #85 (rowerzysta, 62 lat) - cena: 80
+[23:01:37.995] TURYSTA(1506): Turysta #88 wpuszczony przez bramkę wejściową #1 (bilet #38)
+[23:01:37.996] KASJER(1410):   -> Turysta #85 ma pod opieką 1 dzieci (bilety ze zniżką 25%, suma za dzieci: 60)
+[23:01:38.002] TURYSTA(1424): Turysta #13 - pozostały czas biletu: 45 sekund
+[23:01:38.003] TURYSTA(1506): Turysta #88 wszedł na stację dolną (bilet #38, typ: pieszy)
+[23:01:38.004] PRACOWNIK1(1408): Turysta #65 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 1)
+[23:01:38.007] TURYSTA(1489): Turysta #71 - pozostały czas biletu: 44 sekund
+[23:01:38.008] KASJER(1410): Sprzedano bilet #45 (CZASOWY TK2 (2h)) turyscie #81 (pieszy, 29 lat) - cena: 40
+[23:01:38.009] TURYSTA(1514): Turysta #96 przeszedł na peron (bramka peronowa #1, bilet #36)
+[23:01:38.009] TURYSTA(1441): Turysta #30 przeszedł na peron (bramka peronowa #1, bilet #32)
+[23:01:38.011] TURYSTA(1489): Turysta #71 wpuszczony przez bramkę wejściową #4 (bilet #39)
+[23:01:38.011] TURYSTA(1489): Turysta #71 wszedł na stację dolną (bilet #39, typ: rowerzysta)
+[23:01:38.019] TURYSTA(1424): Turysta #13 wpuszczony przez bramkę wejściową #2 (bilet #37)
+[23:01:38.022] TURYSTA(1424): Turysta #13 wszedł na stację dolną (bilet #37, typ: rowerzysta)
+[23:01:38.023] TURYSTA(1492): Turysta #74 wpuszczony przez bramkę wejściową #3 (bilet #33)
+[23:01:38.027] TURYSTA(1492): Turysta #74 wszedł na stację dolną (bilet #33, typ: pieszy)
+[23:01:38.008] KRZESEŁKO(1408): Krzesełko #6 odjeżdża z pasażerami: [#60(R)+1dz] (R:2, P:0)
+[23:01:38.047] PRACOWNIK1(1408): Turysta #52 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:38.047] TURYSTA(1435): Turysta #24 wpuszczony przez bramkę wejściową #1 (bilet #40)
+[23:01:38.047] KASJER(1410): Sprzedano bilet #46 (CZASOWY TK2 (2h)) turyscie #35 (pieszy, 78 lat) (ze zniżką 25%) - cena: 30
+[23:01:38.051] TURYSTA(1435): Turysta #24 wszedł na stację dolną (bilet #40, typ: pieszy)
+[23:01:38.079] KASJER(1410): Sprzedano bilet #47 (CZASOWY TK2 (2h)) turyscie #57 (rowerzysta, 31 lat) - cena: 40
+[23:01:38.079] PRACOWNIK1(1408): Turysta #96 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:38.080] TURYSTA(1460): Turysta #49 wpuszczony przez bramkę wejściową #2 (bilet #41)
+[23:01:38.080] TURYSTA(1506): Turysta #88 przeszedł na peron (bramka peronowa #2, bilet #38)
+[23:01:38.080] TURYSTA(1460): Turysta #49 wszedł na stację dolną (bilet #41, typ: pieszy)
+[23:01:38.083] TURYSTA(1489): Turysta #71 przeszedł na peron (bramka peronowa #3, bilet #39)
+[23:01:38.083] KASJER(1410): Sprzedano bilet #48 (CZASOWY TK2 (2h)) turyscie #29 (pieszy, 44 lat) - cena: 40
+[23:01:38.083] PRACOWNIK1(1408): Turysta #30 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 1)
+[23:01:38.087] TURYSTA(1424): Turysta #13 przeszedł na peron (bramka peronowa #2, bilet #37)
+[23:01:38.087] TURYSTA(1492): Turysta #74 przeszedł na peron (bramka peronowa #3, bilet #33)
+[23:01:38.096] TURYSTA(1435): Turysta #24 przeszedł na peron (bramka peronowa #1, bilet #40)
+[23:01:38.096] PRACOWNIK1(1408): Turysta #88 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:38.097] KASJER(1410): Sprzedano bilet #49 (CZASOWY TK3 (3h)) turyscie #4 (rowerzysta, 57 lat) - cena: 55
+[23:01:38.104] TURYSTA(1499): Turysta #81 - pozostały czas biletu: 30 sekund
+[23:01:38.105] TURYSTA(1460): Turysta #49 przeszedł na peron (bramka peronowa #2, bilet #41)
+[23:01:38.105] PRACOWNIK1(1408): Turysta #71 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:38.105] KASJER(1410): Sprzedano bilet #50 (CZASOWY TK3 (3h)) turyscie #31 (pieszy, 62 lat) - cena: 55
+[23:01:38.105] TURYSTA(1499): Turysta #81 wpuszczony przez bramkę wejściową #2 (bilet #45)
+[23:01:38.105] KASJER(1410):   -> Turysta #31 ma pod opieką 2 dzieci (bilety ze zniżką 25%, suma za dzieci: 84)
+[23:01:38.105] TURYSTA(1499): Turysta #81 wszedł na stację dolną (bilet #45, typ: pieszy)
+[23:01:38.111] TURYSTA(1513): Turysta #95 - pozostały czas biletu: 15 sekund
+[23:01:38.111] PRACOWNIK1(1408): Turysta #13 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:38.111] KASJER(1410): Sprzedano bilet #51 (CZASOWY TK1 (1h)) turyscie #10 (pieszy, 8 lat) (ze zniżką 25%) - cena: 19
+[23:01:38.115] TURYSTA(1503): Turysta #85 wpuszczony przez bramkę wejściową #2 (bilet #44)
+[23:01:38.115] TURYSTA(1517): Turysta #99 - pozostały czas biletu: 15 sekund
+[23:01:38.118] TURYSTA(1513): Turysta #95 wpuszczony przez bramkę wejściową #4 (bilet #43)
+[23:01:38.118] TURYSTA(1503): Turysta #85 wszedł na stację dolną (bilet #44, typ: rowerzysta)
+[23:01:38.119] TURYSTA(1513): Turysta #95 wszedł na stację dolną (bilet #43, typ: pieszy)
+[23:01:38.119] TURYSTA(1517): Turysta #99 wpuszczony przez bramkę wejściową #4 (bilet #42)
+[23:01:38.120] TURYSTA(1517): Turysta #99 wszedł na stację dolną (bilet #42, typ: pieszy)
+[23:01:38.127] PRACOWNIK1(1408): Turysta #74 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:38.128] KASJER(1410): Sprzedano bilet #52 (CZASOWY TK1 (1h)) turyscie #20 (rowerzysta, 29 lat) - cena: 25
+[23:01:38.132] TURYSTA(1499): Turysta #81 przeszedł na peron (bramka peronowa #1, bilet #45)
+[23:01:38.139] TURYSTA(1503): Turysta #85 przeszedł na peron (bramka peronowa #2, bilet #44)
+[23:01:38.167] TURYSTA(1517): Turysta #99 przeszedł na peron (bramka peronowa #1, bilet #42)
+[23:01:38.167] KASJER(1410): Sprzedano bilet #53 (DZIENNY) turyscie #66 (pieszy, 13 lat) - cena: 80
+[23:01:38.167] TURYSTA(1446): Turysta #35 - pozostały czas biletu: 30 sekund
+[23:01:38.167] TURYSTA(1513): Turysta #95 przeszedł na peron (bramka peronowa #3, bilet #43)
+[23:01:38.171] PRACOWNIK1(1408): Turysta #24 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:38.175] TURYSTA(1446): Turysta #35 wpuszczony przez bramkę wejściową #4 (bilet #46)
+[23:01:38.176] TURYSTA(1446): Turysta #35 wszedł na stację dolną (bilet #46, typ: pieszy)
+[23:01:38.175] TURYSTA(1472): Turysta #57 - pozostały czas biletu: 30 sekund
+[23:01:38.178] PRACOWNIK1(1408): Turysta #49 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:38.178] TURYSTA(1440): Turysta #29 - pozostały czas biletu: 30 sekund
+[23:01:38.178] KASJER(1410): Sprzedano bilet #54 (CZASOWY TK2 (2h)) turyscie #2 (pieszy, 66 lat) (ze zniżką 25%) - cena: 30
+[23:01:38.179] TURYSTA(1440): Turysta #29 wpuszczony przez bramkę wejściową #2 (bilet #48)
+[23:01:38.183] TURYSTA(1440): Turysta #29 wszedł na stację dolną (bilet #48, typ: pieszy)
+[23:01:38.183] KASJER(1410): Sprzedano bilet #55 (JEDNORAZOWY) turyscie #48 (rowerzysta, 13 lat) - cena: 10
+[23:01:38.187] PRACOWNIK1(1408): Turysta #81 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:38.207] KASJER(1410): Sprzedano bilet #56 (DZIENNY) turyscie #75 (pieszy, 38 lat) - cena: 80
+[23:01:38.207] TURYSTA(1442): Turysta #31 - pozostały czas biletu: 45 sekund
+[23:01:38.207] PRACOWNIK1(1408): Turysta #85 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 1)
+[23:01:38.208] TURYSTA(1442): Turysta #31 wpuszczony przez bramkę wejściową #4 (bilet #50)
+[23:01:38.208] TURYSTA(1442): Turysta #31 wszedł na stację dolną (bilet #50, typ: pieszy)
+[23:01:38.207] TURYSTA(1421): Turysta #10 - pozostały czas biletu: 15 sekund
+[23:01:38.208] TURYSTA(1421): Turysta #10 wpuszczony przez bramkę wejściową #3 (bilet #51)
+[23:01:38.211] TURYSTA(1415): Turysta #4 - pozostały czas biletu: 45 sekund
+[23:01:38.213] TURYSTA(1421): Turysta #10 wszedł na stację dolną (bilet #51, typ: pieszy)
+[23:01:38.215] TURYSTA(1415): Turysta #4 wpuszczony przez bramkę wejściową #1 (bilet #49)
+[23:01:38.215] TURYSTA(1472): Turysta #57 wpuszczony przez bramkę wejściową #2 (bilet #47)
+[23:01:38.215] TURYSTA(1446): Turysta #35 przeszedł na peron (bramka peronowa #3, bilet #46)
+[23:01:38.215] TURYSTA(1415): Turysta #4 wszedł na stację dolną (bilet #49, typ: rowerzysta)
+[23:01:38.215] PRACOWNIK1(1408): Turysta #95 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:38.219] KASJER(1410): Sprzedano bilet #57 (CZASOWY TK3 (3h)) turyscie #79 (pieszy, 63 lat) - cena: 55
+[23:01:38.219] TURYSTA(1472): Turysta #57 wszedł na stację dolną (bilet #47, typ: rowerzysta)
+[23:01:38.219] TURYSTA(1440): Turysta #29 przeszedł na peron (bramka peronowa #3, bilet #48)
+[23:01:38.223] PRACOWNIK1(1408): Turysta #99 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:38.227] TURYSTA(1442): Turysta #31 przeszedł na peron (bramka peronowa #2, bilet #50)
+[23:01:38.231] KASJER(1410): Sprzedano bilet #58 (CZASOWY TK1 (1h)) turyscie #92 (pieszy, 8 lat) (ze zniżką 25%) - cena: 19
+[23:01:38.231] TURYSTA(1421): Turysta #10 przeszedł na peron (bramka peronowa #2, bilet #51)
+[23:01:38.235] TURYSTA(1415): Turysta #4 przeszedł na peron (bramka peronowa #2, bilet #49)
+[23:01:38.235] TURYSTA(1431): Turysta #20 - pozostały czas biletu: 15 sekund
+[23:01:38.235] PRACOWNIK1(1408): Turysta #35 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:38.239] TURYSTA(1431): Turysta #20 wpuszczony przez bramkę wejściową #1 (bilet #52)
+[23:01:38.243] KASJER(1410): Sprzedano bilet #59 (CZASOWY TK1 (1h)) turyscie #16 (rowerzysta, 9 lat) (ze zniżką 25%) - cena: 19
+[23:01:38.243] TURYSTA(1431): Turysta #20 wszedł na stację dolną (bilet #52, typ: rowerzysta)
+[23:01:38.255] PRACOWNIK1(1408): Turysta #29 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:38.255] KASJER(1410): Sprzedano bilet #60 (DZIENNY) turyscie #76 (rowerzysta, 9 lat) (ze zniżką 25%) - cena: 60
+[23:01:38.259] TURYSTA(1472): Turysta #57 przeszedł na peron (bramka peronowa #1, bilet #47)
+[23:01:38.260] TURYSTA(1493): Turysta #75 wpuszczony przez bramkę wejściową #4 (bilet #56)
+[23:01:38.260] TURYSTA(1493): Turysta #75 wszedł na stację dolną (bilet #56, typ: pieszy)
+[23:01:38.267] KASJER(1410): Sprzedano bilet #61 (DZIENNY) turyscie #94 (pieszy, 30 lat) - cena: 80
+[23:01:38.267] PRACOWNIK1(1408): Turysta #31 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 2)
+[23:01:38.279] TURYSTA(1431): Turysta #20 przeszedł na peron (bramka peronowa #3, bilet #52)
+[23:01:38.283] TURYSTA(1413): Turysta #2 - pozostały czas biletu: 30 sekund
+[23:01:38.283] TURYSTA(1413): Turysta #2 wpuszczony przez bramkę wejściową #3 (bilet #54)
+[23:01:38.283] KASJER(1410): Sprzedano bilet #62 (DZIENNY) turyscie #23 (pieszy, 22 lat) - cena: 80
+[23:01:38.284] PRACOWNIK1(1408): Turysta #10 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:38.284] TURYSTA(1413): Turysta #2 wszedł na stację dolną (bilet #54, typ: pieszy)
+[23:01:38.287] TURYSTA(1459): Turysta #48 wpuszczony przez bramkę wejściową #1 (bilet #55)
+[23:01:38.291] TURYSTA(1459): Turysta #48 wszedł na stację dolną (bilet #55, typ: rowerzysta)
+[23:01:38.291] KASJER(1410): Sprzedano bilet #63 (CZASOWY TK1 (1h)) turyscie #46 (rowerzysta, 34 lat) - cena: 25
+[23:01:38.291] TURYSTA(1493): Turysta #75 przeszedł na peron (bramka peronowa #1, bilet #56)
+[23:01:38.292] KASJER(1410):   -> Turysta #46 ma pod opieką 1 dzieci (bilety ze zniżką 25%, suma za dzieci: 19)
+[23:01:38.303] PRACOWNIK1(1408): Turysta #4 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:38.303] TURYSTA(1484): Turysta #66 wpuszczony przez bramkę wejściową #3 (bilet #53)
+[23:01:38.307] TURYSTA(1484): Turysta #66 wszedł na stację dolną (bilet #53, typ: pieszy)
+[23:01:38.308] KASJER(1410): Sprzedano bilet #64 (CZASOWY TK1 (1h)) turyscie #50 (pieszy, 73 lat) (ze zniżką 25%) - cena: 19
+[23:01:38.311] PRACOWNIK1(1408): Turysta #57 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:38.315] TURYSTA(1413): Turysta #2 przeszedł na peron (bramka peronowa #3, bilet #54)
+[23:01:38.316] TURYSTA(1497): Turysta #79 - pozostały czas biletu: 45 sekund
+[23:01:38.316] KASJER(1410): Sprzedano bilet #65 (JEDNORAZOWY) turyscie #90 (pieszy, 27 lat) - cena: 10
+[23:01:38.319] TURYSTA(1497): Turysta #79 wpuszczony przez bramkę wejściową #4 (bilet #57)
+[23:01:38.319] TURYSTA(1510): Turysta #92 - pozostały czas biletu: 15 sekund
+[23:01:38.323] PRACOWNIK1(1408): Turysta #20 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:38.323] TURYSTA(1497): Turysta #79 wszedł na stację dolną (bilet #57, typ: pieszy)
+[23:01:38.323] TURYSTA(1510): Turysta #92 wpuszczony przez bramkę wejściową #1 (bilet #58)
+[23:01:38.327] TURYSTA(1459): Turysta #48 przeszedł na peron (bramka peronowa #1, bilet #55)
+[23:01:38.327] TURYSTA(1510): Turysta #92 wszedł na stację dolną (bilet #58, typ: pieszy)
+[23:01:38.327] KASJER(1410): Sprzedano bilet #66 (CZASOWY TK3 (3h)) turyscie #6 (rowerzysta, 27 lat) - cena: 55
+[23:01:38.344] PRACOWNIK1(1408): Turysta #75 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:38.355] TURYSTA(1484): Turysta #66 przeszedł na peron (bramka peronowa #1, bilet #53)
+[23:01:38.355] KASJER(1410): Sprzedano bilet #67 (CZASOWY TK2 (2h)) turyscie #54 (pieszy, 37 lat) - cena: 40
+[23:01:38.363] PRACOWNIK1(1408): Turysta #2 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:38.367] KASJER(1410): Sprzedano bilet #68 (CZASOWY TK1 (1h)) turyscie #67 (rowerzysta, 50 lat) - cena: 25
+[23:01:38.371] TURYSTA(1457): Turysta #46 - pozostały czas biletu: 15 sekund
+[23:01:38.371] TURYSTA(1494): Turysta #76 wpuszczony przez bramkę wejściową #1 (bilet #60)
+[23:01:38.371] TURYSTA(1497): Turysta #79 przeszedł na peron (bramka peronowa #2, bilet #57)
+[23:01:38.371] PRACOWNIK1(1408): Turysta #48 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:38.371] TURYSTA(1512): Turysta #94 wpuszczony przez bramkę wejściową #3 (bilet #61)
+[23:01:38.372] KASJER(1410): Sprzedano bilet #69 (CZASOWY TK2 (2h)) turyscie #43 (rowerzysta, 77 lat) (ze zniżką 25%) - cena: 30
+[23:01:38.371] TURYSTA(1510): Turysta #92 przeszedł na peron (bramka peronowa #3, bilet #58)
+[23:01:38.372] TURYSTA(1512): Turysta #94 wszedł na stację dolną (bilet #61, typ: pieszy)
+[23:01:38.372] TURYSTA(1457): Turysta #46 wpuszczony przez bramkę wejściową #3 (bilet #63)
+[23:01:38.372] TURYSTA(1494): Turysta #76 wszedł na stację dolną (bilet #60, typ: rowerzysta)
+[23:01:38.375] TURYSTA(1457): Turysta #46 wszedł na stację dolną (bilet #63, typ: rowerzysta)
+[23:01:38.375] TURYSTA(1427): Turysta #16 - pozostały czas biletu: 15 sekund
+[23:01:38.377] PRACOWNIK1(1408): Turysta #66 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:38.377] KASJER(1410): Sprzedano bilet #70 (CZASOWY TK3 (3h)) turyscie #55 (rowerzysta, 9 lat) (ze zniżką 25%) - cena: 42
+[23:01:38.379] TURYSTA(1427): Turysta #16 wpuszczony przez bramkę wejściową #1 (bilet #59)
+[23:01:38.380] TURYSTA(1512): Turysta #94 przeszedł na peron (bramka peronowa #2, bilet #61)
+[23:01:38.380] KASJER(1410): Sprzedano bilet #71 (DZIENNY) turyscie #32 (pieszy, 43 lat) - cena: 80
+[23:01:38.380] PRACOWNIK1(1408): Turysta #79 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:38.381] TURYSTA(1457): Turysta #46 przeszedł na peron (bramka peronowa #2, bilet #63)
+[23:01:38.381] KASJER(1410): Sprzedano bilet #72 (CZASOWY TK3 (3h)) turyscie #73 (pieszy, 49 lat) - cena: 55
+[23:01:38.381] TURYSTA(1494): Turysta #76 przeszedł na peron (bramka peronowa #2, bilet #60)
+[23:01:38.383] TURYSTA(1427): Turysta #16 wszedł na stację dolną (bilet #59, typ: rowerzysta)
+[23:01:38.391] TURYSTA(1469): Turysta #54 - pozostały czas biletu: 30 sekund
+[23:01:38.391] PRACOWNIK1(1408): Turysta #92 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:38.391] KASJER(1410): Sprzedano bilet #73 (CZASOWY TK2 (2h)) turyscie #28 (rowerzysta, 40 lat) - cena: 40
+[23:01:38.391] TURYSTA(1461): Turysta #50 - pozostały czas biletu: 15 sekund
+[23:01:38.392] TURYSTA(1434): Turysta #23 wpuszczony przez bramkę wejściową #4 (bilet #62)
+[23:01:38.392] TURYSTA(1427): Turysta #16 przeszedł na peron (bramka peronowa #2, bilet #59)
+[23:01:38.394] TURYSTA(1469): Turysta #54 wpuszczony przez bramkę wejściową #3 (bilet #67)
+[23:01:38.394] TURYSTA(1434): Turysta #23 wszedł na stację dolną (bilet #62, typ: pieszy)
+[23:01:38.395] TURYSTA(1469): Turysta #54 wszedł na stację dolną (bilet #67, typ: pieszy)
+[23:01:38.399] TURYSTA(1461): Turysta #50 wpuszczony przez bramkę wejściową #3 (bilet #64)
+[23:01:38.403] TURYSTA(1461): Turysta #50 wszedł na stację dolną (bilet #64, typ: pieszy)
+[23:01:38.415] KASJER(1410): Sprzedano bilet #74 (DZIENNY) turyscie #84 (rowerzysta, 62 lat) - cena: 80
+[23:01:38.415] PRACOWNIK1(1408): Turysta #94 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:38.435] TURYSTA(1508): Turysta #90 wpuszczony przez bramkę wejściową #3 (bilet #65)
+[23:01:38.439] TURYSTA(1508): Turysta #90 wszedł na stację dolną (bilet #65, typ: pieszy)
+[23:01:38.443] KASJER(1410): Sprzedano bilet #75 (CZASOWY TK3 (3h)) turyscie #59 (rowerzysta, 18 lat) - cena: 55
+[23:01:38.443] PRACOWNIK1(1408): Turysta #76 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:38.448] TURYSTA(1434): Turysta #23 przeszedł na peron (bramka peronowa #3, bilet #62)
+[23:01:38.448] TURYSTA(1469): Turysta #54 przeszedł na peron (bramka peronowa #1, bilet #67)
+[23:01:38.449] KASJER(1410): Sprzedano bilet #76 (CZASOWY TK2 (2h)) turyscie #51 (pieszy, 61 lat) - cena: 40
+[23:01:38.449] PRACOWNIK1(1408): Turysta #46 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 1)
+[23:01:38.449] TURYSTA(1485): Turysta #67 - pozostały czas biletu: 15 sekund
+[23:01:38.456] TURYSTA(1485): Turysta #67 wpuszczony przez bramkę wejściową #4 (bilet #68)
+[23:01:38.456] TURYSTA(1485): Turysta #67 wszedł na stację dolną (bilet #68, typ: rowerzysta)
+[23:01:38.459] TURYSTA(1461): Turysta #50 przeszedł na peron (bramka peronowa #3, bilet #64)
+[23:01:38.483] PRACOWNIK1(1408): Turysta #16 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:38.487] KASJER(1410): Sprzedano bilet #77 (CZASOWY TK1 (1h)) turyscie #62 (pieszy, 8 lat) (ze zniżką 25%) - cena: 19
+[23:01:38.516] TURYSTA(1417): Turysta #6 - pozostały czas biletu: 45 sekund
+[23:01:38.529] TURYSTA(1417): Turysta #6 wpuszczony przez bramkę wejściową #3 (bilet #66)
+[23:01:38.531] TURYSTA(1417): Turysta #6 wszedł na stację dolną (bilet #66, typ: rowerzysta)
+[23:01:38.535] TURYSTA(1454): Turysta #43 - pozostały czas biletu: 30 sekund
+[23:01:38.542] TURYSTA(1454): Turysta #43 wpuszczony przez bramkę wejściową #4 (bilet #69)
+[23:01:38.544] TURYSTA(1454): Turysta #43 wszedł na stację dolną (bilet #69, typ: rowerzysta)
+[23:01:38.545] TURYSTA(1508): Turysta #90 przeszedł na peron (bramka peronowa #1, bilet #65)
+[23:01:38.555] PRACOWNIK1(1408): Turysta #54 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:38.567] KASJER(1410): Sprzedano bilet #78 (CZASOWY TK1 (1h)) turyscie #58 (rowerzysta, 9 lat) (ze zniżką 25%) - cena: 19
+[23:01:38.580] TURYSTA(1443): Turysta #32 wpuszczony przez bramkę wejściową #1 (bilet #71)
+[23:01:38.581] TURYSTA(1470): Turysta #55 - pozostały czas biletu: 45 sekund
+[23:01:38.581] TURYSTA(1443): Turysta #32 wszedł na stację dolną (bilet #71, typ: pieszy)
+[23:01:38.581] PRACOWNIK1(1408): Turysta #23 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:38.581] KASJER(1410): Sprzedano bilet #79 (JEDNORAZOWY) turyscie #86 (pieszy, 46 lat) - cena: 10
+[23:01:38.582] TURYSTA(1485): Turysta #67 przeszedł na peron (bramka peronowa #2, bilet #68)
+[23:01:38.582] TURYSTA(1491): Turysta #73 - pozostały czas biletu: 45 sekund
+[23:01:38.582] TURYSTA(1417): Turysta #6 przeszedł na peron (bramka peronowa #1, bilet #66)
+[23:01:38.582] TURYSTA(1454): Turysta #43 przeszedł na peron (bramka peronowa #2, bilet #69)
+[23:01:38.583] TURYSTA(1491): Turysta #73 wpuszczony przez bramkę wejściową #2 (bilet #72)
+[23:01:38.587] TURYSTA(1491): Turysta #73 wszedł na stację dolną (bilet #72, typ: pieszy)
+[23:01:38.587] PRACOWNIK1(1408): Turysta #50 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:38.588] KASJER(1410): Sprzedano bilet #80 (CZASOWY TK3 (3h)) turyscie #98 (pieszy, 83 lat) (ze zniżką 25%) - cena: 42
+[23:01:38.588] TURYSTA(1439): Turysta #28 - pozostały czas biletu: 30 sekund
+[23:01:38.588] TURYSTA(1443): Turysta #32 przeszedł na peron (bramka peronowa #3, bilet #71)
+[23:01:38.589] TURYSTA(1439): Turysta #28 wpuszczony przez bramkę wejściową #1 (bilet #73)
+[23:01:38.596] TURYSTA(1439): Turysta #28 wszedł na stację dolną (bilet #73, typ: rowerzysta)
+[23:01:38.596] KASJER(1410): Sprzedano bilet #81 (CZASOWY TK1 (1h)) turyscie #33 (rowerzysta, 24 lat) - cena: 25
+[23:01:38.596] PRACOWNIK1(1408): Turysta #90 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:38.596] TURYSTA(1476): Turysta #59 - pozostały czas biletu: 45 sekund
+[23:01:38.596] TURYSTA(1502): Turysta #84 wpuszczony przez bramkę wejściową #1 (bilet #74)
+[23:01:38.598] TURYSTA(1502): Turysta #84 wszedł na stację dolną (bilet #74, typ: rowerzysta)
+[23:01:38.598] KASJER(1410): Sprzedano bilet #82 (JEDNORAZOWY) turyscie #83 (pieszy, 14 lat) - cena: 10
+[23:01:38.598] PRACOWNIK1(1408): Turysta #67 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:38.598] TURYSTA(1491): Turysta #73 przeszedł na peron (bramka peronowa #2, bilet #72)
+[23:01:38.603] TURYSTA(1439): Turysta #28 przeszedł na peron (bramka peronowa #2, bilet #73)
+[23:01:38.599] TURYSTA(1479): Turysta #62 - pozostały czas biletu: 15 sekund
+[23:01:38.603] PRACOWNIK1(1408): Turysta #6 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:38.603] KASJER(1410): Sprzedano bilet #83 (CZASOWY TK2 (2h)) turyscie #42 (pieszy, 15 lat) - cena: 40
+[23:01:38.604] TURYSTA(1479): Turysta #62 wpuszczony przez bramkę wejściową #3 (bilet #77)
+[23:01:38.603] TURYSTA(1502): Turysta #84 przeszedł na peron (bramka peronowa #1, bilet #74)
+[23:01:38.604] KASJER(1410): Sprzedano bilet #84 (CZASOWY TK2 (2h)) turyscie #63 (rowerzysta, 62 lat) - cena: 40
+[23:01:38.604] PRACOWNIK1(1408): Turysta #43 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:38.605] PRACOWNIK1(1408): Turysta #32 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:38.605] KASJER(1410): Sprzedano bilet #85 (DZIENNY) turyscie #22 (rowerzysta, 77 lat) (ze zniżką 25%) - cena: 60
+[23:01:38.605] PRACOWNIK1(1408): Turysta #73 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:38.606] TURYSTA(1476): Turysta #59 wpuszczony przez bramkę wejściową #4 (bilet #75)
+[23:01:38.606] TURYSTA(1476): Turysta #59 wszedł na stację dolną (bilet #75, typ: rowerzysta)
+[23:01:38.606] TURYSTA(1470): Turysta #55 wpuszczony przez bramkę wejściową #4 (bilet #70)
+[23:01:38.606] TURYSTA(1479): Turysta #62 wszedł na stację dolną (bilet #77, typ: pieszy)
+[23:01:38.607] KASJER(1410): Sprzedano bilet #86 (CZASOWY TK1 (1h)) turyscie #8 (pieszy, 39 lat) - cena: 25
+[23:01:38.607] PRACOWNIK1(1408): Turysta #28 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:38.608] PRACOWNIK1(1408): Turysta #84 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:38.611] PRACOWNIK1(1408): Turysta #62 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:38.608] TURYSTA(1479): Turysta #62 przeszedł na peron (bramka peronowa #3, bilet #77)
+[23:01:38.615] PRACOWNIK1(1408): Wpuszczam turyste #93(R)+1dz na krzesełko
+[23:01:38.615] KASJER(1410): Sprzedano bilet #87 (JEDNORAZOWY) turyscie #97 (rowerzysta, 32 lat) - cena: 10
+[23:01:38.616] TURYSTA(1462): Turysta #51 - pozostały czas biletu: 30 sekund
+[23:01:38.616] TURYSTA(1462): Turysta #51 wpuszczony przez bramkę wejściową #4 (bilet #76)
+[23:01:38.616] TURYSTA(1462): Turysta #51 wszedł na stację dolną (bilet #76, typ: pieszy)
+[23:01:38.616] KASJER(1410): Sprzedano bilet #88 (CZASOWY TK2 (2h)) turyscie #11 (rowerzysta, 9 lat) (ze zniżką 25%) - cena: 30
+[23:01:38.616] KASJER(1410): Sprzedano bilet #89 (CZASOWY TK3 (3h)) turyscie #77 (rowerzysta, 33 lat) - cena: 55
+[23:01:38.616] TURYSTA(1462): Turysta #51 przeszedł na peron (bramka peronowa #1, bilet #76)
+[23:01:38.616] KASJER(1410): Sprzedano bilet #90 (CZASOWY TK2 (2h)) turyscie #89 (pieszy, 47 lat) - cena: 40
+[23:01:38.616] KASJER(1410): Sprzedano bilet #91 (CZASOWY TK2 (2h)) turyscie #18 (pieszy, 8 lat) (ze zniżką 25%) - cena: 30
+[23:01:38.617] KASJER(1410): Sprzedano bilet #92 (CZASOWY TK1 (1h)) turyscie #37 (rowerzysta, 50 lat) - cena: 25
+[23:01:38.617] KASJER(1410): Sprzedano bilet #93 (CZASOWY TK2 (2h)) turyscie #87 (rowerzysta, 8 lat) (ze zniżką 25%) - cena: 30
+[23:01:38.617] TURYSTA(1481): Turysta #63 - pozostały czas biletu: 30 sekund
+[23:01:38.617] TURYSTA(1475): Turysta #58 - pozostały czas biletu: 15 sekund
+[23:01:38.617] TURYSTA(1481): Turysta #63 wpuszczony przez bramkę wejściową #4 (bilet #84)
+[23:01:38.617] TURYSTA(1481): Turysta #63 wszedł na stację dolną (bilet #84, typ: rowerzysta)
+[23:01:38.617] TURYSTA(1475): Turysta #58 wpuszczony przez bramkę wejściową #3 (bilet #78)
+[23:01:38.618] TURYSTA(1470): Turysta #55 wszedł na stację dolną (bilet #70, typ: rowerzysta)
+[23:01:38.618] TURYSTA(1476): Turysta #59 przeszedł na peron (bramka peronowa #3, bilet #75)
+[23:01:38.619] KASJER(1410): Sprzedano bilet #94 (DZIENNY) turyscie #36 (pieszy, 8 lat) (ze zniżką 25%) - cena: 60
+[23:01:38.618] TURYSTA(1470): Turysta #55 przeszedł na peron (bramka peronowa #2, bilet #70)
+[23:01:38.624] AWARIA(1408): PRACOWNIK1: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:01:38.624] TURYSTA(1475): Turysta #58 wszedł na stację dolną (bilet #78, typ: rowerzysta)
+[23:01:38.618] TURYSTA(1481): Turysta #63 przeszedł na peron (bramka peronowa #1, bilet #84)
+[23:01:38.628] PRACOWNIK1(1408): Turysta #51 wpuszczony przez bramkę peronową #3 (zdążył przed awarią, typ: pieszy)
+[23:01:38.631] PRACOWNIK1(1408): Turysta #59 wpuszczony przez bramkę peronową #1 (zdążył przed awarią, typ: rowerzysta)
+[23:01:38.635] TURYSTA(1444): Turysta #33 - pozostały czas biletu: 15 sekund
+[23:01:38.638] PRACOWNIK1(1408): Turysta #63 wpuszczony przez bramkę peronową #2 (zdążył przed awarią, typ: rowerzysta)
+[23:01:38.638] TURYSTA(1444): Turysta #33 wpuszczony przez bramkę wejściową #2 (bilet #81)
+[23:01:38.639] TURYSTA(1448): Turysta #37 - pozostały czas biletu: 15 sekund
+[23:01:38.640] PRACOWNIK1(1408): Turysta #55 wpuszczony przez bramkę peronową #3 (zdążył przed awarią, typ: rowerzysta)
+[23:01:38.641] TURYSTA(1504): Turysta #86 wpuszczony przez bramkę wejściową #3 (bilet #79)
+[23:01:38.641] TURYSTA(1444): Turysta #33 wszedł na stację dolną (bilet #81, typ: rowerzysta)
+[23:01:38.641] TURYSTA(1448): Turysta #37 wpuszczony przez bramkę wejściową #2 (bilet #92)
+[23:01:38.641] TURYSTA(1504): Turysta #86 wszedł na stację dolną (bilet #79, typ: pieszy)
+[23:01:38.641] AWARIA(1409): PRACOWNIK2: Odebrano sygnał AWARII od worker1!
+[23:01:38.647] TURYSTA(1448): Turysta #37 wszedł na stację dolną (bilet #92, typ: rowerzysta)
+[23:01:38.648] AWARIA(1409): PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)
+[23:01:38.659] TURYSTA(1516): Turysta #98 - pozostały czas biletu: 45 sekund
+[23:01:38.659] TURYSTA(1505): Turysta #87 - pozostały czas biletu: 30 sekund
+[23:01:38.659] AWARIA(1408): PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...
+[23:01:38.660] TURYSTA(1495): Turysta #77 - pozostały czas biletu: 45 sekund
+[23:01:38.663] TURYSTA(1495): Turysta #77 wpuszczony przez bramkę wejściową #2 (bilet #89)
+[23:01:38.667] TURYSTA(1516): Turysta #98 wpuszczony przez bramkę wejściową #3 (bilet #80)
+[23:01:38.667] TURYSTA(1495): Turysta #77 wszedł na stację dolną (bilet #89, typ: rowerzysta)
+[23:01:38.667] TURYSTA(1505): Turysta #87 wpuszczony przez bramkę wejściową #4 (bilet #93)
+[23:01:38.671] TURYSTA(1505): Turysta #87 wszedł na stację dolną (bilet #93, typ: rowerzysta)
+[23:01:38.671] TURYSTA(1516): Turysta #98 wszedł na stację dolną (bilet #80, typ: pieszy)
+[23:01:38.691] KRZESEŁKO(1408): Krzesełko #7 odjeżdża z pasażerami: [#93(R)+1dz] (R:2, P:0)
+[23:01:38.723] TURYSTA(1501): Turysta #83 wpuszczony przez bramkę wejściową #4 (bilet #82)
+[23:01:38.724] TURYSTA(1422): Turysta #11 - pozostały czas biletu: 30 sekund
+[23:01:38.724] TURYSTA(1501): Turysta #83 wszedł na stację dolną (bilet #82, typ: pieszy)
+[23:01:38.724] TURYSTA(1453): Turysta #42 - pozostały czas biletu: 30 sekund
+[23:01:38.724] TURYSTA(1422): Turysta #11 wpuszczony przez bramkę wejściową #4 (bilet #88)
+[23:01:38.725] TURYSTA(1433): Turysta #22 wpuszczony przez bramkę wejściową #3 (bilet #85)
+[23:01:38.725] TURYSTA(1433): Turysta #22 wszedł na stację dolną (bilet #85, typ: rowerzysta)
+[23:01:38.726] TURYSTA(1515): Turysta #97 wpuszczony przez bramkę wejściową #2 (bilet #87)
+[23:01:38.726] TURYSTA(1515): Turysta #97 wszedł na stację dolną (bilet #87, typ: rowerzysta)
+[23:01:38.727] TURYSTA(1507): Turysta #89 - pozostały czas biletu: 30 sekund
+[23:01:38.727] TURYSTA(1507): Turysta #89 wpuszczony przez bramkę wejściową #2 (bilet #90)
+[23:01:38.728] TURYSTA(1507): Turysta #89 wszedł na stację dolną (bilet #90, typ: pieszy)
+[23:01:38.728] TURYSTA(1453): Turysta #42 wpuszczony przez bramkę wejściową #3 (bilet #83)
+[23:01:38.728] TURYSTA(1422): Turysta #11 wszedł na stację dolną (bilet #88, typ: rowerzysta)
+[23:01:38.728] TURYSTA(1447): Turysta #36 wpuszczony przez bramkę wejściową #1 (bilet #94)
+[23:01:38.729] TURYSTA(1447): Turysta #36 wszedł na stację dolną (bilet #94, typ: pieszy)
+[23:01:38.729] TURYSTA(1453): Turysta #42 wszedł na stację dolną (bilet #83, typ: pieszy)
+[23:01:38.739] TURYSTA(1419): Turysta #8 - pozostały czas biletu: 15 sekund
+[23:01:38.739] TURYSTA(1419): Turysta #8 wpuszczony przez bramkę wejściową #1 (bilet #86)
+[23:01:38.740] TURYSTA(1419): Turysta #8 wszedł na stację dolną (bilet #86, typ: pieszy)
+[23:01:38.740] TURYSTA(1429): Turysta #18 - pozostały czas biletu: 30 sekund
+[23:01:38.740] TURYSTA(1429): Turysta #18 wpuszczony przez bramkę wejściową #3 (bilet #91)
+[23:01:38.740] TURYSTA(1429): Turysta #18 wszedł na stację dolną (bilet #91, typ: pieszy)
+[23:01:43.135] AWARIA(1408): PRACOWNIK1: Kolej WZNOWIONA - normalny ruch!
+[23:01:43.135] TURYSTA(1444): Turysta #33 przeszedł na peron (bramka peronowa #1, bilet #81)
+[23:01:43.139] TURYSTA(1475): Turysta #58 przeszedł na peron (bramka peronowa #2, bilet #78)
+[23:01:43.147] TURYSTA(1504): Turysta #86 przeszedł na peron (bramka peronowa #3, bilet #79)
+[23:01:43.148] TURYSTA(1495): Turysta #77 przeszedł na peron (bramka peronowa #3, bilet #89)
+[23:01:43.151] TURYSTA(1447): Turysta #36 przeszedł na peron (bramka peronowa #1, bilet #94)
+[23:01:43.171] TURYSTA(1453): Turysta #42 przeszedł na peron (bramka peronowa #1, bilet #83)
+[23:01:43.171] TURYSTA(1516): Turysta #98 przeszedł na peron (bramka peronowa #3, bilet #80)
+[23:01:43.171] TURYSTA(1433): Turysta #22 przeszedł na peron (bramka peronowa #2, bilet #85)
+[23:01:43.183] PRACOWNIK1(1408): Turysta #33 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:43.183] TURYSTA(1448): Turysta #37 przeszedł na peron (bramka peronowa #2, bilet #92)
+[23:01:43.183] TURYSTA(1501): Turysta #83 przeszedł na peron (bramka peronowa #3, bilet #82)
+[23:01:43.184] TURYSTA(1429): Turysta #18 przeszedł na peron (bramka peronowa #1, bilet #91)
+[23:01:43.184] PRACOWNIK1(1408): Turysta #58 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:43.199] TURYSTA(1505): Turysta #87 przeszedł na peron (bramka peronowa #1, bilet #93)
+[23:01:43.199] AWARIA(1409): PRACOWNIK2: Otrzymano sygnał WZNOWIENIA od worker1!
+[23:01:43.199] TURYSTA(1515): Turysta #97 przeszedł na peron (bramka peronowa #2, bilet #87)
+[23:01:43.203] PRACOWNIK1(1408): Turysta #86 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:43.199] TURYSTA(1422): Turysta #11 przeszedł na peron (bramka peronowa #3, bilet #88)
+[23:01:43.207] TURYSTA(1419): Turysta #8 przeszedł na peron (bramka peronowa #3, bilet #86)
+[23:01:43.207] KRZESEŁKO(1409): Krzesełko #5 dotarło na górną stację z 2 pasażerami
+[23:01:43.207] PRACOWNIK1(1408): Turysta #77 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:43.207] TURYSTA(1507): Turysta #89 przeszedł na peron (bramka peronowa #3, bilet #90)
+[23:01:43.223] TURYSTA(1423): Turysta #12 wybiera trasę zjazdową T2 (średnia)
+[23:01:43.267] KRZESEŁKO(1409): Krzesełko #2 dotarło na górną stację z 2 pasażerami
+[23:01:43.267] PRACOWNIK1(1408): Turysta #36 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:43.267] TURYSTA(1428): Turysta #17 wybiera trasę zjazdową T1 (łatwa)
+[23:01:43.268] PRACOWNIK1(1408): Turysta #22 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:43.268] PRACOWNIK1(1408): Turysta #42 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:43.269] PRACOWNIK1(1408): Turysta #98 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:43.269] TURYSTA(1437): Turysta #26 wybiera trasę zjazdową T2 (średnia)
+[23:01:43.303] PRACOWNIK1(1408): Turysta #83 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:43.303] KRZESEŁKO(1409): Krzesełko #3 dotarło na górną stację z 3 pasażerami
+[23:01:43.304] PRACOWNIK1(1408): Turysta #37 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:43.307] TURYSTA(1450): Turysta #39 wybiera trasę zjazdową T3 (trudna)
+[23:01:43.311] PRACOWNIK1(1408): Turysta #18 wpuszczony przez bramkę peronową #2 (typ: pieszy, dzieci: 0)
+[23:01:43.311] KRZESEŁKO(1409): Krzesełko #1 dotarło na górną stację z 1 pasażerami
+[23:01:43.312] PRACOWNIK1(1408): Turysta #11 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:43.312] PRACOWNIK1(1408): Turysta #87 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:43.319] TURYSTA(1412): Turysta #1 wybiera trasę zjazdową T3 (trudna)
+[23:01:43.319] KRZESEŁKO(1409): Krzesełko #4 dotarło na górną stację z 1 pasażerami
+[23:01:43.319] PRACOWNIK1(1408): Turysta #97 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:43.320] KRZESEŁKO(1409): Krzesełko #6 dotarło na górną stację z 1 pasażerami
+[23:01:43.323] PRACOWNIK1(1408): Turysta #8 wpuszczony przez bramkę peronową #3 (typ: pieszy, dzieci: 0)
+[23:01:43.323] KRZESEŁKO(1409): Krzesełko #7 dotarło na górną stację z 1 pasażerami
+[23:01:43.331] PRACOWNIK1(1408): Turysta #89 wpuszczony przez bramkę peronową #1 (typ: pieszy, dzieci: 0)
+[23:01:43.335] PRACOWNIK1(1408): Wpuszczam turyste #91(P) na krzesełko
+[23:01:43.343] PRACOWNIK1(1408): Wpuszczam turyste #15(P) na krzesełko
+[23:01:43.347] TURYSTA(1477): Turysta #60 wybiera trasę zjazdową T1 (łatwa)
+[23:01:43.347] TURYSTA(1445): Turysta #34 wybiera trasę zjazdową T2 (średnia)
+[23:01:43.347] PRACOWNIK1(1408): Wpuszczam turyste #53(R) na krzesełko
+[23:01:43.347] TURYSTA(1436): Turysta #25 (pieszy) opuszcza system na górnej stacji
+[23:01:43.347] PRACOWNIK1(1408): Wpuszczam turyste #82(P) na krzesełko
+[23:01:43.351] PRACOWNIK1(1408): Wpuszczam turyste #21(P) na krzesełko
+[23:01:43.359] PRACOWNIK2(1409): Turysta #17 wypuszczony przez bramkę wyjściową #1
+[23:01:43.360] PRACOWNIK1(1408): Wpuszczam turyste #14(P) na krzesełko
+[23:01:43.361] PRACOWNIK1(1408): Wpuszczam turyste #69(P) na krzesełko
+[23:01:43.361] PRACOWNIK1(1408): Wpuszczam turyste #44(R) na krzesełko
+[23:01:43.363] PRACOWNIK1(1408): Wpuszczam turyste #38(R) na krzesełko
+[23:01:43.363] PRACOWNIK1(1408): Wpuszczam turyste #41(P) na krzesełko
+[23:01:43.363] PRACOWNIK1(1408): Wpuszczam turyste #7(R) na krzesełko
+[23:01:43.364] PRACOWNIK1(1408): Wpuszczam turyste #100(P) na krzesełko
+[23:01:43.364] PRACOWNIK1(1408): Wpuszczam turyste #19(R) na krzesełko
+[23:01:43.367] PRACOWNIK1(1408): Wpuszczam turyste #72(R) na krzesełko
+[23:01:43.367] TURYSTA(1471): Turysta #56 wybiera trasę zjazdową T1 (łatwa)
+[23:01:43.368] PRACOWNIK1(1408): Wpuszczam turyste #78(P)+1dz na krzesełko
+[23:01:43.371] PRACOWNIK2(1409): Turysta #17 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:43.363] PRACOWNIK2(1409): Turysta #39 wypuszczony przez bramkę wyjściową #2
+[23:01:43.375] PRACOWNIK1(1408): Wpuszczam turyste #40(R) na krzesełko
+[23:01:43.376] PRACOWNIK1(1408): Wpuszczam turyste #5(P) na krzesełko
+[23:01:43.376] PRACOWNIK1(1408): Wpuszczam turyste #68(R) na krzesełko
+[23:01:43.376] PRACOWNIK1(1408): Wpuszczam turyste #3(P) na krzesełko
+[23:01:43.376] PRACOWNIK1(1408): Wpuszczam turyste #70(R) na krzesełko
+[23:01:43.376] PRACOWNIK1(1408): Wpuszczam turyste #52(P) na krzesełko
+[23:01:43.379] PRACOWNIK1(1408): Wpuszczam turyste #96(P) na krzesełko
+[23:01:43.379] PRACOWNIK2(1409): Turysta #39 zjeżdża trasą T3 (trudna) (3s)
+[23:01:43.380] PRACOWNIK1(1408): Wpuszczam turyste #65(R)+1dz na krzesełko
+[23:01:43.383] PRACOWNIK2(1409): Turysta #26 wypuszczony przez bramkę wyjściową #2
+[23:01:43.375] PRACOWNIK2(1409): Turysta #12 wypuszczony przez bramkę wyjściową #1
+[23:01:43.388] TURYSTA(1511): Turysta #93 wybiera trasę zjazdową T1 (łatwa)
+[23:01:43.392] PRACOWNIK2(1409): Turysta #12 zjeżdża trasą T2 (średnia) (2s)
+[23:01:43.387] PRACOWNIK2(1409): Turysta #26 zjeżdża trasą T2 (średnia) (2s)
+[23:01:43.371] TURYSTA(1438): Turysta #27 (pieszy) opuszcza system na górnej stacji
+[23:01:43.379] KRZESEŁKO(1408): Krzesełko #8 odjeżdża z pasażerami: [#91(P), #15(P), #53(R)] (R:1, P:2)
+[23:01:43.387] PRACOWNIK2(1409): Turysta #1 wypuszczony przez bramkę wyjściową #1
+[23:01:43.407] KRZESEŁKO(1408): Krzesełko #11 odjeżdża z pasażerami: [#19(R), #72(R)] (R:2, P:0)
+[23:01:43.408] PRACOWNIK2(1409): Turysta #1 zjeżdża trasą T3 (trudna) (3s)
+[23:01:43.388] KRZESEŁKO(1408): Krzesełko #9 odjeżdża z pasażerami: [#82(P), #21(P), #14(P), #69(P)] (R:0, P:4)
+[23:01:43.399] KRZESEŁKO(1408): Krzesełko #10 odjeżdża z pasażerami: [#41(P), #7(R), #100(P)] (R:1, P:2)
+[23:01:43.400] PRACOWNIK1(1408): Wpuszczam turyste #30(R)+1dz na krzesełko
+[23:01:43.407] KRZESEŁKO(1408): Krzesełko #12 odjeżdża z pasażerami: [#44(R), #38(R)] (R:2, P:0)
+[23:01:43.407] KRZESEŁKO(1408): Krzesełko #13 odjeżdża z pasażerami: [#78(P)+1dz, #40(R)] (R:1, P:2)
+[23:01:43.491] KRZESEŁKO(1408): Krzesełko #16 odjeżdża z pasażerami: [#65(R)+1dz] (R:2, P:0)
+[23:01:43.487] KRZESEŁKO(1408): Krzesełko #14 odjeżdża z pasażerami: [#70(R), #52(P), #96(P)] (R:1, P:2)
+[23:01:43.487] KRZESEŁKO(1408): Krzesełko #15 odjeżdża z pasażerami: [#5(P), #68(R), #3(P)] (R:1, P:2)
+[23:01:43.503] PRACOWNIK2(1409): Turysta #93 wypuszczony przez bramkę wyjściową #2
+[23:01:43.507] PRACOWNIK2(1409): Turysta #93 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:43.511] PRACOWNIK2(1409): Turysta #60 wypuszczony przez bramkę wyjściową #2
+[23:01:43.512] PRACOWNIK2(1409): Turysta #60 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:43.507] PRACOWNIK2(1409): Turysta #56 wypuszczony przez bramkę wyjściową #1
+[23:01:43.523] PRACOWNIK2(1409): Turysta #56 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:43.523] PRACOWNIK1(1408): Wpuszczam turyste #88(P) na krzesełko
+[23:01:43.512] PRACOWNIK2(1409): Turysta #34 wypuszczony przez bramkę wyjściową #1
+[23:01:43.527] PRACOWNIK1(1408): Wpuszczam turyste #71(R) na krzesełko
+[23:01:43.531] PRACOWNIK1(1408): Wpuszczam turyste #74(P) na krzesełko
+[23:01:43.531] PRACOWNIK2(1409): Turysta #34 zjeżdża trasą T2 (średnia) (2s)
+[23:01:43.523] PRACOWNIK2(1409): Pieszy #25 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:43.531] PRACOWNIK2(1409): Pieszy #27 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:43.575] KRZESEŁKO(1408): Krzesełko #17 odjeżdża z pasażerami: [#30(R)+1dz] (R:2, P:0)
+[23:01:43.583] PRACOWNIK1(1408): Wpuszczam turyste #13(R) na krzesełko
+[23:01:43.585] TURYSTA(1438): Turysta #27 (pieszy) zakończył wizytę na górnej stacji (bilet #7)
+[23:01:43.585] TURYSTA(1436): Turysta #25 (pieszy) zakończył wizytę na górnej stacji (bilet #8)
+[23:01:43.587] PRACOWNIK1(1408): Wpuszczam turyste #24(P) na krzesełko
+[23:01:43.587] TURYSTA(1436): Turysta #25 kończy wizytę (przejazdy: 1)
+[23:01:43.591] PRACOWNIK1(1408): Wpuszczam turyste #49(P) na krzesełko
+[23:01:43.591] TURYSTA(1438): Turysta #27 kończy wizytę (przejazdy: 1)
+[23:01:43.619] KRZESEŁKO(1408): Krzesełko #18 odjeżdża z pasażerami: [#88(P), #71(R), #74(P)] (R:1, P:2)
+[23:01:43.619] PRACOWNIK1(1408): Wpuszczam turyste #81(P) na krzesełko
+[23:01:43.637] PRACOWNIK1(1408): Wpuszczam turyste #95(P) na krzesełko
+[23:01:43.637] PRACOWNIK1(1408): Wpuszczam turyste #99(P) na krzesełko
+[23:01:43.639] PRACOWNIK1(1408): Wpuszczam turyste #35(P) na krzesełko
+[23:01:43.643] KRZESEŁKO(1408): Krzesełko #19 odjeżdża z pasażerami: [#13(R), #24(P), #49(P)] (R:1, P:2)
+[23:01:43.647] PRACOWNIK1(1408): Wpuszczam turyste #85(R)+1dz na krzesełko
+[23:01:43.695] PRACOWNIK1(1408): Wpuszczam turyste #29(P) na krzesełko
+[23:01:43.696] PRACOWNIK1(1408): Wpuszczam turyste #31(P)+2dz na krzesełko
+[23:01:43.707] KRZESEŁKO(1408): Krzesełko #20 odjeżdża z pasażerami: [#81(P), #95(P), #99(P), #35(P)] (R:0, P:4)
+[23:01:43.715] KRZESEŁKO(1408): Krzesełko #21 odjeżdża z pasażerami: [#85(R)+1dz] (R:2, P:0)
+[23:01:43.779] PRACOWNIK1(1408): Wpuszczam turyste #10(P) na krzesełko
+[23:01:43.781] PRACOWNIK1(1408): Wpuszczam turyste #4(R) na krzesełko
+[23:01:43.781] PRACOWNIK1(1408): Wpuszczam turyste #75(P) na krzesełko
+[23:01:43.791] KRZESEŁKO(1408): Krzesełko #22 odjeżdża z pasażerami: [#29(P), #31(P)+2dz] (R:0, P:4)
+[23:01:43.791] PRACOWNIK1(1408): Wpuszczam turyste #57(R) na krzesełko
+[23:01:43.803] PRACOWNIK1(1408): Wpuszczam turyste #20(R) na krzesełko
+[23:01:43.839] KRZESEŁKO(1408): Krzesełko #23 odjeżdża z pasażerami: [#10(P), #4(R), #75(P)] (R:1, P:2)
+[23:01:43.839] PRACOWNIK1(1408): Wpuszczam turyste #2(P) na krzesełko
+[23:01:43.846] PRACOWNIK1(1408): Wpuszczam turyste #48(R) na krzesełko
+[23:01:43.851] PRACOWNIK1(1408): Wpuszczam turyste #66(P) na krzesełko
+[23:01:43.867] KRZESEŁKO(1408): Krzesełko #24 odjeżdża z pasażerami: [#57(R), #20(R)] (R:2, P:0)
+[23:01:43.911] KRZESEŁKO(1408): Krzesełko #25 odjeżdża z pasażerami: [#2(P), #48(R), #66(P)] (R:1, P:2)
+[23:01:43.915] PRACOWNIK1(1408): Wpuszczam turyste #79(P) na krzesełko
+[23:01:43.922] PRACOWNIK1(1408): Wpuszczam turyste #92(P) na krzesełko
+[23:01:43.927] PRACOWNIK1(1408): Wpuszczam turyste #94(P) na krzesełko
+[23:01:43.931] PRACOWNIK1(1408): Wpuszczam turyste #54(P) na krzesełko
+[23:01:44.033] PRACOWNIK2(1409): Turysta #56 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:44.039] PRACOWNIK1(1408): Wpuszczam turyste #76(R) na krzesełko
+[23:01:44.033] PRACOWNIK2(1409): Turysta #60 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:44.047] PRACOWNIK1(1408): Wpuszczam turyste #16(R) na krzesełko
+[23:01:44.047] PRACOWNIK1(1408): Wpuszczam turyste #46(R)+1dz na krzesełko
+[23:01:44.051] PRACOWNIK1(1408): Wpuszczam turyste #23(P) na krzesełko
+[23:01:44.053] PRACOWNIK1(1408): Wpuszczam turyste #50(P) na krzesełko
+[23:01:44.055] PRACOWNIK2(1409): Turysta #93 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:44.055] PRACOWNIK1(1408): Wpuszczam turyste #90(P) na krzesełko
+[23:01:44.059] PRACOWNIK1(1408): Wpuszczam turyste #32(P) na krzesełko
+[23:01:44.056] KRZESEŁKO(1408): Krzesełko #26 odjeżdża z pasażerami: [#79(P), #92(P), #94(P), #54(P)] (R:0, P:4)
+[23:01:44.059] KRZESEŁKO(1408): Krzesełko #27 odjeżdża z pasażerami: [#76(R), #16(R)] (R:2, P:0)
+[23:01:44.059] KRZESEŁKO(1408): Krzesełko #28 odjeżdża z pasażerami: [#46(R)+1dz] (R:2, P:0)
+[23:01:44.062] PRACOWNIK1(1408): Wpuszczam turyste #67(R) na krzesełko
+[23:01:44.074] PRACOWNIK1(1408): Wpuszczam turyste #6(R) na krzesełko
+[23:01:44.119] TURYSTA(1471): Turysta #56 zakończył trasę zjazdową i dotarł na stację dolną (bilet #1)
+[23:01:44.119] PRACOWNIK2(1409): Turysta #17 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:44.120] TURYSTA(1511): Turysta #93 zakończył trasę zjazdową i dotarł na stację dolną (bilet #15)
+[23:01:44.120] KRZESEŁKO(1408): Krzesełko #29 odjeżdża z pasażerami: [#23(P), #50(P), #90(P), #32(P)] (R:0, P:4)
+[23:01:44.123] PRACOWNIK1(1408): Wpuszczam turyste #43(R) na krzesełko
+[23:01:44.123] PRACOWNIK1(1408): Wpuszczam turyste #73(P) na krzesełko
+[23:01:44.124] PRACOWNIK1(1408): Wpuszczam turyste #62(P) na krzesełko
+[23:01:44.124] TURYSTA(1471): Turysta #56 wpuszczony przez bramkę wejściową #1 (bilet #1)
+[23:01:44.124] TURYSTA(1471): Turysta #56 wszedł na stację dolną (bilet #1, typ: rowerzysta)
+[23:01:44.131] TURYSTA(1471): Turysta #56 przeszedł na peron (bramka peronowa #3, bilet #1)
+[23:01:44.131] PRACOWNIK1(1408): Turysta #56 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:44.136] PRACOWNIK1(1408): Wpuszczam turyste #28(R) na krzesełko
+[23:01:44.139] PRACOWNIK1(1408): Wpuszczam turyste #84(R) na krzesełko
+[23:01:44.140] TURYSTA(1477): Turysta #60 zakończył trasę zjazdową i dotarł na stację dolną (bilet #12)
+[23:01:44.142] TURYSTA(1511): Turysta #93 - pozostały czas biletu: 8 sekund
+[23:01:44.143] TURYSTA(1511): Turysta #93 wpuszczony przez bramkę wejściową #2 (bilet #15)
+[23:01:44.146] TURYSTA(1511): Turysta #93 wszedł na stację dolną (bilet #15, typ: rowerzysta)
+[23:01:44.157] KRZESEŁKO(1408): Krzesełko #30 odjeżdża z pasażerami: [#67(R), #6(R)] (R:2, P:0)
+[23:01:44.157] TURYSTA(1428): Turysta #17 zakończył trasę zjazdową i dotarł na stację dolną (bilet #10)
+[23:01:44.157] KRZESEŁKO(1408): Krzesełko #31 odjeżdża z pasażerami: [#43(R), #73(P), #62(P)] (R:1, P:2)
+[23:01:44.158] PRACOWNIK1(1408): Wpuszczam turyste #51(P) na krzesełko
+[23:01:44.187] PRACOWNIK1(1408): Wpuszczam turyste #59(R) na krzesełko
+[23:01:44.187] TURYSTA(1511): Turysta #93 przeszedł na peron (bramka peronowa #1, bilet #15)
+[23:01:44.194] PRACOWNIK1(1408): Wpuszczam turyste #86(P) na krzesełko
+[23:01:44.197] TURYSTA(1428): Turysta #17 kończy wizytę (przejazdy: 1)
+[23:01:44.199] TURYSTA(1477): Turysta #60 - pozostały czas biletu: 8 sekund
+[23:01:44.200] TURYSTA(1477): Turysta #60 wpuszczony przez bramkę wejściową #1 (bilet #12)
+[23:01:44.209] TURYSTA(1477): Turysta #60 wszedł na stację dolną (bilet #12, typ: rowerzysta)
+[23:01:44.215] KRZESEŁKO(1408): Krzesełko #32 odjeżdża z pasażerami: [#28(R), #84(R)] (R:2, P:0)
+[23:01:44.225] TURYSTA(1477): Turysta #60 przeszedł na peron (bramka peronowa #1, bilet #12)
+[23:01:44.225] PRACOWNIK1(1408): Turysta #93 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 1)
+[23:01:44.237] PRACOWNIK1(1408): Turysta #60 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 1)
+[23:01:44.239] PRACOWNIK1(1408): Wpuszczam turyste #63(R) na krzesełko
+[23:01:44.241] PRACOWNIK1(1408): Wpuszczam turyste #55(R) na krzesełko
+[23:01:44.271] PRACOWNIK1(1408): Wpuszczam turyste #33(R) na krzesełko
+[23:01:44.271] PRACOWNIK1(1408): Wpuszczam turyste #58(R) na krzesełko
+[23:01:44.271] KRZESEŁKO(1408): Krzesełko #33 odjeżdża z pasażerami: [#51(P), #59(R), #86(P)] (R:1, P:2)
+[23:01:44.275] PRACOWNIK1(1408): Wpuszczam turyste #77(R) na krzesełko
+[23:01:44.275] PRACOWNIK1(1408): Wpuszczam turyste #36(P) na krzesełko
+[23:01:44.276] PRACOWNIK1(1408): Wpuszczam turyste #42(P) na krzesełko
+[23:01:44.276] PRACOWNIK1(1408): Wpuszczam turyste #22(R) na krzesełko
+[23:01:44.279] PRACOWNIK1(1408): Wpuszczam turyste #98(P) na krzesełko
+[23:01:44.286] PRACOWNIK1(1408): Wpuszczam turyste #83(P) na krzesełko
+[23:01:44.276] KRZESEŁKO(1408): Krzesełko #34 odjeżdża z pasażerami: [#63(R), #55(R)] (R:2, P:0)
+[23:01:44.295] PRACOWNIK1(1408): Wpuszczam turyste #37(R) na krzesełko
+[23:01:44.319] PRACOWNIK1(1408): Wpuszczam turyste #18(P) na krzesełko
+[23:01:44.319] PRACOWNIK1(1408): Wpuszczam turyste #8(P) na krzesełko
+[23:01:44.327] KRZESEŁKO(1408): Krzesełko #36 odjeżdża z pasażerami: [#77(R), #36(P), #42(P)] (R:1, P:2)
+[23:01:44.307] KRZESEŁKO(1408): Krzesełko #35 odjeżdża z pasażerami: [#33(R), #58(R)] (R:2, P:0)
+[23:01:44.336] KRZESEŁKO(1408): Krzesełko #37 odjeżdża z pasażerami: [#22(R), #98(P), #83(P)] (R:1, P:2)
+[23:01:44.327] PRACOWNIK1(1408): Wpuszczam turyste #11(R) na krzesełko
+[23:01:44.340] PRACOWNIK1(1408): Wpuszczam turyste #87(R) na krzesełko
+[23:01:44.340] PRACOWNIK1(1408): Wpuszczam turyste #97(R) na krzesełko
+[23:01:44.340] PRACOWNIK1(1408): Wpuszczam turyste #89(P) na krzesełko
+[23:01:44.341] PRACOWNIK1(1408): Wpuszczam turyste #56(R) na krzesełko
+[23:01:44.341] PRACOWNIK1(1408): Wpuszczam turyste #93(R)+1dz na krzesełko
+[23:01:44.342] PRACOWNIK1(1408): Wpuszczam turyste #60(R)+1dz na krzesełko
+[23:01:44.474] KRZESEŁKO(1408): Krzesełko #38 odjeżdża z pasażerami: [#37(R), #18(P), #8(P)] (R:1, P:2)
+[23:01:44.475] KRZESEŁKO(1408): Krzesełko #39 odjeżdża z pasażerami: [#97(R), #89(P)] (R:1, P:1)
+[23:01:44.483] KRZESEŁKO(1408): Krzesełko #40 odjeżdża z pasażerami: [#11(R), #87(R)] (R:2, P:0)
+[23:01:44.483] KRZESEŁKO(1408): Krzesełko #41 odjeżdża z pasażerami: [#93(R)+1dz] (R:2, P:0)
+[23:01:44.483] KRZESEŁKO(1408): Krzesełko #42 odjeżdża z pasażerami: [#56(R)] (R:1, P:0)
+[23:01:44.483] KRZESEŁKO(1408): Krzesełko #43 odjeżdża z pasażerami: [#60(R)+1dz] (R:2, P:0)
+[23:01:45.003] PRACOWNIK2(1409): Turysta #26 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:45.043] KRZESEŁKO(1409): Krzesełko #23 dotarło na górną stację z 3 pasażerami
+[23:01:45.100] TURYSTA(1421): Turysta #10 (pieszy) opuszcza system na górnej stacji
+[23:01:45.115] TURYSTA(1493): Turysta #75 (pieszy) opuszcza system na górnej stacji
+[23:01:45.139] TURYSTA(1415): Turysta #4 wybiera trasę zjazdową T3 (trudna)
+[23:01:45.219] TURYSTA(1437): Turysta #26 zakończył trasę zjazdową i dotarł na stację dolną (bilet #3)
+[23:01:45.227] KRZESEŁKO(1409): Krzesełko #14 dotarło na górną stację z 3 pasażerami
+[23:01:45.227] TURYSTA(1463): Turysta #52 (pieszy) opuszcza system na górnej stacji
+[23:01:45.227] PRACOWNIK2(1409): Turysta #34 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:45.235] PRACOWNIK2(1409): Turysta #12 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:45.237] KRZESEŁKO(1409): Krzesełko #20 dotarło na górną stację z 4 pasażerami
+[23:01:45.237] TURYSTA(1437): Turysta #26 kończy wizytę (przejazdy: 1)
+[23:01:45.239] KRZESEŁKO(1409): Krzesełko #11 dotarło na górną stację z 2 pasażerami
+[23:01:45.243] TURYSTA(1499): Turysta #81 (pieszy) opuszcza system na górnej stacji
+[23:01:45.251] TURYSTA(1514): Turysta #96 (pieszy) opuszcza system na górnej stacji
+[23:01:45.251] TURYSTA(1513): Turysta #95 (pieszy) opuszcza system na górnej stacji
+[23:01:45.251] TURYSTA(1430): Turysta #19 wybiera trasę zjazdową T2 (średnia)
+[23:01:45.276] KRZESEŁKO(1409): Krzesełko #15 dotarło na górną stację z 3 pasażerami
+[23:01:45.283] TURYSTA(1414): Turysta #3 (pieszy) opuszcza system na górnej stacji
+[23:01:45.285] KRZESEŁKO(1409): Krzesełko #22 dotarło na górną stację z 2 pasażerami
+[23:01:45.286] KRZESEŁKO(1409): Krzesełko #19 dotarło na górną stację z 3 pasażerami
+[23:01:45.287] TURYSTA(1486): Turysta #68 wybiera trasę zjazdową T1 (łatwa)
+[23:01:45.288] TURYSTA(1517): Turysta #99 (pieszy) opuszcza system na górnej stacji
+[23:01:45.295] TURYSTA(1440): Turysta #29 (pieszy) opuszcza system na górnej stacji
+[23:01:45.295] KRZESEŁKO(1409): Krzesełko #17 dotarło na górną stację z 1 pasażerami
+[23:01:45.300] TURYSTA(1424): Turysta #13 wybiera trasę zjazdową T2 (średnia)
+[23:01:45.303] KRZESEŁKO(1409): Krzesełko #24 dotarło na górną stację z 2 pasażerami
+[23:01:45.303] TURYSTA(1423): Turysta #12 zakończył trasę zjazdową i dotarł na stację dolną (bilet #9)
+[23:01:45.303] TURYSTA(1488): Turysta #70 wybiera trasę zjazdową T1 (łatwa)
+[23:01:45.307] TURYSTA(1446): Turysta #35 (pieszy) opuszcza system na górnej stacji
+[23:01:45.311] KRZESEŁKO(1409): Krzesełko #21 dotarło na górną stację z 1 pasażerami
+[23:01:45.323] TURYSTA(1490): Turysta #72 wybiera trasę zjazdową T1 (łatwa)
+[23:01:45.323] TURYSTA(1503): Turysta #85 wybiera trasę zjazdową T3 (trudna)
+[23:01:45.331] TURYSTA(1441): Turysta #30 wybiera trasę zjazdową T1 (łatwa)
+[23:01:45.332] TURYSTA(1445): Turysta #34 zakończył trasę zjazdową i dotarł na stację dolną (bilet #4)
+[23:01:45.335] TURYSTA(1416): Turysta #5 (pieszy) opuszcza system na górnej stacji
+[23:01:45.335] TURYSTA(1472): Turysta #57 wybiera trasę zjazdową T2 (średnia)
+[23:01:45.335] TURYSTA(1460): Turysta #49 (pieszy) opuszcza system na górnej stacji
+[23:01:45.355] TURYSTA(1435): Turysta #24 (pieszy) opuszcza system na górnej stacji
+[23:01:45.300] TURYSTA(1442): Turysta #31 (pieszy) opuszcza system na górnej stacji
+[23:01:45.415] KRZESEŁKO(1409): Krzesełko #12 dotarło na górną stację z 2 pasażerami
+[23:01:45.416] TURYSTA(1423): Turysta #12 wpuszczony przez bramkę wejściową #1 (bilet #9)
+[23:01:45.427] TURYSTA(1423): Turysta #12 wszedł na stację dolną (bilet #9, typ: rowerzysta)
+[23:01:45.431] TURYSTA(1423): Turysta #12 przeszedł na peron (bramka peronowa #1, bilet #9)
+[23:01:45.432] KRZESEŁKO(1409): Krzesełko #16 dotarło na górną stację z 1 pasażerami
+[23:01:45.432] KRZESEŁKO(1409): Krzesełko #8 dotarło na górną stację z 3 pasażerami
+[23:01:45.432] KRZESEŁKO(1409): Krzesełko #10 dotarło na górną stację z 3 pasażerami
+[23:01:45.432] KRZESEŁKO(1409): Krzesełko #25 dotarło na górną stację z 3 pasażerami
+[23:01:45.433] KRZESEŁKO(1409): Krzesełko #18 dotarło na górną stację z 3 pasażerami
+[23:01:45.433] TURYSTA(1431): Turysta #20 wybiera trasę zjazdową T1 (łatwa)
+[23:01:45.435] TURYSTA(1483): Turysta #65 wybiera trasę zjazdową T3 (trudna)
+[23:01:45.436] KRZESEŁKO(1409): Krzesełko #13 dotarło na górną stację z 2 pasażerami
+[23:01:45.436] KRZESEŁKO(1409): Krzesełko #9 dotarło na górną stację z 4 pasażerami
+[23:01:45.436] TURYSTA(1518): Turysta #100 (pieszy) opuszcza system na górnej stacji
+[23:01:45.437] TURYSTA(1432): Turysta #21 (pieszy) opuszcza system na górnej stacji
+[23:01:45.437] TURYSTA(1418): Turysta #7 wybiera trasę zjazdową T2 (średnia)
+[23:01:45.443] TURYSTA(1489): Turysta #71 wybiera trasę zjazdową T2 (średnia)
+[23:01:45.447] TURYSTA(1445): Turysta #34 kończy wizytę (przejazdy: 1)
+[23:01:45.448] TURYSTA(1451): Turysta #40 wybiera trasę zjazdową T2 (średnia)
+[23:01:45.451] TURYSTA(1425): Turysta #14 (pieszy) opuszcza system na górnej stacji
+[23:01:45.451] TURYSTA(1492): Turysta #74 (pieszy) opuszcza system na górnej stacji
+[23:01:45.451] TURYSTA(1500): Turysta #82 (pieszy) opuszcza system na górnej stacji
+[23:01:45.456] TURYSTA(1452): Turysta #41 (pieszy) opuszcza system na górnej stacji
+[23:01:45.461] PRACOWNIK2(1409): Pieszy #10 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.462] TURYSTA(1413): Turysta #2 (pieszy) opuszcza system na górnej stacji
+[23:01:45.471] TURYSTA(1468): Turysta #53 wybiera trasę zjazdową T2 (średnia)
+[23:01:45.479] TURYSTA(1487): Turysta #69 (pieszy) opuszcza system na górnej stacji
+[23:01:45.482] TURYSTA(1509): Turysta #91 (pieszy) opuszcza system na górnej stacji
+[23:01:45.483] TURYSTA(1455): Turysta #44 wybiera trasę zjazdową T1 (łatwa)
+[23:01:45.483] TURYSTA(1449): Turysta #38 wybiera trasę zjazdową T1 (łatwa)
+[23:01:45.485] PRACOWNIK2(1409): Pieszy #81 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.487] TURYSTA(1484): Turysta #66 (pieszy) opuszcza system na górnej stacji
+[23:01:45.461] PRACOWNIK2(1409): Pieszy #75 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.495] TURYSTA(1426): Turysta #15 (pieszy) opuszcza system na górnej stacji
+[23:01:45.505] PRACOWNIK2(1409): Pieszy #99 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.510] PRACOWNIK1(1408): Turysta #12 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:45.519] PRACOWNIK1(1408): Wpuszczam turyste #12(R) na krzesełko
+[23:01:45.522] PRACOWNIK2(1409): Turysta #70 wypuszczony przez bramkę wyjściową #2
+[23:01:45.528] TURYSTA(1496): Turysta #78 (pieszy) opuszcza system na górnej stacji
+[23:01:45.531] TURYSTA(1459): Turysta #48 wybiera trasę zjazdową T1 (łatwa)
+[23:01:45.532] PRACOWNIK2(1409): Turysta #70 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:45.535] PRACOWNIK2(1409): Turysta #4 wypuszczony przez bramkę wyjściową #1
+[23:01:45.539] PRACOWNIK2(1409): Turysta #4 zjeżdża trasą T3 (trudna) (3s)
+[23:01:45.551] PRACOWNIK2(1409): Pieszy #95 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.551] PRACOWNIK2(1409): Turysta #19 wypuszczony przez bramkę wyjściową #1
+[23:01:45.559] PRACOWNIK2(1409): Turysta #19 zjeżdża trasą T2 (średnia) (2s)
+[23:01:45.559] PRACOWNIK2(1409): Pieszy #35 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.571] PRACOWNIK2(1409): Pieszy #52 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.575] TURYSTA(1517): Turysta #99 (pieszy) zakończył wizytę na górnej stacji (bilet #42)
+[23:01:45.578] TURYSTA(1517): Turysta #99 kończy wizytę (przejazdy: 1)
+[23:01:45.579] PRACOWNIK2(1409): Turysta #72 wypuszczony przez bramkę wyjściową #1
+[23:01:45.583] PRACOWNIK2(1409): Turysta #72 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:45.587] PRACOWNIK2(1409): Turysta #68 wypuszczony przez bramkę wyjściową #1
+[23:01:45.599] PRACOWNIK2(1409): Turysta #68 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:45.599] PRACOWNIK2(1409): Turysta #85 wypuszczony przez bramkę wyjściową #1
+[23:01:45.621] PRACOWNIK2(1409): Turysta #85 zjeżdża trasą T3 (trudna) (3s)
+[23:01:45.599] PRACOWNIK2(1409): Pieszy #29 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.630] PRACOWNIK2(1409): Turysta #57 wypuszczony przez bramkę wyjściową #1
+[23:01:45.623] PRACOWNIK2(1409): Turysta #30 wypuszczony przez bramkę wyjściową #2
+[23:01:45.647] TURYSTA(1421): Turysta #10 (pieszy) zakończył wizytę na górnej stacji (bilet #51)
+[23:01:45.650] PRACOWNIK2(1409): Turysta #30 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:45.668] TURYSTA(1446): Turysta #35 (pieszy) zakończył wizytę na górnej stacji (bilet #46)
+[23:01:45.703] TURYSTA(1446): Turysta #35 kończy wizytę (przejazdy: 1)
+[23:01:45.637] PRACOWNIK2(1409): Turysta #57 zjeżdża trasą T2 (średnia) (2s)
+[23:01:45.638] PRACOWNIK2(1409): Pieszy #49 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.650] PRACOWNIK2(1409): Pieszy #5 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.740] PRACOWNIK2(1409): Pieszy #96 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.740] PRACOWNIK2(1409): Pieszy #3 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.741] PRACOWNIK2(1409): Turysta #13 wypuszczony przez bramkę wyjściową #2
+[23:01:45.741] PRACOWNIK2(1409): Turysta #13 zjeżdża trasą T2 (średnia) (2s)
+[23:01:45.741] PRACOWNIK2(1409): Pieszy #24 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.746] TURYSTA(1421): Turysta #10 kończy wizytę (przejazdy: 1)
+[23:01:45.753] PRACOWNIK2(1409): Turysta #20 wypuszczony przez bramkę wyjściową #1
+[23:01:45.764] PRACOWNIK2(1409): Turysta #20 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:45.763] PRACOWNIK2(1409): Pieszy #31 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.764] PRACOWNIK2(1409): Turysta #65 wypuszczony przez bramkę wyjściową #2
+[23:01:45.769] PRACOWNIK2(1409): Turysta #65 zjeżdża trasą T3 (trudna) (3s)
+[23:01:45.827] TURYSTA(1499): Turysta #81 (pieszy) zakończył wizytę na górnej stacji (bilet #45)
+[23:01:45.827] KRZESEŁKO(1408): Krzesełko #44 odjeżdża z pasażerami: [#12(R)] (R:1, P:0)
+[23:01:45.831] PRACOWNIK2(1409): Turysta #40 wypuszczony przez bramkę wyjściową #1
+[23:01:45.835] TURYSTA(1463): Turysta #52 (pieszy) zakończył wizytę na górnej stacji (bilet #34)
+[23:01:45.835] TURYSTA(1499): Turysta #81 kończy wizytę (przejazdy: 1)
+[23:01:45.835] TURYSTA(1493): Turysta #75 (pieszy) zakończył wizytę na górnej stacji (bilet #56)
+[23:01:45.839] TURYSTA(1414): Turysta #3 (pieszy) zakończył wizytę na górnej stacji (bilet #31)
+[23:01:45.845] TURYSTA(1414): Turysta #3 kończy wizytę (przejazdy: 1)
+[23:01:45.847] TURYSTA(1442): Turysta #31 (pieszy) zakończył wizytę na górnej stacji (bilet #50)
+[23:01:45.847] TURYSTA(1514): Turysta #96 (pieszy) zakończył wizytę na górnej stacji (bilet #36)
+[23:01:45.847] TURYSTA(1435): Turysta #24 (pieszy) zakończył wizytę na górnej stacji (bilet #40)
+[23:01:45.847] TURYSTA(1463): Turysta #52 kończy wizytę (przejazdy: 1)
+[23:01:45.847] TURYSTA(1493): Turysta #75 kończy wizytę (przejazdy: 1)
+[23:01:45.848] TURYSTA(1435): Turysta #24 kończy wizytę (przejazdy: 1)
+[23:01:45.848] TURYSTA(1514): Turysta #96 kończy wizytę (przejazdy: 1)
+[23:01:45.850] PRACOWNIK2(1409): Turysta #40 zjeżdża trasą T2 (średnia) (2s)
+[23:01:45.831] PRACOWNIK2(1409): Pieszy #14 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.850] PRACOWNIK2(1409): Turysta #7 wypuszczony przez bramkę wyjściową #1
+[23:01:45.863] PRACOWNIK2(1409): Turysta #7 zjeżdża trasą T2 (średnia) (2s)
+[23:01:45.863] PRACOWNIK2(1409): Pieszy #21 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.867] PRACOWNIK2(1409): Turysta #71 wypuszczony przez bramkę wyjściową #2
+[23:01:45.863] PRACOWNIK2(1409): Pieszy #100 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.867] PRACOWNIK2(1409): Turysta #71 zjeżdża trasą T2 (średnia) (2s)
+[23:01:45.867] PRACOWNIK2(1409): Pieszy #82 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.868] PRACOWNIK2(1409): Pieszy #69 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.868] PRACOWNIK2(1409): Pieszy #74 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.875] PRACOWNIK2(1409): Pieszy #41 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.879] PRACOWNIK2(1409): Pieszy #91 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.880] TURYSTA(1440): Turysta #29 (pieszy) zakończył wizytę na górnej stacji (bilet #48)
+[23:01:45.879] PRACOWNIK2(1409): Pieszy #2 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.885] TURYSTA(1440): Turysta #29 kończy wizytę (przejazdy: 1)
+[23:01:45.890] TURYSTA(1500): Turysta #82 (pieszy) zakończył wizytę na górnej stacji (bilet #13)
+[23:01:45.884] PRACOWNIK2(1409): Turysta #53 wypuszczony przez bramkę wyjściową #1
+[23:01:45.900] TURYSTA(1487): Turysta #69 (pieszy) zakończył wizytę na górnej stacji (bilet #22)
+[23:01:45.900] TURYSTA(1518): Turysta #100 (pieszy) zakończył wizytę na górnej stacji (bilet #26)
+[23:01:45.900] TURYSTA(1500): Turysta #82 kończy wizytę (przejazdy: 1)
+[23:01:45.903] TURYSTA(1487): Turysta #69 kończy wizytę (przejazdy: 1)
+[23:01:45.903] TURYSTA(1518): Turysta #100 kończy wizytę (przejazdy: 1)
+[23:01:45.903] PRACOWNIK2(1409): Turysta #53 zjeżdża trasą T2 (średnia) (2s)
+[23:01:45.900] PRACOWNIK2(1409): Pieszy #66 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.912] TURYSTA(1425): Turysta #14 (pieszy) zakończył wizytę na górnej stacji (bilet #18)
+[23:01:45.928] TURYSTA(1425): Turysta #14 kończy wizytę (przejazdy: 1)
+[23:01:45.903] PRACOWNIK2(1409): Turysta #38 wypuszczony przez bramkę wyjściową #1
+[23:01:45.931] TURYSTA(1442): Turysta #31 kończy wizytę (przejazdy: 1)
+[23:01:45.931] PRACOWNIK2(1409): Turysta #48 wypuszczony przez bramkę wyjściową #2
+[23:01:45.935] TURYSTA(1513): Turysta #95 (pieszy) zakończył wizytę na górnej stacji (bilet #43)
+[23:01:45.935] TURYSTA(1492): Turysta #74 (pieszy) zakończył wizytę na górnej stacji (bilet #33)
+[23:01:45.936] PRACOWNIK2(1409): Turysta #48 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:45.936] TURYSTA(1513): Turysta #95 kończy wizytę (przejazdy: 1)
+[23:01:45.937] TURYSTA(1492): Turysta #74 kończy wizytę (przejazdy: 1)
+[23:01:45.935] PRACOWNIK2(1409): Turysta #38 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:45.936] PRACOWNIK2(1409): Pieszy #78 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:45.963] TURYSTA(1432): Turysta #21 (pieszy) zakończył wizytę na górnej stacji (bilet #11)
+[23:01:45.964] PRACOWNIK2(1409): Pieszy #15 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:45.970] TURYSTA(1460): Turysta #49 (pieszy) zakończył wizytę na górnej stacji (bilet #41)
+[23:01:45.971] TURYSTA(1413): Turysta #2 (pieszy) zakończył wizytę na górnej stacji (bilet #54)
+[23:01:45.972] TURYSTA(1432): Turysta #21 kończy wizytę (przejazdy: 1)
+[23:01:45.972] TURYSTA(1413): Turysta #2 kończy wizytę (przejazdy: 1)
+[23:01:45.936] PRACOWNIK2(1409): Turysta #44 wypuszczony przez bramkę wyjściową #1
+[23:01:45.973] PRACOWNIK2(1409): Turysta #44 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:45.975] TURYSTA(1460): Turysta #49 kończy wizytę (przejazdy: 1)
+[23:01:46.088] TURYSTA(1426): Turysta #15 (pieszy) zakończył wizytę na górnej stacji (bilet #14)
+[23:01:46.092] TURYSTA(1426): Turysta #15 kończy wizytę (przejazdy: 1)
+[23:01:46.099] AWARIA(1408): PRACOWNIK1: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:01:46.107] TURYSTA(1416): Turysta #5 (pieszy) zakończył wizytę na górnej stacji (bilet #28)
+[23:01:46.107] PRACOWNIK2(1409): Turysta #39 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:46.107] PRACOWNIK2(1409): Turysta #30 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:46.111] PRACOWNIK2(1409): Turysta #48 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:46.115] TURYSTA(1452): Turysta #41 (pieszy) zakończył wizytę na górnej stacji (bilet #19)
+[23:01:46.121] TURYSTA(1509): Turysta #91 (pieszy) zakończył wizytę na górnej stacji (bilet #6)
+[23:01:46.111] PRACOWNIK2(1409): Turysta #38 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:46.124] TURYSTA(1509): Turysta #91 kończy wizytę (przejazdy: 1)
+[23:01:46.111] PRACOWNIK2(1409): Turysta #20 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:46.125] TURYSTA(1452): Turysta #41 kończy wizytę (przejazdy: 1)
+[23:01:46.135] TURYSTA(1441): Turysta #30 zakończył trasę zjazdową i dotarł na stację dolną (bilet #32)
+[23:01:46.143] TURYSTA(1496): Turysta #78 (pieszy) zakończył wizytę na górnej stacji (bilet #25)
+[23:01:46.116] PRACOWNIK2(1409): Turysta #70 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:46.126] PRACOWNIK2(1409): Turysta #44 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:46.183] TURYSTA(1496): Turysta #78 kończy wizytę (przejazdy: 1)
+[23:01:46.110] TURYSTA(1416): Turysta #5 kończy wizytę (przejazdy: 1)
+[23:01:46.126] PRACOWNIK2(1409): Turysta #1 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:46.131] KRZESEŁKO(1409): Krzesełko #35 dotarło na górną stację z 2 pasażerami
+[23:01:46.131] PRACOWNIK2(1409): Turysta #72 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:46.103] PRACOWNIK2(1409): Turysta #68 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:46.261] TURYSTA(1486): Turysta #68 zakończył trasę zjazdową i dotarł na stację dolną (bilet #29)
+[23:01:45.647] TURYSTA(1506): Turysta #88 (pieszy) opuszcza system na górnej stacji
+[23:01:46.304] TURYSTA(1449): Turysta #38 zakończył trasę zjazdową i dotarł na stację dolną (bilet #20)
+[23:01:46.328] TURYSTA(1444): Turysta #33 wybiera trasę zjazdową T2 (średnia)
+[23:01:46.343] TURYSTA(1488): Turysta #70 zakończył trasę zjazdową i dotarł na stację dolną (bilet #35)
+[23:01:46.347] TURYSTA(1412): Turysta #1 zakończył trasę zjazdową i dotarł na stację dolną (bilet #5)
+[23:01:46.348] TURYSTA(1455): Turysta #44 zakończył trasę zjazdową i dotarł na stację dolną (bilet #17)
+[23:01:46.347] TURYSTA(1431): Turysta #20 zakończył trasę zjazdową i dotarł na stację dolną (bilet #52)
+[23:01:46.348] TURYSTA(1450): Turysta #39 zakończył trasę zjazdową i dotarł na stację dolną (bilet #2)
+[23:01:46.350] TURYSTA(1412): Turysta #1 kończy wizytę (przejazdy: 1)
+[23:01:46.355] TURYSTA(1459): Turysta #48 zakończył trasę zjazdową i dotarł na stację dolną (bilet #55)
+[23:01:46.356] TURYSTA(1484): Turysta #66 (pieszy) zakończył wizytę na górnej stacji (bilet #53)
+[23:01:46.356] TURYSTA(1490): Turysta #72 zakończył trasę zjazdową i dotarł na stację dolną (bilet #23)
+[23:01:46.356] TURYSTA(1449): Turysta #38 kończy wizytę (przejazdy: 1)
+[23:01:46.356] KRZESEŁKO(1409): Krzesełko #34 dotarło na górną stację z 2 pasażerami
+[23:01:46.356] TURYSTA(1455): Turysta #44 kończy wizytę (przejazdy: 1)
+[23:01:46.356] TURYSTA(1450): Turysta #39 kończy wizytę (przejazdy: 1)
+[23:01:46.363] TURYSTA(1484): Turysta #66 kończy wizytę (przejazdy: 1)
+[23:01:46.368] KRZESEŁKO(1409): Krzesełko #27 dotarło na górną stację z 2 pasażerami
+[23:01:46.368] TURYSTA(1459): Turysta #48 kończy wizytę (przejazdy: 1)
+[23:01:46.369] TURYSTA(1490): Turysta #72 kończy wizytę (przejazdy: 1)
+[23:01:46.368] TURYSTA(1486): Turysta #68 - pozostały czas biletu: 21 sekund
+[23:01:46.372] TURYSTA(1488): Turysta #70 wpuszczony przez bramkę wejściową #3 (bilet #35)
+[23:01:46.372] TURYSTA(1431): Turysta #20 - pozostały czas biletu: 7 sekund
+[23:01:46.372] KRZESEŁKO(1409): Krzesełko #42 dotarło na górną stację z 1 pasażerami
+[23:01:46.379] TURYSTA(1441): Turysta #30 kończy wizytę (przejazdy: 1)
+[23:01:46.379] TURYSTA(1486): Turysta #68 wpuszczony przez bramkę wejściową #1 (bilet #29)
+[23:01:46.379] TURYSTA(1431): Turysta #20 wpuszczony przez bramkę wejściową #1 (bilet #52)
+[23:01:46.379] TURYSTA(1488): Turysta #70 wszedł na stację dolną (bilet #35, typ: rowerzysta)
+[23:01:46.289] TURYSTA(1475): Turysta #58 wybiera trasę zjazdową T2 (średnia)
+[23:01:46.380] KRZESEŁKO(1409): Krzesełko #31 dotarło na górną stację z 3 pasażerami
+[23:01:46.383] TURYSTA(1431): Turysta #20 wszedł na stację dolną (bilet #52, typ: rowerzysta)
+[23:01:46.383] TURYSTA(1491): Turysta #73 (pieszy) opuszcza system na górnej stacji
+[23:01:46.383] TURYSTA(1486): Turysta #68 wszedł na stację dolną (bilet #29, typ: rowerzysta)
+[23:01:46.384] TURYSTA(1494): Turysta #76 wybiera trasę zjazdową T2 (średnia)
+[23:01:46.387] TURYSTA(1471): Turysta #56 wybiera trasę zjazdową T1 (łatwa)
+[23:01:46.389] TURYSTA(1470): Turysta #55 wybiera trasę zjazdową T3 (trudna)
+[23:01:46.397] TURYSTA(1481): Turysta #63 wybiera trasę zjazdową T1 (łatwa)
+[23:01:46.400] KRZESEŁKO(1409): Krzesełko #41 dotarło na górną stację z 1 pasażerami
+[23:01:46.407] TURYSTA(1511): Turysta #93 wybiera trasę zjazdową T1 (łatwa)
+[23:01:46.427] TURYSTA(1427): Turysta #16 wybiera trasę zjazdową T3 (trudna)
+[23:01:46.431] TURYSTA(1479): Turysta #62 (pieszy) opuszcza system na górnej stacji
+[23:01:46.452] KRZESEŁKO(1409): Krzesełko #28 dotarło na górną stację z 1 pasażerami
+[23:01:46.453] KRZESEŁKO(1409): Krzesełko #33 dotarło na górną stację z 3 pasażerami
+[23:01:46.453] KRZESEŁKO(1409): Krzesełko #37 dotarło na górną stację z 3 pasażerami
+[23:01:46.454] KRZESEŁKO(1409): Krzesełko #38 dotarło na górną stację z 3 pasażerami
+[23:01:46.454] KRZESEŁKO(1409): Krzesełko #26 dotarło na górną stację z 4 pasażerami
+[23:01:46.454] KRZESEŁKO(1409): Krzesełko #29 dotarło na górną stację z 4 pasażerami
+[23:01:46.455] TURYSTA(1504): Turysta #86 (pieszy) opuszcza system na górnej stacji
+[23:01:46.455] KRZESEŁKO(1409): Krzesełko #30 dotarło na górną stację z 2 pasażerami
+[23:01:46.455] TURYSTA(1497): Turysta #79 (pieszy) opuszcza system na górnej stacji
+[23:01:46.455] TURYSTA(1469): Turysta #54 (pieszy) opuszcza system na górnej stacji
+[23:01:46.456] KRZESEŁKO(1409): Krzesełko #32 dotarło na górną stację z 2 pasażerami
+[23:01:46.456] KRZESEŁKO(1409): Krzesełko #43 dotarło na górną stację z 1 pasażerami
+[23:01:46.456] TURYSTA(1502): Turysta #84 wybiera trasę zjazdową T2 (średnia)
+[23:01:46.456] KRZESEŁKO(1409): Krzesełko #40 dotarło na górną stację z 2 pasażerami
+[23:01:46.456] TURYSTA(1443): Turysta #32 (pieszy) opuszcza system na górnej stacji
+[23:01:46.457] KRZESEŁKO(1409): Krzesełko #36 dotarło na górną stację z 3 pasażerami
+[23:01:46.457] KRZESEŁKO(1409): Krzesełko #39 dotarło na górną stację z 2 pasażerami
+[23:01:46.458] AWARIA(1409): PRACOWNIK2: Odebrano sygnał AWARII od worker1!
+[23:01:46.458] AWARIA(1409): PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)
+[23:01:46.458] AWARIA(1408): PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...
+[23:01:46.459] TURYSTA(1505): Turysta #87 wybiera trasę zjazdową T1 (łatwa)
+[23:01:46.463] TURYSTA(1476): Turysta #59 wybiera trasę zjazdową T3 (trudna)
+[23:01:46.463] TURYSTA(1501): Turysta #83 (pieszy) opuszcza system na górnej stacji
+[23:01:46.467] TURYSTA(1516): Turysta #98 (pieszy) opuszcza system na górnej stacji
+[23:01:46.467] TURYSTA(1510): Turysta #92 (pieszy) opuszcza system na górnej stacji
+[23:01:46.467] TURYSTA(1419): Turysta #8 (pieszy) opuszcza system na górnej stacji
+[23:01:46.471] TURYSTA(1477): Turysta #60 wybiera trasę zjazdową T2 (średnia)
+[23:01:46.472] TURYSTA(1462): Turysta #51 (pieszy) opuszcza system na górnej stacji
+[23:01:46.481] PRACOWNIK2(1409): Pieszy #88 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:46.481] TURYSTA(1434): Turysta #23 (pieszy) opuszcza system na górnej stacji
+[23:01:46.482] TURYSTA(1439): Turysta #28 wybiera trasę zjazdową T3 (trudna)
+[23:01:46.483] TURYSTA(1447): Turysta #36 (pieszy) opuszcza system na górnej stacji
+[23:01:46.483] TURYSTA(1515): Turysta #97 wybiera trasę zjazdową T1 (łatwa)
+[23:01:46.483] TURYSTA(1512): Turysta #94 (pieszy) opuszcza system na górnej stacji
+[23:01:46.491] TURYSTA(1461): Turysta #50 (pieszy) opuszcza system na górnej stacji
+[23:01:46.493] TURYSTA(1507): Turysta #89 (pieszy) opuszcza system na górnej stacji
+[23:01:46.493] TURYSTA(1417): Turysta #6 wybiera trasę zjazdową T1 (łatwa)
+[23:01:46.495] TURYSTA(1433): Turysta #22 wybiera trasę zjazdową T2 (średnia)
+[23:01:46.499] PRACOWNIK2(1409): Turysta #33 wypuszczony przez bramkę wyjściową #1
+[23:01:46.502] PRACOWNIK2(1409): Turysta #33 zjeżdża trasą T2 (średnia) (2s)
+[23:01:46.503] TURYSTA(1485): Turysta #67 wybiera trasę zjazdową T1 (łatwa)
+[23:01:46.504] TURYSTA(1448): Turysta #37 wybiera trasę zjazdową T3 (trudna)
+[23:01:46.504] TURYSTA(1453): Turysta #42 (pieszy) opuszcza system na górnej stacji
+[23:01:46.504] TURYSTA(1422): Turysta #11 wybiera trasę zjazdową T3 (trudna)
+[23:01:46.502] PRACOWNIK2(1409): Turysta #58 wypuszczony przez bramkę wyjściową #2
+[23:01:46.505] PRACOWNIK2(1409): Turysta #58 zjeżdża trasą T2 (średnia) (2s)
+[23:01:46.453] TURYSTA(1457): Turysta #46 wybiera trasę zjazdową T2 (średnia)
+[23:01:46.507] PRACOWNIK2(1409): Turysta #63 wypuszczony przez bramkę wyjściową #1
+[23:01:46.507] PRACOWNIK2(1409): Turysta #63 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:46.507] PRACOWNIK2(1409): Turysta #16 wypuszczony przez bramkę wyjściową #2
+[23:01:46.513] PRACOWNIK2(1409): Turysta #16 zjeżdża trasą T3 (trudna) (3s)
+[23:01:46.507] PRACOWNIK2(1409): Pieszy #73 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:46.513] PRACOWNIK2(1409): Turysta #93 wypuszczony przez bramkę wyjściową #1
+[23:01:46.514] PRACOWNIK2(1409): Turysta #93 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:46.514] TURYSTA(1495): Turysta #77 wybiera trasę zjazdową T2 (średnia)
+[23:01:46.519] TURYSTA(1454): Turysta #43 wybiera trasę zjazdową T2 (średnia)
+[23:01:46.519] PRACOWNIK2(1409): Turysta #55 wypuszczony przez bramkę wyjściową #2
+[23:01:46.520] PRACOWNIK2(1409): Turysta #55 zjeżdża trasą T3 (trudna) (3s)
+[23:01:46.531] TURYSTA(1429): Turysta #18 (pieszy) opuszcza system na górnej stacji
+[23:01:46.533] TURYSTA(1506): Turysta #88 (pieszy) zakończył wizytę na górnej stacji (bilet #38)
+[23:01:46.534] PRACOWNIK2(1409): Turysta #56 wypuszczony przez bramkę wyjściową #2
+[23:01:46.534] TURYSTA(1508): Turysta #90 (pieszy) opuszcza system na górnej stacji
+[23:01:46.539] PRACOWNIK2(1409): Turysta #56 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:46.539] TURYSTA(1506): Turysta #88 kończy wizytę (przejazdy: 1)
+[23:01:46.534] PRACOWNIK2(1409): Turysta #76 wypuszczony przez bramkę wyjściową #1
+[23:01:46.547] PRACOWNIK2(1409): Turysta #76 zjeżdża trasą T2 (średnia) (2s)
+[23:01:46.539] PRACOWNIK2(1409): Pieszy #62 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:46.611] TURYSTA(1491): Turysta #73 (pieszy) zakończył wizytę na górnej stacji (bilet #72)
+[23:01:46.615] TURYSTA(1491): Turysta #73 kończy wizytę (przejazdy: 1)
+[23:01:46.615] TURYSTA(1479): Turysta #62 (pieszy) zakończył wizytę na górnej stacji (bilet #77)
+[23:01:46.619] TURYSTA(1479): Turysta #62 kończy wizytę (przejazdy: 1)
+[23:01:47.007] PRACOWNIK2(1409): Turysta #71 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:47.008] PRACOWNIK2(1409): Turysta #40 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:47.007] PRACOWNIK2(1409): Turysta #57 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:47.043] TURYSTA(1489): Turysta #71 zakończył trasę zjazdową i dotarł na stację dolną (bilet #39)
+[23:01:47.043] PRACOWNIK2(1409): Turysta #19 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:47.044] PRACOWNIK2(1409): Turysta #93 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:47.044] PRACOWNIK2(1409): Turysta #63 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:47.047] PRACOWNIK2(1409): Turysta #7 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:47.055] PRACOWNIK2(1409): Turysta #56 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:47.059] PRACOWNIK2(1409): Turysta #53 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:47.061] TURYSTA(1451): Turysta #40 zakończył trasę zjazdową i dotarł na stację dolną (bilet #27)
+[23:01:47.063] TURYSTA(1430): Turysta #19 zakończył trasę zjazdową i dotarł na stację dolną (bilet #21)
+[23:01:47.059] PRACOWNIK2(1409): Turysta #13 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:47.063] TURYSTA(1451): Turysta #40 kończy wizytę (przejazdy: 1)
+[23:01:47.068] TURYSTA(1430): Turysta #19 kończy wizytę (przejazdy: 1)
+[23:01:47.069] TURYSTA(1472): Turysta #57 zakończył trasę zjazdową i dotarł na stację dolną (bilet #47)
+[23:01:47.075] TURYSTA(1468): Turysta #53 zakończył trasę zjazdową i dotarł na stację dolną (bilet #16)
+[23:01:47.080] TURYSTA(1481): Turysta #63 zakończył trasę zjazdową i dotarł na stację dolną (bilet #84)
+[23:01:47.087] TURYSTA(1511): Turysta #93 zakończył trasę zjazdową i dotarł na stację dolną (bilet #15)
+[23:01:47.103] TURYSTA(1418): Turysta #7 zakończył trasę zjazdową i dotarł na stację dolną (bilet #24)
+[23:01:47.107] TURYSTA(1418): Turysta #7 kończy wizytę (przejazdy: 1)
+[23:01:47.115] TURYSTA(1468): Turysta #53 kończy wizytę (przejazdy: 1)
+[23:01:47.122] TURYSTA(1472): Turysta #57 kończy wizytę (przejazdy: 1)
+[23:01:47.122] TURYSTA(1471): Turysta #56 zakończył trasę zjazdową i dotarł na stację dolną (bilet #1)
+[23:01:47.123] TURYSTA(1481): Turysta #63 kończy wizytę (przejazdy: 1)
+[23:01:47.124] TURYSTA(1424): Turysta #13 zakończył trasę zjazdową i dotarł na stację dolną (bilet #37)
+[23:01:47.124] TURYSTA(1511): Turysta #93 kończy wizytę (przejazdy: 2)
+[23:01:47.125] TURYSTA(1424): Turysta #13 kończy wizytę (przejazdy: 1)
+[23:01:47.135] TURYSTA(1489): Turysta #71 - pozostały czas biletu: 35 sekund
+[23:01:47.137] TURYSTA(1489): Turysta #71 wpuszczony przez bramkę wejściową #4 (bilet #39)
+[23:01:47.139] TURYSTA(1489): Turysta #71 wszedł na stację dolną (bilet #39, typ: rowerzysta)
+[23:01:47.203] TURYSTA(1471): Turysta #56 kończy wizytę (przejazdy: 2)
+[23:01:48.004] PRACOWNIK2(1409): Turysta #85 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:48.012] PRACOWNIK2(1409): Turysta #33 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:48.016] PRACOWNIK2(1409): Turysta #58 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:48.017] TURYSTA(1444): Turysta #33 zakończył trasę zjazdową i dotarł na stację dolną (bilet #81)
+[23:01:48.016] PRACOWNIK2(1409): Turysta #4 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:48.040] TURYSTA(1475): Turysta #58 zakończył trasę zjazdową i dotarł na stację dolną (bilet #78)
+[23:01:48.047] TURYSTA(1503): Turysta #85 zakończył trasę zjazdową i dotarł na stację dolną (bilet #44)
+[23:01:48.059] TURYSTA(1444): Turysta #33 kończy wizytę (przejazdy: 1)
+[23:01:48.059] PRACOWNIK2(1409): Turysta #76 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:48.059] TURYSTA(1415): Turysta #4 zakończył trasę zjazdową i dotarł na stację dolną (bilet #49)
+[23:01:48.063] TURYSTA(1475): Turysta #58 kończy wizytę (przejazdy: 1)
+[23:01:48.063] PRACOWNIK2(1409): Turysta #65 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:48.064] TURYSTA(1503): Turysta #85 kończy wizytę (przejazdy: 1)
+[23:01:48.077] TURYSTA(1415): Turysta #4 - pozostały czas biletu: 35 sekund
+[23:01:48.077] TURYSTA(1494): Turysta #76 zakończył trasę zjazdową i dotarł na stację dolną (bilet #60)
+[23:01:48.085] TURYSTA(1483): Turysta #65 zakończył trasę zjazdową i dotarł na stację dolną (bilet #30)
+[23:01:48.086] TURYSTA(1415): Turysta #4 wpuszczony przez bramkę wejściową #1 (bilet #49)
+[23:01:48.087] TURYSTA(1415): Turysta #4 wszedł na stację dolną (bilet #49, typ: rowerzysta)
+[23:01:48.115] TURYSTA(1494): Turysta #76 wpuszczony przez bramkę wejściową #1 (bilet #60)
+[23:01:48.115] TURYSTA(1494): Turysta #76 wszedł na stację dolną (bilet #60, typ: rowerzysta)
+[23:01:48.119] TURYSTA(1483): Turysta #65 - pozostały czas biletu: 4 sekund
+[23:01:48.119] TURYSTA(1483): Turysta #65 wpuszczony przez bramkę wejściową #2 (bilet #30)
+[23:01:48.120] TURYSTA(1483): Turysta #65 wszedł na stację dolną (bilet #30, typ: rowerzysta)
+[23:01:49.011] PRACOWNIK2(1409): Turysta #16 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:49.036] PRACOWNIK2(1409): Turysta #55 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:49.047] TURYSTA(1427): Turysta #16 zakończył trasę zjazdową i dotarł na stację dolną (bilet #59)
+[23:01:49.063] TURYSTA(1470): Turysta #55 zakończył trasę zjazdową i dotarł na stację dolną (bilet #70)
+[23:01:49.075] TURYSTA(1470): Turysta #55 kończy wizytę (przejazdy: 1)
+[23:01:49.115] TURYSTA(1427): Turysta #16 - pozostały czas biletu: 4 sekund
+[23:01:49.119] TURYSTA(1427): Turysta #16 wpuszczony przez bramkę wejściową #1 (bilet #59)
+[23:01:49.123] TURYSTA(1427): Turysta #16 wszedł na stację dolną (bilet #59, typ: rowerzysta)
+[23:01:51.027] TURYSTA(1486): Turysta #68 przeszedł na peron (bramka peronowa #3, bilet #29)
+[23:01:51.027] AWARIA(1408): PRACOWNIK1: Kolej WZNOWIONA - normalny ruch!
+[23:01:51.028] TURYSTA(1431): Turysta #20 przeszedł na peron (bramka peronowa #3, bilet #52)
+[23:01:51.027] TURYSTA(1488): Turysta #70 przeszedł na peron (bramka peronowa #2, bilet #35)
+[23:01:51.028] TURYSTA(1427): Turysta #16 przeszedł na peron (bramka peronowa #2, bilet #59)
+[23:01:51.039] TURYSTA(1415): Turysta #4 przeszedł na peron (bramka peronowa #2, bilet #49)
+[23:01:51.043] TURYSTA(1483): Turysta #65 przeszedł na peron (bramka peronowa #3, bilet #30)
+[23:01:51.046] TURYSTA(1489): Turysta #71 przeszedł na peron (bramka peronowa #3, bilet #39)
+[23:01:51.055] TURYSTA(1494): Turysta #76 przeszedł na peron (bramka peronowa #2, bilet #60)
+[23:01:51.055] PRACOWNIK1(1408): Turysta #68 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:51.060] PRACOWNIK1(1408): Turysta #70 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:51.060] PRACOWNIK1(1408): Turysta #20 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:51.063] PRACOWNIK1(1408): Turysta #16 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:51.063] PRACOWNIK1(1408): Turysta #4 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:51.063] PRACOWNIK1(1408): Turysta #65 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 1)
+[23:01:51.063] PRACOWNIK1(1408): Turysta #71 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:51.064] PRACOWNIK1(1408): Turysta #76 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:51.064] PRACOWNIK1(1408): Wpuszczam turyste #68(R) na krzesełko
+[23:01:51.064] PRACOWNIK1(1408): Wpuszczam turyste #70(R) na krzesełko
+[23:01:51.064] PRACOWNIK1(1408): Wpuszczam turyste #20(R) na krzesełko
+[23:01:51.064] PRACOWNIK1(1408): Wpuszczam turyste #16(R) na krzesełko
+[23:01:51.067] PRACOWNIK1(1408): Wpuszczam turyste #4(R) na krzesełko
+[23:01:51.067] AWARIA(1409): PRACOWNIK2: Otrzymano sygnał WZNOWIENIA od worker1!
+[23:01:51.067] PRACOWNIK1(1408): Wpuszczam turyste #71(R) na krzesełko
+[23:01:51.068] PRACOWNIK1(1408): Wpuszczam turyste #65(R)+1dz na krzesełko
+[23:01:51.069] PRACOWNIK1(1408): Wpuszczam turyste #76(R) na krzesełko
+[23:01:51.120] KRZESEŁKO(1409): Krzesełko #44 dotarło na górną stację z 1 pasażerami
+[23:01:51.162] KRZESEŁKO(1408): Krzesełko #45 odjeżdża z pasażerami: [#68(R), #70(R)] (R:2, P:0)
+[23:01:51.179] KRZESEŁKO(1408): Krzesełko #46 odjeżdża z pasażerami: [#20(R), #16(R)] (R:2, P:0)
+[23:01:51.191] KRZESEŁKO(1408): Krzesełko #47 odjeżdża z pasażerami: [#76(R)] (R:1, P:0)
+[23:01:51.211] KRZESEŁKO(1408): Krzesełko #48 odjeżdża z pasażerami: [#4(R), #71(R)] (R:2, P:0)
+[23:01:51.223] KRZESEŁKO(1408): Krzesełko #49 odjeżdża z pasażerami: [#65(R)+1dz] (R:2, P:0)
+[23:01:51.227] TURYSTA(1423): Turysta #12 wybiera trasę zjazdową T1 (łatwa)
+[23:01:51.243] PRACOWNIK2(1409): Turysta #84 wypuszczony przez bramkę wyjściową #1
+[23:01:51.247] PRACOWNIK2(1409): Turysta #87 wypuszczony przez bramkę wyjściową #1
+[23:01:51.243] PRACOWNIK2(1409): Pieszy #32 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:51.247] PRACOWNIK2(1409): Turysta #84 zjeżdża trasą T2 (średnia) (2s)
+[23:01:51.255] PRACOWNIK2(1409): Pieszy #86 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:51.250] PRACOWNIK2(1409): Pieszy #79 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:51.250] PRACOWNIK2(1409): Turysta #87 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:51.299] TURYSTA(1497): Turysta #79 (pieszy) zakończył wizytę na górnej stacji (bilet #57)
+[23:01:51.307] TURYSTA(1497): Turysta #79 kończy wizytę (przejazdy: 1)
+[23:01:51.311] TURYSTA(1443): Turysta #32 (pieszy) zakończył wizytę na górnej stacji (bilet #71)
+[23:01:51.313] TURYSTA(1443): Turysta #32 kończy wizytę (przejazdy: 1)
+[23:01:51.320] PRACOWNIK2(1409): Turysta #59 wypuszczony przez bramkę wyjściową #2
+[23:01:51.320] PRACOWNIK2(1409): Turysta #59 zjeżdża trasą T3 (trudna) (3s)
+[23:01:51.331] PRACOWNIK2(1409): Pieszy #83 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:51.333] PRACOWNIK2(1409): Pieszy #8 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:51.347] PRACOWNIK2(1409): Pieszy #98 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:51.354] PRACOWNIK2(1409): Pieszy #92 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:51.367] PRACOWNIK2(1409): Turysta #60 wypuszczony przez bramkę wyjściową #1
+[23:01:51.371] PRACOWNIK2(1409): Turysta #60 zjeżdża trasą T2 (średnia) (2s)
+[23:01:51.376] PRACOWNIK2(1409): Pieszy #94 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:51.386] PRACOWNIK2(1409): Turysta #22 wypuszczony przez bramkę wyjściową #2
+[23:01:51.379] PRACOWNIK2(1409): Pieszy #50 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:51.391] TURYSTA(1504): Turysta #86 (pieszy) zakończył wizytę na górnej stacji (bilet #79)
+[23:01:51.391] TURYSTA(1504): Turysta #86 kończy wizytę (przejazdy: 1)
+[23:01:51.391] PRACOWNIK2(1409): Turysta #22 zjeżdża trasą T2 (średnia) (2s)
+[23:01:51.391] PRACOWNIK2(1409): Turysta #6 wypuszczony przez bramkę wyjściową #1
+[23:01:51.395] PRACOWNIK2(1409): Turysta #67 wypuszczony przez bramkę wyjściową #2
+[23:01:51.398] PRACOWNIK2(1409): Turysta #6 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:51.399] PRACOWNIK2(1409): Pieszy #54 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:51.399] PRACOWNIK2(1409): Turysta #67 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:51.407] PRACOWNIK2(1409): Turysta #97 wypuszczony przez bramkę wyjściową #2
+[23:01:51.407] PRACOWNIK2(1409): Turysta #97 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:51.411] PRACOWNIK2(1409): Pieszy #51 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:51.415] PRACOWNIK2(1409): Pieszy #36 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:51.427] PRACOWNIK2(1409): Turysta #28 wypuszczony przez bramkę wyjściową #2
+[23:01:51.420] PRACOWNIK2(1409): Pieszy #23 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:51.439] TURYSTA(1501): Turysta #83 (pieszy) zakończył wizytę na górnej stacji (bilet #82)
+[23:01:51.433] PRACOWNIK2(1409): Turysta #28 zjeżdża trasą T3 (trudna) (3s)
+[23:01:51.443] TURYSTA(1501): Turysta #83 kończy wizytę (przejazdy: 1)
+[23:01:51.433] PRACOWNIK2(1409): Pieszy #89 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:51.447] PRACOWNIK2(1409): Turysta #37 wypuszczony przez bramkę wyjściową #1
+[23:01:51.439] PRACOWNIK2(1409): Pieszy #18 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:51.451] TURYSTA(1516): Turysta #98 (pieszy) zakończył wizytę na górnej stacji (bilet #80)
+[23:01:51.451] TURYSTA(1419): Turysta #8 (pieszy) zakończył wizytę na górnej stacji (bilet #86)
+[23:01:51.451] TURYSTA(1510): Turysta #92 (pieszy) zakończył wizytę na górnej stacji (bilet #58)
+[23:01:51.455] TURYSTA(1512): Turysta #94 (pieszy) zakończył wizytę na górnej stacji (bilet #61)
+[23:01:51.451] PRACOWNIK2(1409): Turysta #37 zjeżdża trasą T3 (trudna) (3s)
+[23:01:51.456] PRACOWNIK2(1409): Turysta #11 wypuszczony przez bramkę wyjściową #1
+[23:01:51.456] TURYSTA(1419): Turysta #8 kończy wizytę (przejazdy: 1)
+[23:01:51.451] PRACOWNIK2(1409): Turysta #12 wypuszczony przez bramkę wyjściową #2
+[23:01:51.457] TURYSTA(1510): Turysta #92 kończy wizytę (przejazdy: 1)
+[23:01:51.457] PRACOWNIK2(1409): Turysta #12 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:51.457] TURYSTA(1516): Turysta #98 kończy wizytę (przejazdy: 1)
+[23:01:51.456] PRACOWNIK2(1409): Turysta #11 zjeżdża trasą T3 (trudna) (3s)
+[23:01:51.459] TURYSTA(1512): Turysta #94 kończy wizytę (przejazdy: 1)
+[23:01:51.457] PRACOWNIK2(1409): Turysta #46 wypuszczony przez bramkę wyjściową #2
+[23:01:51.463] TURYSTA(1461): Turysta #50 (pieszy) zakończył wizytę na górnej stacji (bilet #64)
+[23:01:51.469] PRACOWNIK2(1409): Turysta #46 zjeżdża trasą T2 (średnia) (2s)
+[23:01:51.475] TURYSTA(1461): Turysta #50 kończy wizytę (przejazdy: 1)
+[23:01:51.485] TURYSTA(1469): Turysta #54 (pieszy) zakończył wizytę na górnej stacji (bilet #67)
+[23:01:51.495] TURYSTA(1469): Turysta #54 kończy wizytę (przejazdy: 1)
+[23:01:51.457] PRACOWNIK2(1409): Pieszy #42 wypuszczony przez bramkę wyjściową #1 (opuszcza system)
+[23:01:51.496] PRACOWNIK2(1409): Turysta #43 wypuszczony przez bramkę wyjściową #1
+[23:01:51.469] PRACOWNIK2(1409): Turysta #77 wypuszczony przez bramkę wyjściową #2
+[23:01:51.497] PRACOWNIK2(1409): Turysta #77 zjeżdża trasą T2 (średnia) (2s)
+[23:01:51.497] PRACOWNIK2(1409): Turysta #43 zjeżdża trasą T2 (średnia) (2s)
+[23:01:51.497] PRACOWNIK2(1409): Pieszy #90 wypuszczony przez bramkę wyjściową #2 (opuszcza system)
+[23:01:51.503] TURYSTA(1462): Turysta #51 (pieszy) zakończył wizytę na górnej stacji (bilet #76)
+[23:01:51.507] TURYSTA(1447): Turysta #36 (pieszy) zakończył wizytę na górnej stacji (bilet #94)
+[23:01:51.514] TURYSTA(1447): Turysta #36 kończy wizytę (przejazdy: 1)
+[23:01:51.527] TURYSTA(1462): Turysta #51 kończy wizytę (przejazdy: 1)
+[23:01:51.571] TURYSTA(1434): Turysta #23 (pieszy) zakończył wizytę na górnej stacji (bilet #62)
+[23:01:51.573] TURYSTA(1434): Turysta #23 kończy wizytę (przejazdy: 1)
+[23:01:51.587] TURYSTA(1507): Turysta #89 (pieszy) zakończył wizytę na górnej stacji (bilet #90)
+[23:01:51.598] TURYSTA(1507): Turysta #89 kończy wizytę (przejazdy: 1)
+[23:01:51.598] TURYSTA(1429): Turysta #18 (pieszy) zakończył wizytę na górnej stacji (bilet #91)
+[23:01:51.599] TURYSTA(1429): Turysta #18 kończy wizytę (przejazdy: 1)
+[23:01:51.643] TURYSTA(1508): Turysta #90 (pieszy) zakończył wizytę na górnej stacji (bilet #65)
+[23:01:51.655] TURYSTA(1453): Turysta #42 (pieszy) zakończył wizytę na górnej stacji (bilet #83)
+[23:01:51.655] TURYSTA(1453): Turysta #42 kończy wizytę (przejazdy: 1)
+[23:01:51.655] TURYSTA(1508): Turysta #90 kończy wizytę (przejazdy: 1)
+[23:01:52.023] PRACOWNIK2(1409): Turysta #97 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:52.027] PRACOWNIK2(1409): Turysta #67 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:52.029] TURYSTA(1515): Turysta #97 zakończył trasę zjazdową i dotarł na stację dolną (bilet #87)
+[23:01:52.029] TURYSTA(1515): Turysta #97 kończy wizytę (przejazdy: 1)
+[23:01:52.027] PRACOWNIK2(1409): Turysta #6 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:52.043] PRACOWNIK2(1409): Turysta #87 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:52.071] PRACOWNIK2(1409): Turysta #12 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:52.071] TURYSTA(1485): Turysta #67 zakończył trasę zjazdową i dotarł na stację dolną (bilet #68)
+[23:01:52.072] TURYSTA(1417): Turysta #6 zakończył trasę zjazdową i dotarł na stację dolną (bilet #66)
+[23:01:52.075] TURYSTA(1505): Turysta #87 zakończył trasę zjazdową i dotarł na stację dolną (bilet #93)
+[23:01:52.075] TURYSTA(1423): Turysta #12 zakończył trasę zjazdową i dotarł na stację dolną (bilet #9)
+[23:01:52.079] TURYSTA(1417): Turysta #6 kończy wizytę (przejazdy: 1)
+[23:01:52.087] TURYSTA(1423): Turysta #12 kończy wizytę (przejazdy: 2)
+[23:01:52.100] TURYSTA(1485): Turysta #67 - pozostały czas biletu: 1 sekund
+[23:01:52.105] TURYSTA(1505): Turysta #87 - pozostały czas biletu: 16 sekund
+[23:01:52.105] TURYSTA(1485): Turysta #67 wpuszczony przez bramkę wejściową #4 (bilet #68)
+[23:01:52.105] TURYSTA(1505): Turysta #87 wpuszczony przez bramkę wejściową #4 (bilet #93)
+[23:01:52.105] TURYSTA(1485): Turysta #67 wszedł na stację dolną (bilet #68, typ: rowerzysta)
+[23:01:52.106] TURYSTA(1505): Turysta #87 wszedł na stację dolną (bilet #93, typ: rowerzysta)
+[23:01:52.106] TURYSTA(1485): Turysta #67 przeszedł na peron (bramka peronowa #2, bilet #68)
+[23:01:52.106] PRACOWNIK1(1408): Turysta #67 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:52.106] PRACOWNIK1(1408): Wpuszczam turyste #67(R) na krzesełko
+[23:01:52.107] TURYSTA(1505): Turysta #87 przeszedł na peron (bramka peronowa #1, bilet #93)
+[23:01:52.108] PRACOWNIK1(1408): Turysta #87 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:52.108] PRACOWNIK1(1408): Wpuszczam turyste #87(R) na krzesełko
+[23:01:52.119] KRZESEŁKO(1408): Krzesełko #50 odjeżdża z pasażerami: [#67(R)] (R:1, P:0)
+[23:01:52.131] KRZESEŁKO(1408): Krzesełko #51 odjeżdża z pasażerami: [#87(R)] (R:1, P:0)
+[23:01:53.015] PRACOWNIK2(1409): Turysta #22 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:53.019] PRACOWNIK2(1409): Turysta #46 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:53.019] PRACOWNIK2(1409): Turysta #60 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:53.023] PRACOWNIK2(1409): Turysta #43 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:53.031] KRZESEŁKO(1409): Krzesełko #49 dotarło na górną stację z 1 pasażerami
+[23:01:53.035] PRACOWNIK2(1409): Turysta #77 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:53.035] TURYSTA(1457): Turysta #46 zakończył trasę zjazdową i dotarł na stację dolną (bilet #63)
+[23:01:53.036] TURYSTA(1433): Turysta #22 zakończył trasę zjazdową i dotarł na stację dolną (bilet #85)
+[23:01:53.039] PRACOWNIK2(1409): Turysta #84 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:53.039] TURYSTA(1477): Turysta #60 zakończył trasę zjazdową i dotarł na stację dolną (bilet #12)
+[23:01:53.040] TURYSTA(1483): Turysta #65 wybiera trasę zjazdową T2 (średnia)
+[23:01:53.043] TURYSTA(1454): Turysta #43 zakończył trasę zjazdową i dotarł na stację dolną (bilet #69)
+[23:01:53.044] KRZESEŁKO(1409): Krzesełko #48 dotarło na górną stację z 2 pasażerami
+[23:01:53.044] TURYSTA(1433): Turysta #22 kończy wizytę (przejazdy: 1)
+[23:01:53.045] TURYSTA(1489): Turysta #71 wybiera trasę zjazdową T1 (łatwa)
+[23:01:53.045] TURYSTA(1502): Turysta #84 zakończył trasę zjazdową i dotarł na stację dolną (bilet #74)
+[23:01:53.044] TURYSTA(1495): Turysta #77 zakończył trasę zjazdową i dotarł na stację dolną (bilet #89)
+[23:01:53.045] TURYSTA(1454): Turysta #43 kończy wizytę (przejazdy: 1)
+[23:01:53.045] KRZESEŁKO(1409): Krzesełko #47 dotarło na górną stację z 1 pasażerami
+[23:01:53.046] TURYSTA(1415): Turysta #4 wybiera trasę zjazdową T2 (średnia)
+[23:01:53.047] KRZESEŁKO(1409): Krzesełko #46 dotarło na górną stację z 2 pasażerami
+[23:01:53.047] TURYSTA(1477): Turysta #60 - bilet czasowy wygasł!
+[23:01:53.047] TURYSTA(1495): Turysta #77 kończy wizytę (przejazdy: 1)
+[23:01:53.047] TURYSTA(1427): Turysta #16 wybiera trasę zjazdową T2 (średnia)
+[23:01:53.051] TURYSTA(1431): Turysta #20 wybiera trasę zjazdową T1 (łatwa)
+[23:01:53.052] KRZESEŁKO(1409): Krzesełko #45 dotarło na górną stację z 2 pasażerami
+[23:01:53.054] TURYSTA(1457): Turysta #46 wpuszczony przez bramkę wejściową #3 (bilet #63)
+[23:01:53.054] TURYSTA(1494): Turysta #76 wybiera trasę zjazdową T3 (trudna)
+[23:01:53.071] TURYSTA(1457): Turysta #46 wszedł na stację dolną (bilet #63, typ: rowerzysta)
+[23:01:53.071] TURYSTA(1486): Turysta #68 wybiera trasę zjazdową T3 (trudna)
+[23:01:53.073] TURYSTA(1502): Turysta #84 wpuszczony przez bramkę wejściową #1 (bilet #74)
+[23:01:53.073] TURYSTA(1457): Turysta #46 przeszedł na peron (bramka peronowa #2, bilet #63)
+[23:01:53.074] TURYSTA(1502): Turysta #84 wszedł na stację dolną (bilet #74, typ: rowerzysta)
+[23:01:53.079] TURYSTA(1502): Turysta #84 przeszedł na peron (bramka peronowa #1, bilet #74)
+[23:01:53.087] TURYSTA(1477): Turysta #60 kończy wizytę (przejazdy: 2)
+[23:01:53.088] PRACOWNIK2(1409): Turysta #4 wypuszczony przez bramkę wyjściową #1
+[23:01:53.089] PRACOWNIK2(1409): Turysta #4 zjeżdża trasą T2 (średnia) (2s)
+[23:01:53.092] PRACOWNIK2(1409): Turysta #71 wypuszczony przez bramkę wyjściową #2
+[23:01:53.102] PRACOWNIK2(1409): Turysta #71 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:53.092] PRACOWNIK2(1409): Turysta #20 wypuszczony przez bramkę wyjściową #1
+[23:01:53.107] TURYSTA(1488): Turysta #70 wybiera trasę zjazdową T1 (łatwa)
+[23:01:53.108] PRACOWNIK2(1409): Turysta #76 wypuszczony przez bramkę wyjściową #1
+[23:01:53.120] PRACOWNIK1(1408): Turysta #46 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 1)
+[23:01:53.120] PRACOWNIK1(1408): Turysta #84 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:53.120] PRACOWNIK1(1408): Wpuszczam turyste #46(R)+1dz na krzesełko
+[23:01:53.121] PRACOWNIK1(1408): Wpuszczam turyste #84(R) na krzesełko
+[23:01:53.103] PRACOWNIK2(1409): Turysta #68 wypuszczony przez bramkę wyjściową #2
+[23:01:53.108] PRACOWNIK2(1409): Turysta #20 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:53.121] PRACOWNIK2(1409): Turysta #76 zjeżdża trasą T3 (trudna) (3s)
+[23:01:53.139] KRZESEŁKO(1408): Krzesełko #52 odjeżdża z pasażerami: [#46(R)+1dz] (R:2, P:0)
+[23:01:53.146] KRZESEŁKO(1408): Krzesełko #53 odjeżdża z pasażerami: [#84(R)] (R:1, P:0)
+[23:01:53.126] PRACOWNIK2(1409): Turysta #68 zjeżdża trasą T3 (trudna) (3s)
+[23:01:53.126] PRACOWNIK2(1409): Turysta #16 wypuszczony przez bramkę wyjściową #2
+[23:01:53.126] PRACOWNIK2(1409): Turysta #65 wypuszczony przez bramkę wyjściową #1
+[23:01:53.177] PRACOWNIK2(1409): Turysta #65 zjeżdża trasą T2 (średnia) (2s)
+[23:01:53.174] PRACOWNIK2(1409): Turysta #16 zjeżdża trasą T2 (średnia) (2s)
+[23:01:53.174] PRACOWNIK2(1409): Turysta #70 wypuszczony przez bramkę wyjściową #2
+[23:01:53.191] PRACOWNIK2(1409): Turysta #70 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:54.017] PRACOWNIK2(1409): Turysta #37 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:54.017] PRACOWNIK2(1409): Turysta #20 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:54.017] PRACOWNIK2(1409): Turysta #28 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:54.040] PRACOWNIK2(1409): Turysta #11 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:54.041] PRACOWNIK2(1409): Turysta #71 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:54.042] TURYSTA(1431): Turysta #20 zakończył trasę zjazdową i dotarł na stację dolną (bilet #52)
+[23:01:54.043] TURYSTA(1431): Turysta #20 - bilet czasowy wygasł!
+[23:01:54.043] TURYSTA(1431): Turysta #20 kończy wizytę (przejazdy: 2)
+[23:01:54.045] PRACOWNIK2(1409): Turysta #70 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:54.051] TURYSTA(1439): Turysta #28 zakończył trasę zjazdową i dotarł na stację dolną (bilet #73)
+[23:01:54.042] KRZESEŁKO(1409): Krzesełko #51 dotarło na górną stację z 1 pasażerami
+[23:01:54.051] TURYSTA(1448): Turysta #37 zakończył trasę zjazdową i dotarł na stację dolną (bilet #92)
+[23:01:54.042] PRACOWNIK2(1409): Turysta #59 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:54.062] TURYSTA(1422): Turysta #11 zakończył trasę zjazdową i dotarł na stację dolną (bilet #88)
+[23:01:54.063] TURYSTA(1505): Turysta #87 wybiera trasę zjazdową T1 (łatwa)
+[23:01:54.063] TURYSTA(1448): Turysta #37 - bilet czasowy wygasł!
+[23:01:54.067] TURYSTA(1448): Turysta #37 kończy wizytę (przejazdy: 1)
+[23:01:54.071] TURYSTA(1476): Turysta #59 zakończył trasę zjazdową i dotarł na stację dolną (bilet #75)
+[23:01:54.071] TURYSTA(1488): Turysta #70 zakończył trasę zjazdową i dotarł na stację dolną (bilet #35)
+[23:01:54.071] KRZESEŁKO(1409): Krzesełko #50 dotarło na górną stację z 1 pasażerami
+[23:01:54.071] TURYSTA(1439): Turysta #28 kończy wizytę (przejazdy: 1)
+[23:01:54.071] TURYSTA(1422): Turysta #11 kończy wizytę (przejazdy: 1)
+[23:01:54.071] TURYSTA(1489): Turysta #71 zakończył trasę zjazdową i dotarł na stację dolną (bilet #39)
+[23:01:54.079] TURYSTA(1476): Turysta #59 kończy wizytę (przejazdy: 1)
+[23:01:54.080] TURYSTA(1488): Turysta #70 wpuszczony przez bramkę wejściową #3 (bilet #35)
+[23:01:54.080] PRACOWNIK2(1409): Turysta #87 wypuszczony przez bramkę wyjściową #1
+[23:01:54.082] TURYSTA(1485): Turysta #67 wybiera trasę zjazdową T2 (średnia)
+[23:01:54.088] PRACOWNIK2(1409): Turysta #87 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:54.091] TURYSTA(1489): Turysta #71 - pozostały czas biletu: 28 sekund
+[23:01:54.093] TURYSTA(1489): Turysta #71 wpuszczony przez bramkę wejściową #4 (bilet #39)
+[23:01:54.094] TURYSTA(1488): Turysta #70 wszedł na stację dolną (bilet #35, typ: rowerzysta)
+[23:01:54.097] TURYSTA(1489): Turysta #71 wszedł na stację dolną (bilet #39, typ: rowerzysta)
+[23:01:54.120] TURYSTA(1488): Turysta #70 przeszedł na peron (bramka peronowa #2, bilet #35)
+[23:01:54.120] PRACOWNIK1(1408): Turysta #70 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:54.120] TURYSTA(1489): Turysta #71 przeszedł na peron (bramka peronowa #3, bilet #39)
+[23:01:54.127] PRACOWNIK2(1409): Turysta #67 wypuszczony przez bramkę wyjściową #2
+[23:01:54.127] PRACOWNIK1(1408): Turysta #71 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:01:54.131] PRACOWNIK2(1409): Turysta #67 zjeżdża trasą T2 (średnia) (2s)
+[23:01:54.131] PRACOWNIK1(1408): Wpuszczam turyste #70(R) na krzesełko
+[23:01:54.136] PRACOWNIK1(1408): Wpuszczam turyste #71(R) na krzesełko
+[23:01:54.164] KRZESEŁKO(1408): Krzesełko #54 odjeżdża z pasażerami: [#70(R), #71(R)] (R:2, P:0)
+[23:01:55.013] PRACOWNIK2(1409): Turysta #87 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:55.014] PRACOWNIK2(1409): Turysta #4 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:55.014] TURYSTA(1415): Turysta #4 zakończył trasę zjazdową i dotarł na stację dolną (bilet #49)
+[23:01:55.015] TURYSTA(1415): Turysta #4 kończy wizytę (przejazdy: 2)
+[23:01:55.015] TURYSTA(1427): Turysta #16 zakończył trasę zjazdową i dotarł na stację dolną (bilet #59)
+[23:01:55.015] TURYSTA(1427): Turysta #16 - bilet czasowy wygasł!
+[23:01:55.017] TURYSTA(1427): Turysta #16 kończy wizytę (przejazdy: 2)
+[23:01:55.019] TURYSTA(1483): Turysta #65 zakończył trasę zjazdową i dotarł na stację dolną (bilet #30)
+[23:01:55.013] PRACOWNIK2(1409): Turysta #65 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:55.023] TURYSTA(1505): Turysta #87 zakończył trasę zjazdową i dotarł na stację dolną (bilet #93)
+[23:01:55.028] TURYSTA(1483): Turysta #65 - bilet czasowy wygasł!
+[23:01:55.013] PRACOWNIK2(1409): Turysta #16 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:55.034] TURYSTA(1505): Turysta #87 kończy wizytę (przejazdy: 2)
+[23:01:55.014] KRZESEŁKO(1409): Krzesełko #52 dotarło na górną stację z 1 pasażerami
+[23:01:55.043] KRZESEŁKO(1409): Krzesełko #53 dotarło na górną stację z 1 pasażerami
+[23:01:55.043] TURYSTA(1483): Turysta #65 kończy wizytę (przejazdy: 2)
+[23:01:55.044] TURYSTA(1502): Turysta #84 wybiera trasę zjazdową T1 (łatwa)
+[23:01:55.051] TURYSTA(1457): Turysta #46 wybiera trasę zjazdową T1 (łatwa)
+[23:01:55.051] PRACOWNIK2(1409): Turysta #84 wypuszczony przez bramkę wyjściową #1
+[23:01:55.052] PRACOWNIK2(1409): Turysta #84 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:55.060] PRACOWNIK2(1409): Turysta #46 wypuszczony przez bramkę wyjściową #2
+[23:01:55.064] PRACOWNIK2(1409): Turysta #46 zjeżdża trasą T1 (łatwa) (1s)
+[23:01:56.003] TURYSTA(1494): Turysta #76 zakończył trasę zjazdową i dotarł na stację dolną (bilet #60)
+[23:01:56.003] PRACOWNIK2(1409): Turysta #76 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:56.007] PRACOWNIK2(1409): Turysta #68 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:01:56.007] TURYSTA(1494): Turysta #76 kończy wizytę (przejazdy: 2)
+[23:01:56.007] TURYSTA(1486): Turysta #68 zakończył trasę zjazdową i dotarł na stację dolną (bilet #29)
+[23:01:56.008] TURYSTA(1502): Turysta #84 zakończył trasę zjazdową i dotarł na stację dolną (bilet #74)
+[23:01:56.007] PRACOWNIK2(1409): Turysta #46 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:56.007] PRACOWNIK2(1409): Turysta #84 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:01:56.008] KRZESEŁKO(1409): Krzesełko #54 dotarło na górną stację z 2 pasażerami
+[23:01:56.017] TURYSTA(1489): Turysta #71 wybiera trasę zjazdową T2 (średnia)
+[23:01:56.017] PRACOWNIK2(1409): Turysta #67 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:56.017] TURYSTA(1488): Turysta #70 wybiera trasę zjazdową T2 (średnia)
+[23:01:56.017] TURYSTA(1457): Turysta #46 zakończył trasę zjazdową i dotarł na stację dolną (bilet #63)
+[23:01:56.017] TURYSTA(1486): Turysta #68 kończy wizytę (przejazdy: 2)
+[23:01:56.019] TURYSTA(1457): Turysta #46 - bilet czasowy wygasł!
+[23:01:56.020] TURYSTA(1485): Turysta #67 zakończył trasę zjazdową i dotarł na stację dolną (bilet #68)
+[23:01:56.020] TURYSTA(1457): Turysta #46 kończy wizytę (przejazdy: 2)
+[23:01:56.020] TURYSTA(1485): Turysta #67 - bilet czasowy wygasł!
+[23:01:56.020] PRACOWNIK2(1409): Turysta #70 wypuszczony przez bramkę wyjściową #1
+[23:01:56.020] TURYSTA(1485): Turysta #67 kończy wizytę (przejazdy: 2)
+[23:01:56.020] PRACOWNIK2(1409): Turysta #70 zjeżdża trasą T2 (średnia) (2s)
+[23:01:56.023] PRACOWNIK2(1409): Turysta #71 wypuszczony przez bramkę wyjściową #2
+[23:01:56.029] TURYSTA(1502): Turysta #84 wpuszczony przez bramkę wejściową #1 (bilet #74)
+[23:01:56.029] PRACOWNIK2(1409): Turysta #71 zjeżdża trasą T2 (średnia) (2s)
+[23:01:56.031] TURYSTA(1502): Turysta #84 wszedł na stację dolną (bilet #74, typ: rowerzysta)
+[23:01:56.035] TURYSTA(1502): Turysta #84 przeszedł na peron (bramka peronowa #1, bilet #74)
+[23:01:56.035] PRACOWNIK1(1408): Turysta #84 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:01:56.047] PRACOWNIK1(1408): Wpuszczam turyste #84(R) na krzesełko
+[23:01:56.055] KRZESEŁKO(1408): Krzesełko #55 odjeżdża z pasażerami: [#84(R)] (R:1, P:0)
+[23:01:58.003] PRACOWNIK2(1409): Turysta #71 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:58.004] TURYSTA(1489): Turysta #71 zakończył trasę zjazdową i dotarł na stację dolną (bilet #39)
+[23:01:58.004] TURYSTA(1488): Turysta #70 zakończył trasę zjazdową i dotarł na stację dolną (bilet #35)
+[23:01:58.003] PRACOWNIK2(1409): Turysta #70 zakończył zjazd trasą T2 (średnia) i zjeżdża na dół
+[23:01:58.004] TURYSTA(1489): Turysta #71 kończy wizytę (przejazdy: 3)
+[23:01:58.003] KRZESEŁKO(1409): Krzesełko #55 dotarło na górną stację z 1 pasażerami
+[23:01:58.004] TURYSTA(1502): Turysta #84 wybiera trasę zjazdową T3 (trudna)
+[23:01:58.005] PRACOWNIK2(1409): Turysta #84 wypuszczony przez bramkę wyjściową #1
+[23:01:58.006] PRACOWNIK2(1409): Turysta #84 zjeżdża trasą T3 (trudna) (3s)
+[23:01:58.006] TURYSTA(1488): Turysta #70 wpuszczony przez bramkę wejściową #3 (bilet #35)
+[23:01:58.014] TURYSTA(1488): Turysta #70 wszedł na stację dolną (bilet #35, typ: rowerzysta)
+[23:01:58.018] TURYSTA(1488): Turysta #70 przeszedł na peron (bramka peronowa #2, bilet #35)
+[23:01:58.018] PRACOWNIK1(1408): Turysta #70 wpuszczony przez bramkę peronową #3 (typ: rowerzysta, dzieci: 0)
+[23:01:58.020] PRACOWNIK1(1408): Wpuszczam turyste #70(R) na krzesełko
+[23:01:58.031] KRZESEŁKO(1408): Krzesełko #56 odjeżdża z pasażerami: [#70(R)] (R:1, P:0)
+[23:01:59.003] AWARIA(1408): PRACOWNIK1: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:01:59.019] AWARIA(1409): PRACOWNIK2: Odebrano sygnał AWARII od worker1!
+[23:01:59.023] AWARIA(1409): PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)
+[23:01:59.031] AWARIA(1408): PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...
+[23:02:01.007] PRACOWNIK2(1409): Turysta #84 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:02:01.007] TURYSTA(1502): Turysta #84 zakończył trasę zjazdową i dotarł na stację dolną (bilet #74)
+[23:02:01.015] TURYSTA(1502): Turysta #84 wpuszczony przez bramkę wejściową #1 (bilet #74)
+[23:02:01.015] TURYSTA(1502): Turysta #84 wszedł na stację dolną (bilet #74, typ: rowerzysta)
+[23:02:04.004] AWARIA(1409): PRACOWNIK2: Otrzymano sygnał WZNOWIENIA od worker1!
+[23:02:04.004] AWARIA(1408): PRACOWNIK1: Kolej WZNOWIONA - normalny ruch!
+[23:02:04.005] TURYSTA(1502): Turysta #84 przeszedł na peron (bramka peronowa #1, bilet #74)
+[23:02:04.005] KRZESEŁKO(1409): Krzesełko #56 dotarło na górną stację z 1 pasażerami
+[23:02:04.007] TURYSTA(1488): Turysta #70 wybiera trasę zjazdową T1 (łatwa)
+[23:02:04.007] AWARIA(1409): PRACOWNIK2: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:02:04.006] PRACOWNIK1(1408): Turysta #84 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:02:04.013] AWARIA(1408): PRACOWNIK1: Odebrano sygnał AWARII od worker2!
+[23:02:04.013] AWARIA(1408): PRACOWNIK1: Potwierdzam gotowość (awaria od worker2)
+[23:02:04.022] AWARIA(1409): PRACOWNIK2: Worker1 gotowy - Zatrzymanie ruchu kolei
+[23:02:09.003] AWARIA(1409): PRACOWNIK2: Kolej WZNOWIONA - normalny ruch!
+[23:02:09.003] AWARIA(1408): Otrzymano sygnał wznowienia od worker2
+[23:02:09.003] PRACOWNIK2(1409): Turysta #70 wypuszczony przez bramkę wyjściową #2
+[23:02:09.004] PRACOWNIK1(1408): Wpuszczam turyste #84(R) na krzesełko
+[23:02:09.004] PRACOWNIK2(1409): Turysta #70 zjeżdża trasą T1 (łatwa) (1s)
+[23:02:09.008] KRZESEŁKO(1408): Krzesełko #57 odjeżdża z pasażerami: [#84(R)] (R:1, P:0)
+[23:02:10.004] PRACOWNIK2(1409): Turysta #70 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:02:10.005] TURYSTA(1488): Turysta #70 zakończył trasę zjazdową i dotarł na stację dolną (bilet #35)
+[23:02:10.006] TURYSTA(1488): Turysta #70 wpuszczony przez bramkę wejściową #3 (bilet #35)
+[23:02:10.007] TURYSTA(1488): Turysta #70 wszedł na stację dolną (bilet #35, typ: rowerzysta)
+[23:02:10.007] TURYSTA(1488): Turysta #70 przeszedł na peron (bramka peronowa #2, bilet #35)
+[23:02:10.011] PRACOWNIK1(1408): Turysta #70 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:02:10.016] PRACOWNIK1(1408): Wpuszczam turyste #70(R) na krzesełko
+[23:02:10.021] KRZESEŁKO(1408): Krzesełko #58 odjeżdża z pasażerami: [#70(R)] (R:1, P:0)
+[23:02:11.007] KRZESEŁKO(1409): Krzesełko #57 dotarło na górną stację z 1 pasażerami
+[23:02:11.008] TURYSTA(1502): Turysta #84 wybiera trasę zjazdową T3 (trudna)
+[23:02:11.011] PRACOWNIK2(1409): Turysta #84 wypuszczony przez bramkę wyjściową #1
+[23:02:11.012] PRACOWNIK2(1409): Turysta #84 zjeżdża trasą T3 (trudna) (3s)
+[23:02:12.005] KRZESEŁKO(1409): Krzesełko #58 dotarło na górną stację z 1 pasażerami
+[23:02:12.011] TURYSTA(1488): Turysta #70 wybiera trasę zjazdową T3 (trudna)
+[23:02:12.015] PRACOWNIK2(1409): Turysta #70 wypuszczony przez bramkę wyjściową #2
+[23:02:12.015] PRACOWNIK2(1409): Turysta #70 zjeżdża trasą T3 (trudna) (3s)
+[23:02:13.015] AWARIA(1408): PRACOWNIK1: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:02:13.028] AWARIA(1409): PRACOWNIK2: Odebrano sygnał AWARII od worker1!
+[23:02:13.031] AWARIA(1409): PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)
+[23:02:13.031] AWARIA(1408): PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...
+[23:02:14.004] PRACOWNIK2(1409): Turysta #84 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:02:14.004] TURYSTA(1502): Turysta #84 zakończył trasę zjazdową i dotarł na stację dolną (bilet #74)
+[23:02:14.005] TURYSTA(1502): Turysta #84 wpuszczony przez bramkę wejściową #1 (bilet #74)
+[23:02:14.005] TURYSTA(1502): Turysta #84 wszedł na stację dolną (bilet #74, typ: rowerzysta)
+[23:02:15.003] TURYSTA(1488): Turysta #70 zakończył trasę zjazdową i dotarł na stację dolną (bilet #35)
+[23:02:15.003] PRACOWNIK2(1409): Turysta #70 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:02:15.004] TURYSTA(1488): Turysta #70 kończy wizytę (przejazdy: 5)
+[23:02:18.003] AWARIA(1408): PRACOWNIK1: Kolej WZNOWIONA - normalny ruch!
+[23:02:18.003] AWARIA(1409): PRACOWNIK2: Otrzymano sygnał WZNOWIENIA od worker1!
+[23:02:18.004] TURYSTA(1502): Turysta #84 przeszedł na peron (bramka peronowa #1, bilet #74)
+[23:02:18.004] AWARIA(1408): PRACOWNIK1: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:02:18.004] PRACOWNIK1(1408): Turysta #84 wpuszczony przez bramkę peronową #3 (zdążył przed awarią, typ: rowerzysta)
+[23:02:18.004] AWARIA(1409): PRACOWNIK2: Odebrano sygnał AWARII od worker1!
+[23:02:18.005] AWARIA(1409): PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)
+[23:02:18.005] AWARIA(1408): PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...
+[23:02:23.003] AWARIA(1409): PRACOWNIK2: Otrzymano sygnał WZNOWIENIA od worker1!
+[23:02:23.003] AWARIA(1408): PRACOWNIK1: Kolej WZNOWIONA - normalny ruch!
+[23:02:23.004] PRACOWNIK1(1408): Wpuszczam turyste #84(R) na krzesełko
+[23:02:23.005] KRZESEŁKO(1408): Krzesełko #59 odjeżdża z pasażerami: [#84(R)] (R:1, P:0)
+[23:02:25.003] KRZESEŁKO(1409): Krzesełko #59 dotarło na górną stację z 1 pasażerami
+[23:02:25.004] TURYSTA(1502): Turysta #84 wybiera trasę zjazdową T3 (trudna)
+[23:02:25.004] PRACOWNIK2(1409): Turysta #84 wypuszczony przez bramkę wyjściową #1
+[23:02:25.004] PRACOWNIK2(1409): Turysta #84 zjeżdża trasą T3 (trudna) (3s)
+[23:02:28.003] PRACOWNIK2(1409): Turysta #84 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+[23:02:28.003] TURYSTA(1502): Turysta #84 zakończył trasę zjazdową i dotarł na stację dolną (bilet #74)
+[23:02:28.003] AWARIA(1408): PRACOWNIK1: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:02:28.006] AWARIA(1409): PRACOWNIK2: Odebrano sygnał AWARII od worker1!
+[23:02:28.006] AWARIA(1409): PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)
+[23:02:28.006] AWARIA(1408): PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...
+[23:02:28.012] TURYSTA(1502): Turysta #84 wpuszczony przez bramkę wejściową #1 (bilet #74)
+[23:02:28.012] TURYSTA(1502): Turysta #84 wszedł na stację dolną (bilet #74, typ: rowerzysta)
+[23:02:33.003] AWARIA(1409): PRACOWNIK2: Otrzymano sygnał WZNOWIENIA od worker1!
+[23:02:33.003] AWARIA(1408): PRACOWNIK1: Kolej WZNOWIONA - normalny ruch!
+[23:02:33.003] TURYSTA(1502): Turysta #84 przeszedł na peron (bramka peronowa #1, bilet #74)
+[23:02:33.004] PRACOWNIK1(1408): Turysta #84 wpuszczony przez bramkę peronową #1 (typ: rowerzysta, dzieci: 0)
+[23:02:33.004] PRACOWNIK1(1408): Wpuszczam turyste #84(R) na krzesełko
+[23:02:33.004] KRZESEŁKO(1408): Krzesełko #60 odjeżdża z pasażerami: [#84(R)] (R:1, P:0)
+[23:02:35.003] KRZESEŁKO(1409): Krzesełko #60 dotarło na górną stację z 1 pasażerami
+[23:02:35.004] TURYSTA(1502): Turysta #84 wybiera trasę zjazdową T1 (łatwa)
+[23:02:35.004] PRACOWNIK2(1409): Turysta #84 wypuszczony przez bramkę wyjściową #2
+[23:02:35.005] PRACOWNIK2(1409): Turysta #84 zjeżdża trasą T1 (łatwa) (1s)
+[23:02:36.003] PRACOWNIK2(1409): Turysta #84 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:02:36.003] TURYSTA(1502): Turysta #84 zakończył trasę zjazdową i dotarł na stację dolną (bilet #74)
+[23:02:36.005] TURYSTA(1502): Turysta #84 wpuszczony przez bramkę wejściową #1 (bilet #74)
+[23:02:36.005] TURYSTA(1502): Turysta #84 wszedł na stację dolną (bilet #74, typ: rowerzysta)
+[23:02:36.006] TURYSTA(1502): Turysta #84 przeszedł na peron (bramka peronowa #1, bilet #74)
+[23:02:36.006] PRACOWNIK1(1408): Turysta #84 wpuszczony przez bramkę peronową #2 (typ: rowerzysta, dzieci: 0)
+[23:02:36.006] PRACOWNIK1(1408): Wpuszczam turyste #84(R) na krzesełko
+[23:02:36.007] KRZESEŁKO(1408): Krzesełko #61 odjeżdża z pasażerami: [#84(R)] (R:1, P:0)
+[23:02:38.003] KRZESEŁKO(1409): Krzesełko #61 dotarło na górną stację z 1 pasażerami
+[23:02:38.004] TURYSTA(1502): Turysta #84 wybiera trasę zjazdową T1 (łatwa)
+[23:02:38.004] PRACOWNIK2(1409): Turysta #84 wypuszczony przez bramkę wyjściową #1
+[23:02:38.004] PRACOWNIK2(1409): Turysta #84 zjeżdża trasą T1 (łatwa) (1s)
+[23:02:39.003] PRACOWNIK2(1409): Turysta #84 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+[23:02:39.004] TURYSTA(1502): Turysta #84 zakończył trasę zjazdową i dotarł na stację dolną (bilet #74)
+[23:02:39.004] TURYSTA(1502): Turysta #84 kończy wizytę (przejazdy: 7)
+[23:02:48.003] AWARIA(1409): PRACOWNIK2: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:02:48.004] AWARIA(1408): PRACOWNIK1: Odebrano sygnał AWARII od worker2!
+[23:02:48.004] AWARIA(1408): PRACOWNIK1: Potwierdzam gotowość (awaria od worker2)
+[23:02:48.004] AWARIA(1409): PRACOWNIK2: Worker1 gotowy - Zatrzymanie ruchu kolei
+[23:02:53.003] AWARIA(1408): Otrzymano sygnał wznowienia od worker2
+[23:02:53.003] AWARIA(1409): PRACOWNIK2: Kolej WZNOWIONA - normalny ruch!
+[23:02:56.003] AWARIA(1408): PRACOWNIK1: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:02:56.004] AWARIA(1409): PRACOWNIK2: Odebrano sygnał AWARII od worker1!
+[23:02:56.004] AWARIA(1409): PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)
+[23:02:56.004] AWARIA(1408): PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...
+[23:03:01.004] AWARIA(1408): PRACOWNIK1: Kolej WZNOWIONA - normalny ruch!
+[23:03:01.004] AWARIA(1409): PRACOWNIK2: Otrzymano sygnał WZNOWIENIA od worker1!
+[23:03:04.003] AWARIA(1409): PRACOWNIK2: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:03:04.004] AWARIA(1408): PRACOWNIK1: Odebrano sygnał AWARII od worker2!
+[23:03:04.004] AWARIA(1408): PRACOWNIK1: Potwierdzam gotowość (awaria od worker2)
+[23:03:04.004] AWARIA(1409): PRACOWNIK2: Worker1 gotowy - Zatrzymanie ruchu kolei
+[23:03:09.003] AWARIA(1409): PRACOWNIK2: Kolej WZNOWIONA - normalny ruch!
+[23:03:09.004] AWARIA(1408): Otrzymano sygnał wznowienia od worker2
+[23:03:09.004] AWARIA(1408): PRACOWNIK1: Inicjuję AWARYJNE ZATRZYMANIE kolei!
+[23:03:09.005] AWARIA(1409): PRACOWNIK2: Odebrano sygnał AWARII od worker1!
+[23:03:09.005] AWARIA(1409): PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)
+[23:03:09.006] AWARIA(1408): PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...
+[23:03:14.004] AWARIA(1408): PRACOWNIK1: Kolej WZNOWIONA - normalny ruch!
+[23:03:14.005] AWARIA(1409): PRACOWNIK2: Otrzymano sygnał WZNOWIENIA od worker1!
+[23:03:30.003] SYSTEM(1407): Osiągnięto czas Tk - zamykam bramki wejściowe
+[23:03:30.003] SYSTEM(1407): Brak aktywnych turystów
+[23:03:30.004] PRACOWNIK1(1408): Koniec dnia - wszyscy turyści obsłużeni
+[23:03:30.004] SYSTEM(1407): Oczekiwanie 3 sekund przed wyłączeniem...
+[23:03:30.004] PRACOWNIK1(1408): Kończę pracę na stacji dolnej
+[23:03:33.003] SYSTEM(1407): Zamykanie symulacji...
+[23:03:33.003] PRACOWNIK2(1409): Symulacja zakończona
+[23:03:33.003] KASJER(1410): Zamykam kasę - koniec pracy!
+[23:03:33.004] PRACOWNIK2(1409): Kończę pracę na stacji górnej
+[23:03:33.005] SYSTEM(1407): (kasa: 0, stacja: 0, peron: 0, krzesełka: 0, góra: 0, zjazd: 0)
+[23:03:33.006] SYSTEM(1407): Generowanie raportu końcowego...
+[23:03:33.041] RAPORT: 
+[23:03:33.042] RAPORT: ============================================================
+[23:03:33.042] RAPORT:          RAPORT KONCOWY SYMULACJI KOLEI LINOWEJ
+[23:03:33.043] RAPORT: ============================================================
+[23:03:33.043] RAPORT: 
+[23:03:33.043] RAPORT: 1. SPRZEDAZ BILETOW:
+[23:03:33.043] RAPORT:    Jednorazowe (SINGLE):     12 szt.
+[23:03:33.044] RAPORT:    Czasowe TK1 (1h):         25 szt.
+[23:03:33.044] RAPORT:    Czasowe TK2 (2h):         28 szt.
+[23:03:33.044] RAPORT:    Czasowe TK3 (3h):         17 szt.
+[23:03:33.045] RAPORT:    Dzienne (DAILY):          22 szt.
+[23:03:33.045] RAPORT:    RAZEM:                    104 szt.
+[23:03:33.046] RAPORT: 
+[23:03:33.046] RAPORT: 2. STATYSTYKI PRZEJAZDOW:
+[23:03:33.046] RAPORT:    Odjazdy krzeselek:        61
+[23:03:33.047] RAPORT:    Przewiezione osoby:       133
+[23:03:33.047] RAPORT:    - Rowerzysci:             82
+[23:03:33.047] RAPORT:    - Piesi:                  51
+[23:03:33.048] RAPORT:    Sr. osob/krzeslo:         2.18
+[23:03:33.048] RAPORT: 
+[23:03:33.048] RAPORT: 3. KATEGORIE SPECJALNE:
+[23:03:33.048] RAPORT:    VIP obsluzeni:            0
+[23:03:33.049] RAPORT:    Dzieci z opiekunem:       10
+[23:03:33.049] RAPORT:    Odrzuceni (wygasly):      0
+[23:03:33.049] RAPORT: 
+[23:03:33.050] RAPORT: 4. TRASY ZJAZDOWE:
+[23:03:33.050] RAPORT:    T1 (latwa, 1s):          29 turystow
+[23:03:33.050] RAPORT:    T2 (srednia, 2s):        25 turystow
+[23:03:33.051] RAPORT:    T3 (trudna, 3s):         17 turystow
+[23:03:33.051] RAPORT:    RAZEM na trasach:         71 turystow
+[23:03:33.051] RAPORT: 
+[23:03:33.052] RAPORT: 5. PODSUMOWANIE TURYSTOW:
+[23:03:33.052] RAPORT:    Utworzonych turystow:     111
+[23:03:33.052] RAPORT:    Zakonczonych wizyt:       111
+[23:03:33.053] RAPORT: 
+[23:03:33.053] RAPORT: ============================================================
+[23:03:33.053] RAPORT: 
+[23:03:33.054] SYSTEM(1407): Sprzątanie zasobów...
+========== KONIEC SYMULACJI ==========

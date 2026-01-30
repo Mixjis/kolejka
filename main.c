@@ -263,7 +263,7 @@ int main(void) {
             int age;
             int age_roll = rand() % 100;
             if (age_roll < 15) {
-                age = 4 + rand() % 6; // 4-9 lat (dzieci)
+                age = 8 + rand() % 2; // 8-9 lat (dzieci samodzielne)
             } else if (age_roll < 25) {
                 age = 10 + rand() % 8; // 10-17 lat (młodzież)
             } else if (age_roll < 85) {

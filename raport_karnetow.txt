@@ -1,0 +1,263 @@
+============================================================
+         RAPORT KARNETOW - KOLEJ LINOWA
+============================================================
+
+PRZEJSCIA PRZEZ BRAMKI (ID KARNETU - GODZINA):
+------------------------------------------------------------
+Karnet #1 - 23:01:37
+Karnet #3 - 23:01:37
+Karnet #5 - 23:01:37
+Karnet #2 - 23:01:37
+Karnet #7 - 23:01:37
+Karnet #4 - 23:01:37
+Karnet #8 - 23:01:37
+Karnet #9 - 23:01:37
+Karnet #12 - 23:01:37
+Karnet #10 - 23:01:37
+Karnet #15 - 23:01:37
+Karnet #6 - 23:01:37
+Karnet #11 - 23:01:37
+Karnet #13 - 23:01:37
+Karnet #16 - 23:01:37
+Karnet #14 - 23:01:37
+Karnet #18 - 23:01:37
+Karnet #20 - 23:01:37
+Karnet #17 - 23:01:37
+Karnet #22 - 23:01:37
+Karnet #19 - 23:01:37
+Karnet #21 - 23:01:37
+Karnet #23 - 23:01:37
+Karnet #24 - 23:01:37
+Karnet #25 - 23:01:37
+Karnet #27 - 23:01:37
+Karnet #28 - 23:01:37
+Karnet #26 - 23:01:37
+Karnet #29 - 23:01:37
+Karnet #31 - 23:01:37
+Karnet #30 - 23:01:37
+Karnet #35 - 23:01:37
+Karnet #34 - 23:01:37
+Karnet #36 - 23:01:37
+Karnet #32 - 23:01:37
+Karnet #38 - 23:01:37
+Karnet #37 - 23:01:37
+Karnet #39 - 23:01:38
+Karnet #33 - 23:01:38
+Karnet #40 - 23:01:38
+Karnet #41 - 23:01:38
+Karnet #45 - 23:01:38
+Karnet #43 - 23:01:38
+Karnet #44 - 23:01:38
+Karnet #42 - 23:01:38
+Karnet #46 - 23:01:38
+Karnet #47 - 23:01:38
+Karnet #48 - 23:01:38
+Karnet #51 - 23:01:38
+Karnet #50 - 23:01:38
+Karnet #49 - 23:01:38
+Karnet #52 - 23:01:38
+Karnet #56 - 23:01:38
+Karnet #54 - 23:01:38
+Karnet #55 - 23:01:38
+Karnet #53 - 23:01:38
+Karnet #57 - 23:01:38
+Karnet #58 - 23:01:38
+Karnet #63 - 23:01:38
+Karnet #60 - 23:01:38
+Karnet #61 - 23:01:38
+Karnet #59 - 23:01:38
+Karnet #67 - 23:01:38
+Karnet #64 - 23:01:38
+Karnet #62 - 23:01:38
+Karnet #65 - 23:01:38
+Karnet #68 - 23:01:38
+Karnet #66 - 23:01:38
+Karnet #69 - 23:01:38
+Karnet #71 - 23:01:38
+Karnet #70 - 23:01:38
+Karnet #72 - 23:01:38
+Karnet #73 - 23:01:38
+Karnet #74 - 23:01:38
+Karnet #75 - 23:01:38
+Karnet #77 - 23:01:38
+Karnet #76 - 23:01:38
+Karnet #84 - 23:01:38
+Karnet #78 - 23:01:38
+Karnet #81 - 23:01:38
+Karnet #92 - 23:01:38
+Karnet #79 - 23:01:38
+Karnet #80 - 23:01:38
+Karnet #93 - 23:01:38
+Karnet #89 - 23:01:38
+Karnet #82 - 23:01:38
+Karnet #83 - 23:01:38
+Karnet #88 - 23:01:38
+Karnet #85 - 23:01:38
+Karnet #87 - 23:01:38
+Karnet #90 - 23:01:38
+Karnet #94 - 23:01:38
+Karnet #86 - 23:01:38
+Karnet #91 - 23:01:38
+Karnet #1 - 23:01:44
+Karnet #15 - 23:01:44
+Karnet #12 - 23:01:44
+Karnet #9 - 23:01:45
+Karnet #29 - 23:01:46
+Karnet #52 - 23:01:46
+Karnet #35 - 23:01:46
+Karnet #39 - 23:01:47
+Karnet #49 - 23:01:48
+Karnet #60 - 23:01:48
+Karnet #30 - 23:01:48
+Karnet #59 - 23:01:49
+Karnet #68 - 23:01:52
+Karnet #93 - 23:01:52
+Karnet #63 - 23:01:53
+Karnet #74 - 23:01:53
+Karnet #35 - 23:01:54
+Karnet #39 - 23:01:54
+Karnet #74 - 23:01:56
+Karnet #35 - 23:01:58
+Karnet #74 - 23:02:01
+Karnet #35 - 23:02:10
+Karnet #74 - 23:02:14
+Karnet #74 - 23:02:28
+Karnet #74 - 23:02:36
+
+============================================================
+
+PODSUMOWANIE LICZBY PRZEJAZDOW PER KARNET:
+------------------------------------------------------------
+Karnet #1: 2 przejazd(ow)
+Karnet #2: 1 przejazd(ow)
+Karnet #3: 1 przejazd(ow)
+Karnet #4: 1 przejazd(ow)
+Karnet #5: 1 przejazd(ow)
+Karnet #6: 1 przejazd(ow)
+Karnet #7: 1 przejazd(ow)
+Karnet #8: 1 przejazd(ow)
+Karnet #9: 2 przejazd(ow)
+Karnet #10: 1 przejazd(ow)
+Karnet #11: 1 przejazd(ow)
+Karnet #12: 2 przejazd(ow)
+Karnet #13: 1 przejazd(ow)
+Karnet #14: 1 przejazd(ow)
+Karnet #15: 2 przejazd(ow)
+Karnet #16: 1 przejazd(ow)
+Karnet #17: 1 przejazd(ow)
+Karnet #18: 1 przejazd(ow)
+Karnet #19: 1 przejazd(ow)
+Karnet #20: 1 przejazd(ow)
+Karnet #21: 1 przejazd(ow)
+Karnet #22: 1 przejazd(ow)
+Karnet #23: 1 przejazd(ow)
+Karnet #24: 1 przejazd(ow)
+Karnet #25: 1 przejazd(ow)
+Karnet #26: 1 przejazd(ow)
+Karnet #27: 1 przejazd(ow)
+Karnet #28: 1 przejazd(ow)
+Karnet #29: 2 przejazd(ow)
+Karnet #30: 2 przejazd(ow)
+Karnet #31: 1 przejazd(ow)
+Karnet #32: 1 przejazd(ow)
+Karnet #33: 1 przejazd(ow)
+Karnet #34: 1 przejazd(ow)
+Karnet #35: 5 przejazd(ow)
+Karnet #36: 1 przejazd(ow)
+Karnet #37: 1 przejazd(ow)
+Karnet #38: 1 przejazd(ow)
+Karnet #39: 3 przejazd(ow)
+Karnet #40: 1 przejazd(ow)
+Karnet #41: 1 przejazd(ow)
+Karnet #42: 1 przejazd(ow)
+Karnet #43: 1 przejazd(ow)
+Karnet #44: 1 przejazd(ow)
+Karnet #45: 1 przejazd(ow)
+Karnet #46: 1 przejazd(ow)
+Karnet #47: 1 przejazd(ow)
+Karnet #48: 1 przejazd(ow)
+Karnet #49: 2 przejazd(ow)
+Karnet #50: 1 przejazd(ow)
+Karnet #51: 1 przejazd(ow)
+Karnet #52: 2 przejazd(ow)
+Karnet #53: 1 przejazd(ow)
+Karnet #54: 1 przejazd(ow)
+Karnet #55: 1 przejazd(ow)
+Karnet #56: 1 przejazd(ow)
+Karnet #57: 1 przejazd(ow)
+Karnet #58: 1 przejazd(ow)
+Karnet #59: 2 przejazd(ow)
+Karnet #60: 2 przejazd(ow)
+Karnet #61: 1 przejazd(ow)
+Karnet #62: 1 przejazd(ow)
+Karnet #63: 2 przejazd(ow)
+Karnet #64: 1 przejazd(ow)
+Karnet #65: 1 przejazd(ow)
+Karnet #66: 1 przejazd(ow)
+Karnet #67: 1 przejazd(ow)
+Karnet #68: 2 przejazd(ow)
+Karnet #69: 1 przejazd(ow)
+Karnet #70: 1 przejazd(ow)
+Karnet #71: 1 przejazd(ow)
+Karnet #72: 1 przejazd(ow)
+Karnet #73: 1 przejazd(ow)
+Karnet #74: 7 przejazd(ow)
+Karnet #75: 1 przejazd(ow)
+Karnet #76: 1 przejazd(ow)
+Karnet #77: 1 przejazd(ow)
+Karnet #78: 1 przejazd(ow)
+Karnet #79: 1 przejazd(ow)
+Karnet #80: 1 przejazd(ow)
+Karnet #81: 1 przejazd(ow)
+Karnet #82: 1 przejazd(ow)
+Karnet #83: 1 przejazd(ow)
+Karnet #84: 1 przejazd(ow)
+Karnet #85: 1 przejazd(ow)
+Karnet #86: 1 przejazd(ow)
+Karnet #87: 1 przejazd(ow)
+Karnet #88: 1 przejazd(ow)
+Karnet #89: 1 przejazd(ow)
+Karnet #90: 1 przejazd(ow)
+Karnet #91: 1 przejazd(ow)
+Karnet #92: 1 przejazd(ow)
+Karnet #93: 2 przejazd(ow)
+
+============================================================
+
+
+============================================================
+         RAPORT KONCOWY SYMULACJI KOLEI LINOWEJ
+============================================================
+
+1. SPRZEDAZ BILETOW:
+   Jednorazowe (SINGLE):     12 szt.
+   Czasowe TK1 (1h):         25 szt.
+   Czasowe TK2 (2h):         28 szt.
+   Czasowe TK3 (3h):         17 szt.
+   Dzienne (DAILY):          22 szt.
+   RAZEM:                    104 szt.
+
+2. STATYSTYKI PRZEJAZDOW:
+   Odjazdy krzeselek:        61
+   Przewiezione osoby:       133
+   - Rowerzysci:             82
+   - Piesi:                  51
+   Sr. osob/krzeslo:         2.18
+
+3. KATEGORIE SPECJALNE:
+   VIP obsluzeni:            0
+   Dzieci z opiekunem:       10
+   Odrzuceni (wygasly):      0
+
+4. TRASY ZJAZDOWE:
+   T1 (latwa, 1s):          29 turystow
+   T2 (srednia, 2s):        25 turystow
+   T3 (trudna, 3s):         17 turystow
+   RAZEM na trasach:         71 turystow
+
+5. PODSUMOWANIE TURYSTOW:
+   Utworzonych turystow:     111
+   Zakonczonych wizyt:       111
+
+============================================================
+

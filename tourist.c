@@ -226,6 +226,7 @@ bool is_ticket_valid(void) {
 
 // Przejście przez bramkę wejściową
 bool enter_station(void) {
+
     // Sprawdź czy bramki są otwarte
     sem_opusc(g_sem_id, SEM_MAIN);
     bool gates_closed = g_shm->gates_closed;
@@ -245,10 +246,8 @@ bool enter_station(void) {
         return false;
     }
     
-    // Czekaj na semafor stacji (limit N osób) - z timeoutem
-    //int timeout = 0;
+    // Czekaj na semafor stacji (limit N osób)
     while (sem_probuj_opusc(g_sem_id, SEM_STATION) != 1) {
-        //if (shutdown_flag || timeout >= 300) {
         if (shutdown_flag) {
             return false;
         }
@@ -263,9 +262,6 @@ bool enter_station(void) {
             return false;
         }
         if (!running) return false;
-        
-        //usleep(100000); // 100ms
-        //timeout++;
     }
     
     // Jeszcze raz sprawdź bramki po uzyskaniu dostępu do stacji
@@ -280,10 +276,8 @@ bool enter_station(void) {
         return false;
     }
     
-    // Czekaj na bramkę wejściową (4 bramki) - z timeoutem
-    //timeout = 0;
+    // Czekaj na bramkę wejściową (4 bramki)
     while (sem_probuj_opusc(g_sem_id, SEM_GATE_ENTRY) != 1) {
-        //if (shutdown_flag || timeout >= 100) { // max 10 sekund
         if (shutdown_flag) {
             sem_podnies(g_sem_id, SEM_STATION); // Zwolnij stację
             return false;
@@ -297,11 +291,9 @@ bool enter_station(void) {
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
-        //usleep(100000);
-        //timeout++;
     }
     
-    // Przydziel numer bramki wejściowej (round-robin)
+    // Przydziel numer bramki wejściowej
     sem_opusc(g_sem_id, SEM_MAIN);
     g_entry_gate = (g_tourist_id % ENTRY_GATES) + 1;
     g_shm->tourists_in_station++;
@@ -310,15 +302,23 @@ bool enter_station(void) {
     // Rejestruj przejście przez bramkę (id karnetu - godzina)
     rejestruj_przejscie_bramki(g_ticket_id);
     
+    if (g_ticket_type >= TICKET_TK1 && g_ticket_type <= TICKET_TK3) {
+        time_t remaining = g_ticket_valid_until - time(NULL);
+        if (remaining > 0) {
+            logger(LOG_TOURIST, "Turysta #%d - pozostały czas biletu: %ld sekund", 
+            g_tourist_id, remaining);
+        }
+    }
+
     // Log przejścia przez bramkę wejściową
     const char* vip_str = g_is_vip ? " [VIP]" : "";
     logger(LOG_TOURIST, "Turysta #%d%s wpuszczony przez bramkę wejściową #%d (bilet #%d)",
            g_tourist_id, vip_str, g_entry_gate, g_ticket_id);
     
     // Symulacja przejścia
-    //usleep(10000 + rand() % 20000); // 10-30ms
+    // usleep(10000 + rand() % 20000);
     
-    // Zwolnij bramkę (semafor stacji po dopiero po wyjściu zwolnie)
+    // Zwolnij bramkę 
     sem_podnies(g_sem_id, SEM_GATE_ENTRY);
     
     logger(LOG_TOURIST, "Turysta #%d%s wszedł na stację dolną (bilet #%d, typ: %s)",
