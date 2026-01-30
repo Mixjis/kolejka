@@ -175,10 +175,17 @@ void* chair_thread(void* arg) {
     time_t start_time = time(NULL);
     int travel_time = CHAIR_TRAVEL_TIME;
     
+    // Obliczanie liczby pasażerów z dziećmi
+    int total_children = 0;
+    for (int i = 0; i < group->count; i++) {
+        total_children += group->children_counts[i];
+    }
+    int total_passengers = group->count + total_children;
+
     // Aktualizuj statystyki
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->chair_departures++;
-    g_shm->passengers_transported += group->count;
+    g_shm->passengers_transported += total_passengers;
     g_shm->cyclists_transported += group->cyclists;
     g_shm->pedestrians_transported += group->pedestrians;
     g_shm->active_chairs++;

@@ -20,7 +20,11 @@ typedef enum {
 
 // Inicjalizacja i zamykanie loggera
 void logger_init(void);
-void logger_init_child(void);  // Dla procesów potomnych (po fork)
+
+// inicjalizacja dla procesów potomnych
+void logger_init_child(void);
+
+// Zamknięcie loggera
 void logger_close(void);
 
 // Główna funkcja logowania
@@ -28,6 +32,9 @@ void logger(LogSender sender, const char* format, ...);
 
 // Logowanie bez koloru (do pliku raportu)
 void logger_report(const char* format, ...);
+
+// Zapis tylko do pliku raportu
+void logger_report_file_only(const char* format, ...);
 
 // Czyszczenie plików logów
 void logger_clear_files(void);

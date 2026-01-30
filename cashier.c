@@ -283,6 +283,11 @@ int main(void) {
             // Dzieci z opiekunem
             if (tourist.children_count > 0) {
                 shm->children_with_guardian += tourist.children_count;
+                for (int i = 0; i < tourist.children_count; i++) {
+                    shm->tickets_sold[ticket_type]++;
+                    int child_price = cena_biletu(ticket_type, true); // zniżka dla dziecka
+                    shm->total_revenue += child_price;
+                }
             }
             sem_podnies(sem_id, SEM_MAIN);
             

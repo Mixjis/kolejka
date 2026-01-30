@@ -584,7 +584,6 @@ void descend_trail(void) {
     sem_opusc(g_sem_id, SEM_MAIN);
     if (g_ticket_id > 0 && g_ticket_id < MAX_TICKETS) {
         g_shm->ticket_rides[g_ticket_id]++;
-        g_shm->trail_usage[trail]++;
     }
     sem_podnies(g_sem_id, SEM_MAIN);
     
@@ -647,9 +646,9 @@ int main(int argc, char* argv[]) {
     // Ogranicz dzieci do max 2
     if (g_children_count > 2) g_children_count = 2;
     
-    // Wygeneruj wiek dzieci (4-8 lat - wymagają opieki)
+    // Wygeneruj wiek dzieci (4-7 lat - wymagają opieki)
     for (int i = 0; i < g_children_count; i++) {
-        g_child_ages[i] = 4 + rand() % 5; // 4-8 lat
+        g_child_ages[i] = 4 + rand() % 4; // 4-7 lat
     }
     
     // Losuj typ biletu
@@ -669,7 +668,7 @@ int main(int argc, char* argv[]) {
     
     if (!is_running || gates_closed) {
         sem_opusc(g_sem_id, SEM_MAIN);
-        g_shm->total_tourists_finished++;
+        g_shm->total_tourists_finished += 1 + g_children_count;
         sem_podnies(g_sem_id, SEM_MAIN);
         odlacz_pamiec(g_shm);
         return 0;
@@ -691,7 +690,7 @@ int main(int argc, char* argv[]) {
                g_tourist_id, vip_str, type_str, g_age);
     }
     
-    // Niektórzy turyści nie korzystają z kolei (5%)
+    // Turyści nie korzystający z kolei 5% szans
     if (rand() % 100 < 5) {
         logger(LOG_TOURIST, "Turysta #%d tylko ogląda i odchodzi", g_tourist_id);
         
@@ -700,7 +699,7 @@ int main(int argc, char* argv[]) {
         }
         
         sem_opusc(g_sem_id, SEM_MAIN);
-        g_shm->total_tourists_finished++;
+        g_shm->total_tourists_finished += 1 + g_children_count;
         sem_podnies(g_sem_id, SEM_MAIN);
         
         odlacz_pamiec(g_shm);
@@ -716,7 +715,7 @@ int main(int argc, char* argv[]) {
         }
         
         sem_opusc(g_sem_id, SEM_MAIN);
-        g_shm->total_tourists_finished++;
+        g_shm->total_tourists_finished += 1 + g_children_count;
         sem_podnies(g_sem_id, SEM_MAIN);
         
         odlacz_pamiec(g_shm);
@@ -768,7 +767,7 @@ int main(int argc, char* argv[]) {
     
     // Aktualizuj licznik
     sem_opusc(g_sem_id, SEM_MAIN);
-    g_shm->total_tourists_finished++;
+    g_shm->total_tourists_finished += 1 + g_children_count;
     sem_podnies(g_sem_id, SEM_MAIN);
     
     odlacz_pamiec(g_shm);

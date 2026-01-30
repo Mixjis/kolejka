@@ -69,7 +69,6 @@ void* reaper_thread(void* arg) {
             pthread_mutex_unlock(&tourist_mutex);
         }
         
-        // Aktywne czekanie - bez usleep
     }
     
     return NULL;
@@ -94,6 +93,11 @@ void send_signal_to_all(int sig) {
 pid_t create_tourist(int tourist_id, int age, TouristType type, bool is_vip, int children_count) {
     pid_t pid = fork();
     
+    if (pid == -1) {
+        perror("Błąd fork() przy tworzeniu turysty");
+        return -1;
+    }
+
     if (pid == 0) {
         // Proces potomny
         char id_str[16], age_str[16], type_str[16], vip_str[16], children_str[16];
@@ -104,7 +108,7 @@ pid_t create_tourist(int tourist_id, int age, TouristType type, bool is_vip, int
         snprintf(children_str, sizeof(children_str), "%d", children_count);
         
         execl("./tourist", "tourist", id_str, age_str, type_str, vip_str, children_str, NULL);
-        perror("Błąd execl tourist");
+        perror("Błąd execl() przy uruchamianiu turysty");
         _exit(1);
     }
     
@@ -188,7 +192,7 @@ int main(void) {
     worker1_pid = fork();
     if (worker1_pid == 0) {
         execl("./worker", "worker", NULL);
-        perror("Błąd execl worker");
+        perror("Błąd execl() przy uruchamianiu worker1");
         _exit(1);
     }
     logger(LOG_SYSTEM, "Uruchomiono pracownika 1 (stacja dolna) PID: %d", worker1_pid);
@@ -196,7 +200,7 @@ int main(void) {
     worker2_pid = fork();
     if (worker2_pid == 0) {
         execl("./worker2", "worker2", NULL);
-        perror("Błąd execl worker2");
+        perror("Błąd execl() przy uruchamianiu worker2");
         _exit(1);
     }
     logger(LOG_SYSTEM, "Uruchomiono pracownika 2 (stacja górna) PID: %d", worker2_pid);
@@ -205,7 +209,7 @@ int main(void) {
     cashier_pid = fork();
     if (cashier_pid == 0) {
         execl("./cashier", "cashier", NULL);
-        perror("Błąd execl cashier");
+        perror("Błąd execl() przy uruchamianiu kasjera");
         _exit(1);
     }
     logger(LOG_SYSTEM, "Uruchomiono kasjera PID: %d", cashier_pid);
@@ -247,7 +251,6 @@ int main(void) {
             pthread_mutex_unlock(&tourist_mutex);
             
             if (current_count >= MAX_TOURIST_PROCESSES) {
-                //usleep(1000); // Czekanie na zwolnienie
                 continue;
             }
             
@@ -292,8 +295,11 @@ int main(void) {
                 pthread_mutex_unlock(&tourist_mutex);
                 
                 sem_opusc(g_sem_id, SEM_MAIN);
-                g_shm->total_tourists_created++;
+                g_shm->total_tourists_created += 1 + children_count;
                 sem_podnies(g_sem_id, SEM_MAIN);
+
+            } else if (pid == -1) {
+                logger(LOG_SYSTEM, "Błąd tworzenia turysty #%d", tourist_id);
             }
             
             // Losowe opóźnienie między turystami
