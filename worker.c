@@ -172,9 +172,11 @@ void* chair_thread(void* arg) {
     ChairGroup* group = (ChairGroup*)arg;
     
     // Symulacja przejazdu
-    time_t start_time = time(NULL);
+    //time_t start_time = time(NULL);
+
     int travel_time = CHAIR_TRAVEL_TIME;
-    
+    int time_traveled = 0;  // Ile sekund faktycznie przejechaliśmy (bez czasu awarii)
+
     // Obliczanie liczby pasażerów z dziećmi
     int total_children = 0;
     for (int i = 0; i < group->count; i++) {
@@ -215,7 +217,54 @@ void* chair_thread(void* arg) {
            chair_id, passengers_str, group->cyclists, group->pedestrians);
     
     // Symulacja przejazdu
-    while ((time(NULL) - start_time) < travel_time) {}
+    while (time_traveled < travel_time && !shutdown_flag) {
+        // Sprawdź czy jest awaria
+        sem_opusc(g_sem_id, SEM_MAIN);
+        bool emergency = g_shm->emergency_stop;
+        sem_podnies(g_sem_id, SEM_MAIN);
+        
+        if (emergency) {
+            // zatrzymanie krzesełka
+            logger(LOG_CHAIR, "Krzesełko #%d ZATRZYMANE w trakcie jazdy! (przejechane: %d/%d s)",
+                   chair_id, time_traveled, travel_time);
+            
+            // Czekanie na koniec awarii
+            while (emergency && !shutdown_flag) {
+                sem_opusc(g_sem_id, SEM_MAIN);
+                emergency = g_shm->emergency_stop;
+                sem_podnies(g_sem_id, SEM_MAIN);
+            }
+            
+            if (!shutdown_flag) {
+                logger(LOG_CHAIR, "Krzesełko #%d WZNAWIA jazdę (pozostało: %d s)",
+                       chair_id, travel_time - time_traveled);
+            }
+        } else {
+            // Normalny ruch
+            time_t second_start = time(NULL);
+            bool interrupted = false;
+            
+            // Czekaj 1 sekundę, ze sprawdzaniem awarii
+            while ((time(NULL) - second_start) < 1 && !shutdown_flag) {
+                // Sprawdzanie czy nie wystąpiła awaria w trakcie tej sekundy
+                sem_opusc(g_sem_id, SEM_MAIN);
+                emergency = g_shm->emergency_stop;
+                sem_podnies(g_sem_id, SEM_MAIN);
+                
+                if (emergency) {
+                    interrupted = true;
+                    break;
+                }
+            }
+            
+            // Jeśli sekunda minęła bez przerwania - doliczam
+            if (!interrupted && !shutdown_flag) {
+                time_traveled++;
+            }
+            // Jeśli przerwana awarią - wróć do pętli głównej
+        }
+    }
+
     
     // Przyjazd na górę - wyślij komunikat do worker2
     Message msg;
@@ -224,7 +273,7 @@ void* chair_thread(void* arg) {
     msg.data = chair_id;
     msg.data2 = group->count;
     
-    // Skopiuj dane pasażerów do wiadomości (wszystkie 4 PID-y)
+    // Skopiuj dane pasażerów do wiadomości
     for (int i = 0; i < CHAIR_CAPACITY; i++) {
         if (i < group->count) {
             msg.child_ids[i] = group->tourist_pids[i];
@@ -424,7 +473,6 @@ int main(void) {
             if (!emergency_stop && (now - last_emergency_check) >= next_emergency_delay) {
                 // Nie inicjuj awarii jeśli zostało mniej niż EMERGENCY_SAFETY_MARGIN sekund do końca
                 if (time_to_end > EMERGENCY_SAFETY_MARGIN) {
-                    // Losowa szansa na awarię
                     if (rand() % 100 < EMERGENCY_CHANCE) {
                         should_trigger_emergency = true;
                     }
@@ -441,7 +489,7 @@ int main(void) {
         
         // Obsługa zatrzymania awaryjnego
         if (emergency_stop) {
-            // podczas awarii musimy odbierać komunikaty od turystów
+            // odbieranie komunikatów od turystów podczas awarii
             process_platform_messages();
             
             // Sprawdzanie kto zainicjował
@@ -451,10 +499,10 @@ int main(void) {
             sem_podnies(g_sem_id, SEM_MAIN);
             
             if (initiator == 1) {
-                // Czekanie aż worker2 potwierdzi gotowość - ale NADAL odbieraj komunikaty!
+                // Czekanie aż worker2 potwierdzi gotowość
                 while (!w2_ready && !shutdown_flag) {
                     
-                    // Odbieraj komunikaty od turystów podczas czekania
+                    // odbieranie komunikatów od turystów podczas czekania na gotowość
                     process_platform_messages();
                     
                     sem_opusc(g_sem_id, SEM_MAIN);
@@ -483,7 +531,7 @@ int main(void) {
                 
                 // Czekanie na sygnał wznowienia - NADAL odbieraj komunikaty od turystów!
                 while (emergency_stop && !emergency_resume && !shutdown_flag) {
-                    // Odbieraj komunikaty od turystów podczas czekania na wznowienie
+                    // odbieranie komunikatów od turystów podczas czekania na wznowienie
                     process_platform_messages();
                 }
                 
