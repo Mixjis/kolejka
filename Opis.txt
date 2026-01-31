@@ -120,7 +120,10 @@ komitów – ogólnie pojęte „development activity”).
 
 
 Temat 4 – Kolej linowa.  
-W pewnej górskiej miejscowości znajduje się krzesełkowa kolej linowa czynna w okresie letnim, obsługująca m.in. rowerowe trasy zjazdowe. Z kolei krzesełkowej korzystają piesi oraz rowerzyści. Kolej składa się z 4‑osobowych krzesełek o łącznej liczbie 72 sztuk. Jednocześnie może być zajętych 36 krzesełek. Na krzesełku może maksymalnie siedzieć dwóch rowerzystów lub jeden rowerzysta i dwóch pieszych, albo czterech pieszych.
+W pewnej górskiej miejscowości znajduje się krzesełkowa kolej linowa czynna w okresie letnim, 
+obsługująca m.in. rowerowe trasy zjazdowe. Z kolei krzesełkowej korzystają piesi oraz rowerzyści.
+Kolej składa się z 4‑osobowych krzesełek o łącznej liczbie 72 sztuk. Jednocześnie może być zajętych 36 krzesełek.
+Na krzesełku może maksymalnie siedzieć dwóch rowerzystów lub jeden rowerzysta i dwóch pieszych, albo czterech pieszych.
 
 Rowerzyści/turyści przychodzą na teren stacji w losowych momentach czasu (nie wszyscy z nich muszą korzystać z kolei linowej).
 Wejście na teren kolejki linowej odbywa się po opłaceniu biletu/karnetu w kasie. 
@@ -142,7 +145,8 @@ Zasady działania stacji ustalone przez kierownika są następujące:
 - Kolej linowa jest czynna w godzinach od Tp do Tk. W momencie osiągnięcia czasu Tk na bramkach przestają działać karnety. Wszystkie osoby, które weszły na peron mają zostać przetransportowane do stacji górnej. Następnie po 3 sekundach kolej ma zostać wyłączona.  
 - Dzieci w wieku od 4 do 8 lat siadają na krzesełko pod opieką osoby dorosłej.  
 - Osoba dorosła może opiekować się jednocześnie co najwyżej dwoma dziećmi w wieku od 4 do 8 lat.  
-- Każde przejście przez bramki (użycie danego karnetu) jest rejestrowane (id karnetu – godzina). Na koniec dnia jest generowany raport/podsumowanie liczby wykonanych zjazdów przez poszczególne osoby/karnety.  
+- Każde przejście przez bramki (użycie danego karnetu) jest rejestrowane (id karnetu – godzina). 
+    Na koniec dnia jest generowany raport/podsumowanie liczby wykonanych zjazdów przez poszczególne osoby/karnety.  
 - Osoby uprawnione VIP (ok. 1%) wchodzą na teren dolnej stacji bez kolejki (używając karnetu!).  
 
 Napisz procedury **Kasjer**, **Pracownik** i **Turysta** symulujące działanie kolei linowej. Raport z przebiegu symulacji należy zapisać w pliku (plikach) tekstowym.

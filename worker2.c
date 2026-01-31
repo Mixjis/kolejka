@@ -255,7 +255,6 @@ int main(void) {
     // System awarii oparty na rzeczywistym czasie
     time_t last_emergency_check = time(NULL);
     int next_emergency_delay = 3 + (rand() % 9);  // 3-11 sekund
-    const int EMERGENCY_SAFETY_MARGIN = 8;  // Margines bezpieczeństwa przed końcem
     
     while (!shutdown_flag) {
         // Sprawdź czy bramki zamknięte (koniec dnia)
@@ -273,8 +272,8 @@ int main(void) {
             if (!emergency_stop && (now - last_emergency_check) >= next_emergency_delay) {
                 // Nie inicjuj awarii jeśli zostało mniej niż EMERGENCY_SAFETY_MARGIN sekund do końca
                 if (time_to_end > EMERGENCY_SAFETY_MARGIN) {
-                    // Losowa szansa na awarię (20%)
-                    if (rand() % 100 < 20) {
+                    // Losowa szansa na awarię
+                    if (rand() % 100 < EMERGENCY_CHANCE) {
                         should_trigger_emergency = true;
                     }
                 }

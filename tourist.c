@@ -300,7 +300,7 @@ bool enter_station(void) {
     sem_podnies(g_sem_id, SEM_MAIN);
     
     // Rejestruj przejście przez bramkę (id karnetu - godzina)
-    rejestruj_przejscie_bramki(g_ticket_id);
+    rejestruj_przejscie_bramki(g_ticket_id, g_entry_gate);
     
     if (g_ticket_type >= TICKET_TK1 && g_ticket_type <= TICKET_TK3) {
         time_t remaining = g_ticket_valid_until - time(NULL);
@@ -691,7 +691,7 @@ int main(int argc, char* argv[]) {
     }
     
     // Turyści nie korzystający z kolei 5% szans
-    if (rand() % 100 < 5) {
+    if (rand() % 100 < TOURIST_NO_RIDE_PERCENT) {
         logger(LOG_TOURIST, "Turysta #%d tylko ogląda i odchodzi", g_tourist_id);
         
         if (g_children_count > 0) {

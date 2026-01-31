@@ -316,6 +316,43 @@ void resume_from_emergency(void) {
     logger(LOG_EMERGENCY, "PRACOWNIK1: Kolej WZNOWIONA - normalny ruch!");
 }
 
+// Przetwarzanie komunikatów od turystów czekających na peron
+void process_platform_messages(void) {
+    Message msg;
+    while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
+        if (shutdown_flag) break;
+        
+        PlatformWaiter w;
+        w.pid = msg.sender_pid;
+        w.tourist_id = msg.tourist_id;
+        w.type = msg.tourist_type;
+        w.children_count = msg.children_count;
+        w.child_ids[0] = msg.child_ids[0];
+        w.child_ids[1] = msg.child_ids[1];
+    
+        int gate_num = get_next_platform_gate();
+
+        if (add_waiter(&w)) {
+            sem_opusc(g_sem_id, SEM_MAIN);
+            g_shm->tourists_on_platform++;
+            sem_podnies(g_sem_id, SEM_MAIN);
+
+            logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (typ: %s, dzieci: %d)",
+                   w.tourist_id, gate_num,
+                   w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy",
+                   w.children_count);
+        } else {
+            Message refuse;
+            refuse.mtype = w.pid;
+            refuse.sender_pid = getpid();
+            refuse.data = -1;
+            refuse.tourist_id = w.tourist_id;
+            wyslij_komunikat(g_msg_id, &refuse);
+        }
+    }
+}
+
+
 int main(void) {
     // Inicjalizacja loggera dla procesu potomnego
     logger_init_child();
@@ -370,7 +407,6 @@ int main(void) {
     // System awarii oparty na rzeczywistym czasie
     time_t last_emergency_check = time(NULL);
     int next_emergency_delay = 3 + (rand() % 3);  // 3-5 sekund
-    const int EMERGENCY_SAFETY_MARGIN = 8;  // Margines bezpieczeństwa przed końcem
     
     while (!shutdown_flag) {
         // Sprawdź czy bramki zamknięte (koniec dnia)
@@ -388,8 +424,8 @@ int main(void) {
             if (!emergency_stop && (now - last_emergency_check) >= next_emergency_delay) {
                 // Nie inicjuj awarii jeśli zostało mniej niż EMERGENCY_SAFETY_MARGIN sekund do końca
                 if (time_to_end > EMERGENCY_SAFETY_MARGIN) {
-                    // Losowa szansa na awarię (20%)
-                    if (rand() % 100 < 20) {
+                    // Losowa szansa na awarię
+                    if (rand() % 100 < EMERGENCY_CHANCE) {
                         should_trigger_emergency = true;
                     }
                 }
@@ -406,36 +442,7 @@ int main(void) {
         // Obsługa zatrzymania awaryjnego
         if (emergency_stop) {
             // podczas awarii musimy odbierać komunikaty od turystów
-            while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
-                if (shutdown_flag) break;
-                
-                PlatformWaiter w;
-                w.pid = msg.sender_pid;
-                w.tourist_id = msg.tourist_id;
-                w.type = msg.tourist_type;
-                w.children_count = msg.children_count;
-                w.child_ids[0] = msg.child_ids[0];
-                w.child_ids[1] = msg.child_ids[1];
-            
-                int gate_num = get_next_platform_gate();
-
-                if (add_waiter(&w)) {
-                    sem_opusc(g_sem_id, SEM_MAIN);
-                    g_shm->tourists_on_platform++;
-                    sem_podnies(g_sem_id, SEM_MAIN);
-
-                    logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (zdążył przed awarią, typ: %s)",
-                           w.tourist_id, gate_num,
-                           w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy");
-                } else {
-                    Message refuse;
-                    refuse.mtype = w.pid;
-                    refuse.sender_pid = getpid();
-                    refuse.data = -1;
-                    refuse.tourist_id = w.tourist_id;
-                    wyslij_komunikat(g_msg_id, &refuse);
-                }
-            }
+            process_platform_messages();
             
             // Sprawdzanie kto zainicjował
             sem_opusc(g_sem_id, SEM_MAIN);
@@ -448,36 +455,7 @@ int main(void) {
                 while (!w2_ready && !shutdown_flag) {
                     
                     // Odbieraj komunikaty od turystów podczas czekania
-                    while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
-                        if (shutdown_flag) break;
-                        
-                        PlatformWaiter w;
-                        w.pid = msg.sender_pid;
-                        w.tourist_id = msg.tourist_id;
-                        w.type = msg.tourist_type;
-                        w.children_count = msg.children_count;
-                        w.child_ids[0] = msg.child_ids[0];
-                        w.child_ids[1] = msg.child_ids[1];
-                    
-                        int gate_num = get_next_platform_gate();
-
-                        if (add_waiter(&w)) {
-                            sem_opusc(g_sem_id, SEM_MAIN);
-                            g_shm->tourists_on_platform++;
-                            sem_podnies(g_sem_id, SEM_MAIN);
-
-                            logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (zdążył przed awarią, typ: %s)",
-                                   w.tourist_id, gate_num,
-                                   w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy");
-                        } else {
-                            Message refuse;
-                            refuse.mtype = w.pid;
-                            refuse.sender_pid = getpid();
-                            refuse.data = -1;
-                            refuse.tourist_id = w.tourist_id;
-                            wyslij_komunikat(g_msg_id, &refuse);
-                        }
-                    }
+                    process_platform_messages();
                     
                     sem_opusc(g_sem_id, SEM_MAIN);
                     w2_ready = g_shm->worker2_ready;
@@ -506,36 +484,7 @@ int main(void) {
                 // Czekanie na sygnał wznowienia - NADAL odbieraj komunikaty od turystów!
                 while (emergency_stop && !emergency_resume && !shutdown_flag) {
                     // Odbieraj komunikaty od turystów podczas czekania na wznowienie
-                    while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
-                        if (shutdown_flag) break;
-                        
-                        PlatformWaiter w;
-                        w.pid = msg.sender_pid;
-                        w.tourist_id = msg.tourist_id;
-                        w.type = msg.tourist_type;
-                        w.children_count = msg.children_count;
-                        w.child_ids[0] = msg.child_ids[0];
-                        w.child_ids[1] = msg.child_ids[1];
-                    
-                        int gate_num = get_next_platform_gate();
-
-                        if (add_waiter(&w)) {
-                            sem_opusc(g_sem_id, SEM_MAIN);
-                            g_shm->tourists_on_platform++;
-                            sem_podnies(g_sem_id, SEM_MAIN);
-
-                            logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (zdążył przed awarią, typ: %s)",
-                                   w.tourist_id, gate_num,
-                                   w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy");
-                        } else {
-                            Message refuse;
-                            refuse.mtype = w.pid;
-                            refuse.sender_pid = getpid();
-                            refuse.data = -1;
-                            refuse.tourist_id = w.tourist_id;
-                            wyslij_komunikat(g_msg_id, &refuse);
-                        }
-                    }
+                    process_platform_messages();
                 }
                 
                 if (emergency_resume) {

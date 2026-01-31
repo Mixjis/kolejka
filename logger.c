@@ -237,7 +237,7 @@ void rejestruj_zjazd(int ticket_id) {
 }
 
 // Rejestrowanie przejścia przez bramkę (id karnetu - godzina)
-void rejestruj_przejscie_bramki(int ticket_id) {
+void rejestruj_przejscie_bramki(int ticket_id, int gate_number) {
     int shm_id = polacz_pamiec();
     SharedMemory* shm = dolacz_pamiec(shm_id);
     int sem_id = polacz_semafory();
@@ -246,6 +246,7 @@ void rejestruj_przejscie_bramki(int ticket_id) {
     if (shm->gate_entries_count < MAX_GATE_ENTRIES) {
         shm->gate_entries[shm->gate_entries_count].ticket_id = ticket_id;
         shm->gate_entries[shm->gate_entries_count].entry_time = time(NULL);
+        shm->gate_entries[shm->gate_entries_count].gate_number = gate_number;
         shm->gate_entries_count++;
     }
     sem_podnies(sem_id, SEM_MAIN);
@@ -271,11 +272,12 @@ void generuj_raport_koncowy(void) {
         }
     }
     
-    // Kopiuj dane o przejściach przez bramki
+    // Kopiowanie danych o przejściach przez bramki
     int gate_entries_count = shm->gate_entries_count;
     struct {
         int ticket_id;
         time_t entry_time;
+        int gate_number;
     } *gate_entries = NULL;
     
     if (gate_entries_count > 0) {
@@ -284,6 +286,7 @@ void generuj_raport_koncowy(void) {
             for (int i = 0; i < gate_entries_count; i++) {
                 gate_entries[i].ticket_id = shm->gate_entries[i].ticket_id;
                 gate_entries[i].entry_time = shm->gate_entries[i].entry_time;
+                gate_entries[i].gate_number = shm->gate_entries[i].gate_number;
             }
         }
     }
@@ -306,7 +309,7 @@ void generuj_raport_koncowy(void) {
             char time_str[32];
             snprintf(time_str, sizeof(time_str), "%02d:%02d:%02d",
                      tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec);
-            logger_report_file_only("Karnet #%d - %s", gate_entries[i].ticket_id, time_str);
+            logger_report_file_only("Karnet #%d - Bramka #%d - %s", gate_entries[i].ticket_id, gate_entries[i].gate_number, time_str);
         }
     } else {
         logger_report_file_only("Brak zarejestrowanych przejsc.");

@@ -391,17 +391,6 @@ bool wyslij_komunikat(int msg_id, Message* msg) {
     return true;
 }
 
-// bool wyslij_komunikat_nowait(int msg_id, Message* msg) {
-//     if (msgsnd(msg_id, msg, MSG_SIZE, IPC_NOWAIT) == -1) {
-//         if (errno == EAGAIN) return false; // Kolejka pełna
-//         if (errno != EINTR) {
-//             perror("Błąd msgsnd nowait");
-//         }
-//         return false;
-//     }
-//     return true;
-// }
-
 bool odbierz_komunikat(int msg_id, Message* msg, long mtype, bool blocking) {
     int flags = blocking ? 0 : IPC_NOWAIT;
     
@@ -409,29 +398,12 @@ bool odbierz_komunikat(int msg_id, Message* msg, long mtype, bool blocking) {
         if (errno == EINTR) continue;
         if (errno == ENOMSG && !blocking) return false;
         if (errno == EAGAIN) return false;
+        if (errno == EIDRM) return false;
         perror("Błąd msgrcv");
         return false;
     }
     return true;
 }
-
-// bool odbierz_komunikat_timeout(int msg_id, Message* msg, long mtype, int timeout_ms) {
-//     int elapsed = 0;
-//     int step = 1; // 1ms
-    
-//     while (elapsed < timeout_ms) {
-//         if (msgrcv(msg_id, msg, MSG_SIZE, mtype, IPC_NOWAIT) != -1) {
-//             return true;
-//         }
-//         if (errno != ENOMSG && errno != EAGAIN && errno != EINTR) {
-//             perror("Błąd msgrcv timeout");
-//             return false;
-//         }
-//         usleep(step * 1000);
-//         elapsed += step;
-//     }
-//     return false;
-// }
 
 // ==== FUNKCJE POMOCNICZE ====
 const char* nazwa_biletu(TicketType type) {
@@ -513,14 +485,4 @@ void czysc_zasoby(void) {
         id = msgget(klucz, 0);
         if (id != -1) msgctl(id, IPC_RMID, NULL);
     }
-}
-
-void blad_krytyczny(const char* msg) {
-    fprintf(stderr, ANSI_RED "BŁĄD KRYTYCZNY: %s" ANSI_RESET "\n", msg);
-    perror("Szczegóły");
-    exit(1);
-}
-
-void blad_ostrzezenie(const char* msg) {
-    fprintf(stderr, ANSI_YELLOW "OSTRZEŻENIE: %s" ANSI_RESET "\n", msg);
 }

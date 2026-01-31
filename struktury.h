@@ -16,7 +16,15 @@
 #define ENTRY_GATES          4       // Bramki wejściowe (kontrola biletów)
 #define PLATFORM_GATES       3       // Bramki na peron (kontrola grup)
 #define EXIT_GATES           2       // Wyjścia ze stacji górnej
+
+// Awaryjne zatrzymanie
+#define EMERGENCY_SAFETY_MARGIN  8   // Czas przed końcem symulacji, kiedy nie inicjujemy awarii (sekundy)
 #define EMERGENCY_DURATION   5       // Czas trwania zatrzymania awaryjnego (sekundy)
+#define EMERGENCY_CHANCE    10      // Szansa (%) na awarię co kilka sekund
+
+//inne 
+#define TOURIST_NO_RIDE_PERCENT 5       // Procent turystów, którzy nie korzystają z kolejki
+#define ADULT_WITH_CHILDREN_PERCENT 10  // Procent dorosłych turystów mających dzieci
 
 // Czasy przejazdu trasami (sekundy symulacyjne)
 #define TRAIL_T1_TIME        1       // Łatwa
@@ -187,6 +195,7 @@ typedef struct {
     struct {
         int ticket_id;
         time_t entry_time;
+        int gate_number;
     } gate_entries[MAX_GATE_ENTRIES];
     int gate_entries_count;
     

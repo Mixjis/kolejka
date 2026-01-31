@@ -62,8 +62,6 @@ help:
 	@echo "  make        	- kompilacja wszystkich plików"
 	@echo "  make run    	- kompilacja i uruchomienie symulacji"
 	@echo "  make clean  	- usunięcie plików wykonywalnych i obiektowych"
-	@echo "  make clean-ipc - usunięcie zasobów IPC (po awarii)"
-	@echo "  make show-ipc 	- wyświetlenie zasobów IPC"
 	@echo "  make help   	- ta pomoc"
 
 .PHONY: all run clean clean-ipc show-ipc help

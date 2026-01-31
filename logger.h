@@ -43,7 +43,7 @@ void logger_clear_files(void);
 void rejestruj_zjazd(int ticket_id);
 
 // Rejestrowanie przejścia przez bramkę (id karnetu - godzina)
-void rejestruj_przejscie_bramki(int ticket_id);
+void rejestruj_przejscie_bramki(int ticket_id, int gate_number);
 
 // Generowanie raportu końcowego
 void generuj_raport_koncowy(void);

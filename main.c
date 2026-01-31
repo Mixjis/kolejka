@@ -277,7 +277,7 @@ int main(void) {
             
             // Dzieci z opiekunem (dorośli 18-64 lat mogą mieć dzieci)
             int children_count = 0;
-            if (age >= 18 && age < 65 && rand() % 100 < 10) {
+            if (age >= 18 && age < 65 && rand() % 100 < ADULT_WITH_CHILDREN_PERCENT) {
                 if (type == TOURIST_CYCLIST) {
                     children_count = 1;  // Rowerzysta może mieć max 1 dziecko
                 } else {
