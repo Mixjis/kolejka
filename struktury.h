@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <time.h>
 
-// ==== KONFIGURACJA SYMULACJI ====
+// KONFIGURACJA SYMULACJI
 #define TOTAL_TOURISTS       10000   // Liczba turystów do obsłużenia
 #define MAX_CHAIRS           72      // Łączna liczba krzesełek
 #define MAX_ACTIVE_CHAIRS    36      // Maks krzesełek jednocześnie w ruchu
@@ -26,24 +26,24 @@
 #define TOURIST_NO_RIDE_PERCENT 5       // Procent turystów, którzy nie korzystają z kolejki
 #define ADULT_WITH_CHILDREN_PERCENT 10  // Procent dorosłych turystów mających dzieci
 
-// Czasy przejazdu trasami (sekundy symulacyjne)
+// Czasy przejazdu trasami (sekundy)
 #define TRAIL_T1_TIME        1       // Łatwa
 #define TRAIL_T2_TIME        2       // Średnia
 #define TRAIL_T3_TIME        3       // Trudna
-#define CHAIR_TRAVEL_TIME    2       // Czas przejazdu krzesełka
+#define CHAIR_TRAVEL_TIME    4       // Czas przejazdu krzesełka
 
-// Godziny pracy (w sekundach symulacyjnych od startu)
+// Godziny pracy (sekundy)
 #define WORK_START_TIME      5       // Tp - start
-#define WORK_END_TIME        120     // Tk - koniec (sekundy)
+#define WORK_END_TIME        60     // Tk - koniec (sekundy)
 #define SHUTDOWN_DELAY       3       // Opóźnienie przed wyłączeniem po Tk
 
 // Szybkość generowania turystów
-#define TOURIST_SPAWN_DELAY_MAX  2000  // opóźnienie między turystami
+#define TOURIST_SPAWN_DELAY_MAX  2000000  // opóźnienie między turystami
 
 // Procent VIPów
 #define VIP_PERCENT          1
 
-// ==== TYPY BILETÓW ====
+// typy biletów 
 typedef enum {
     TICKET_SINGLE = 0,   // Jednorazowy
     TICKET_TK1,          // Czasowy 1h (w symulacji: 15s)
@@ -64,15 +64,15 @@ typedef enum {
 #define PRICE_TK2            40
 #define PRICE_TK3            55
 #define PRICE_DAILY          80
-#define DISCOUNT_PERCENT     25   // Zniżka dla dzieci <10 i seniorów >65
+#define DISCOUNT_PERCENT     25   // Zniżka dla dzieci < 10 i seniorów >65
 
-// ==== TYPY TURYSTÓW ====
+// typy turystów
 typedef enum {
     TOURIST_PEDESTRIAN = 0,  // Pieszy
     TOURIST_CYCLIST          // Rowerzysta
 } TouristType;
 
-// ==== TRASY ZJAZDOWE ====
+// trasy zjazdowe
 typedef enum {
     TRAIL_T1 = 0,    // Łatwa
     TRAIL_T2,        // Średnia
@@ -80,7 +80,7 @@ typedef enum {
     TRAIL_COUNT
 } TrailType;
 
-// ==== TYPY KOMUNIKATÓW ====
+// typy komunikatów
 #define MSG_TOURIST_TO_CASHIER    1    // Turysta -> Kasjer (kupno biletu)
 #define MSG_CASHIER_TO_TOURIST    2    // Kasjer -> Turysta (potwierdzenie)
 #define MSG_TOURIST_TO_GATE       3    // Turysta -> Bramka (wejście)
@@ -94,14 +94,14 @@ typedef enum {
 #define MSG_TOURIST_EXIT          11   // Turysta opuszcza górną stację
 #define MSG_VIP_PRIORITY          100  // Priorytet VIP (offset)
 
-// ==== KLUCZE IPC ====
+// klucze IPC
 #define IPC_KEY_PATH           "."
 #define IPC_KEY_SEM            'S'
 #define IPC_KEY_SHM            'M'
 #define IPC_KEY_MSG            'Q'
 #define IPC_KEY_MSG_WORKER     'W'
 
-// ==== INDEKSY SEMAFORÓW ====
+// indeksy semaforów
 #define SEM_MAIN               0    // Główny mutex pamięci dzielonej
 #define SEM_STATION            1    // Limit osób na stacji (N)
 #define SEM_PLATFORM           2    // Dostęp do peronu
@@ -115,7 +115,7 @@ typedef enum {
 #define SEM_REPORT             10   // Mutex dla raportu
 #define SEM_COUNT              11   // Liczba semaforów
 
-// ==== STRUKTURY DANYCH ====
+// struktury danych
 
 // Bilet/Karnet
 typedef struct {
@@ -231,7 +231,7 @@ typedef struct {
     // Krzesełka
     Chair chairs[MAX_CHAIRS];
     
-    // VIP queue offset
+    // rozmiar kolejki VIP
     int vip_queue_size;
 } SharedMemory;
 
@@ -252,7 +252,7 @@ typedef struct {
 
 #define MSG_SIZE (sizeof(Message) - sizeof(long))
 
-// ==== KOLORY ANSI ====
+// kolory ansi do logów
 #define ANSI_RESET       "\033[0m"
 #define ANSI_RED         "\033[31m"
 #define ANSI_GREEN       "\033[32m"

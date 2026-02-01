@@ -27,7 +27,7 @@ static pid_t worker1_pid = 0;
 static pid_t worker2_pid = 0;
 
 // Lista procesów turystów
-#define MAX_TOURIST_PROCESSES 10000
+#define MAX_TOURIST_PROCESSES 300
 static pid_t tourist_pids[MAX_TOURIST_PROCESSES];
 static int tourist_pid_count = 0;
 static pthread_mutex_t tourist_mutex = PTHREAD_MUTEX_INITIALIZER;

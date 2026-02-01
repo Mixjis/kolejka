@@ -89,7 +89,7 @@ void resume_from_emergency_w2(void) {
     logger(LOG_EMERGENCY, "PRACOWNIK2: Kolej WZNOWIONA - normalny ruch!");
 }
 
-// Licznik bramek wyjściowych (dla round-robin)
+// Licznik bramek wyjściowych
 static int g_exit_gate_counter = 0;
 static pthread_mutex_t g_exit_gate_mutex = PTHREAD_MUTEX_INITIALIZER;
 
