@@ -288,25 +288,33 @@ System wykorzystuje dwie kolejki komunikatów do komunikacji między procesami:
 ## 6. Opis testów
 
 ### Test 1: Poprawność kombinacji na krzesełkach
-**Cel:** Sprawdzenie, czy pracownik poprawnie grupuje osoby wchodzące na peron.
+**Cel:** Sprawdzenie, czy pracownik poprawnie grupuje osoby wchodzące na peron.  
 **Obserwacje w logach:**
 ```log
 ...
-[21:29:26.678] KRZESEŁKO(64555): Krzesełko #395 odjeżdża z pasażerami: [#657(R), #848(P), #842(P)] (R:1, P:2)
-[21:29:26.678] KRZESEŁKO(64555): Krzesełko #396 odjeżdża z pasażerami: [#841(P)+2dz, #845(P)] (R:0, P:4)
-[21:29:26.679] KRZESEŁKO(64555): Krzesełko #397 odjeżdża z pasażerami: [#849(R), #847(R)] (R:2, P:0)
+[09:49:10.503] KRZESEŁKO(1175): Krzesełko #44 odjeżdża z pasażerami: [#25(P)+2dz, #61(P)] (R:0, P:4)
+[09:49:14.263] KRZESEŁKO(1176): Krzesełko #44 dotarło na górną stację z 2 pasażerami
 ...
-[21:29:30.321] KRZESEŁKO(64556): Krzesełko #395 dotarło na górną stację z 3 pasażerami
-[21:29:30.325] KRZESEŁKO(64556): Krzesełko #396 dotarło na górną stację z 2 pasażerami
-[21:29:30.673] KRZESEŁKO(64556): Krzesełko #397 dotarło na górną stację z 2 pasażerami
+[09:49:47.907] KRZESEŁKO(1175): Krzesełko #184 odjeżdża z pasażerami: [#387(P), #388(P), #397(P), #400(P)] (R:0, P:4)
+[09:49:53.343] KRZESEŁKO(1176): Krzesełko #184 dotarło na górną stację z 4 pasażerami
+
+[09:49:56.155] KRZESEŁKO(1175): Krzesełko #220 odjeżdża z pasażerami: [#468(R), #470(P), #471(P)] (R:1, P:2)
+[09:49:56.410] KRZESEŁKO(1175): Krzesełko #221 odjeżdża z pasażerami: [#472(R), #473(R)] (R:2, P:0)
+...
+[09:50:00.282] KRZESEŁKO(1176): Krzesełko #220 dotarło na górną stację z 3 pasażerami
+[09:50:00.411] KRZESEŁKO(1176): Krzesełko #221 dotarło na górną stację z 2 pasażerami
+
 ...
 ```
-
 **Oczekiwany rezultat:** Żadne krzesełko nie przekracza dozwolonych kombinacji.  
-**Wynik:** logi pokazują poprawne kombinacje np. "[#123(R), #124(P)+1dz]" i symulacja przebiega dalej bez zacięcia.
+Możliwe maksymalne kombinacje:    
+- 2 ROWERZYSTÓW  
+- 4 PIESZYCH   
+- 1 ROWERZYSTA + 2 PIESZYCH  
+**Wynik:** logi pokazują poprawne kombinacje np. "[#472(R), #473(R)]" i symulacja przebiega dalej bez zacięcia.
 
 ### Test 2: Zatrzymanie awaryjne
-**Cel:** Sprawdzenie mechanizmu awaryjnego zatrzymania i wznowienia.
+**Cel:** Sprawdzenie mechanizmu awaryjnego zatrzymania i wznowienia.  
 **Obserwacje w logach:**
 ```log
 [21:27:54.090] AWARIA(64555): PRACOWNIK1: Inicjuję AWARYJNE ZATRZYMANIE kolei!
@@ -329,8 +337,8 @@ System wykorzystuje dwie kolejki komunikatów do komunikacji między procesami:
 **Wynik:** logi pokazują zatrzymanie i wznowienie krzesełek. symulacja przebiega dalej bez zacięcia.
 
 ### Test 3: Zamknięcie bramek (czas Tk)
-**Cel:** Weryfikacja zachowania po osiągnięciu czasu Tk.
-**Obserwacje:**
+**Cel:** Weryfikacja zachowania po osiągnięciu czasu Tk.  
+**Obserwacje w logach:**
 ```log
 [21:29:23.097] SYSTEM(64554): Osiągnięto czas Tk - zamykam bramki wejściowe
 ...
@@ -353,26 +361,29 @@ System wykorzystuje dwie kolejki komunikatów do komunikacji między procesami:
 **Wynik:** system kończy pracę dokańczając obsługę pozostałych turystów ktorzy zdazyli przejsc na peron. Zamykając bramki. A turyści którzy nie zdążyli wejść na peron rezygnują. 
 
 ### Test 4: Bilety czasowe - wygaśnięcie
-**Cel:** Sprawdzenie odmowy wejścia z wygasłym biletem.
+**Cel:** Sprawdzenie odmowy wejścia z wygasłym biletem.  
+**Obserwacje w logach:**
 ```log
 ...
-[21:28:07.766] TURYSTA(64766): Turysta #190 zakończył trasę zjazdową i dotarł na stację dolną (bilet #154)
-[21:28:07.766] TURYSTA(64766): Turysta #190 - bilet czasowy wygasł!
-[21:28:07.778] TURYSTA(64766): Turysta #190 kończy wizytę (przejazdy: 1)
+[09:48:52.282] KASJER(1177): Sprzedano bilet #16 (CZASOWY TK1 (1h)) turyscie #35 (rowerzysta, 63 lat) - cena: 25
 ...
-[21:29:41.318] RAPORT: 3. KATEGORIE SPECJALNE:
-[21:29:41.319] RAPORT:    VIP obsluzeni:            9
-[21:29:41.319] RAPORT:    Dzieci z opiekunem:       64
-[21:29:41.320] RAPORT:    Odrzuceni (wygasly):      146
+[09:49:09.754] TURYSTA(1213): Turysta #35 zakończył trasę zjazdową i dotarł na stację dolną (bilet #16)
+[09:49:09.760] TURYSTA(1213): Turysta #35 - bilet czasowy wygasł!
+[09:49:09.871] TURYSTA(1213): Turysta #35 kończy wizytę (przejazdy: 1)
+...
+[09:50:13.189] RAPORT: 3. KATEGORIE SPECJALNE:
+[09:50:13.189] RAPORT:    VIP obsluzeni:            6
+[09:50:13.189] RAPORT:    Dzieci z opiekunem:       41
+[09:50:13.190] RAPORT:    Odrzuceni (wygasly):      93
 ...
 ```
 **Oczekiwany rezultat:** Turyści z wygasłymi biletami są odrzucani, licznik rejected_expired rośnie.  
 **Wynik:** logi pokazują "bilet czasowy wygasł!" i turysta opuszcza system, osoby ktorym wygasl bilet podczas pobytu widać w statystykach na końcu logów.
 
 ### Test 5: Limit osób na stacji (N=50)
-**Cel:** Sprawdzenie czy limit STATION_CAPACITY jest przestrzegany.
-
-**Procedura:** Przy ustawieniu długiego czasu awarii, turyści mogą się gromadzić na stacji dolnej bo nie są wpuszczani regularnie na peron. można wtedy zobaczyć stan pojemności.
+**Cel:** Sprawdzenie czy limit STATION_CAPACITY jest przestrzegany.  
+**Procedura:** Przy ustawieniu długiego czasu awarii, turyści mogą się gromadzić na stacji dolnej bo nie są wpuszczani na peron. można wtedy zobaczyć stan pojemności.  
+**Obserwacje w logach:**  
 ```log
 [22:19:48.290] SYSTEM(70335): 50/50 turystów na stacji dolnej
 [22:19:48.362] TURYSTA(70335): Turysta #552 - pozostały czas biletu: 30 sekund
@@ -401,7 +412,8 @@ Ceny aktualnie ustawione:
 #define PRICE_TK3            55
 #define PRICE_DAILY          80
 #define DISCOUNT_PERCENT     25
-```
+```  
+**Obserwacje w logach:**  
 ```log
 [22:53:57.017] KASJER(70798): Sprzedano bilet #6 (CZASOWY TK2 (2h)) turyscie #181 (rowerzysta, 43 lat) - cena: 40
 [22:53:57.090] KASJER(70798): Sprzedano bilet #8 (CZASOWY TK2 (2h)) turyscie #80 (rowerzysta, 71 lat) (ze zniżką 25%) - cena: 30
@@ -414,8 +426,40 @@ Ceny aktualnie ustawione:
 **Oczekiwany rezultat:**
 - Seniorzy (>70 lat): Naliczenie zniżki 25% (np. dla Tk2 cena 30 zamiast 40).
 - Dzieci (<10 lat): Naliczenie zniżki 25% (np. dla Tk2 cena 30 zamiast 40).
-- Dorośli: Cena standardowa. (np. Dla Tk3 cena 55).
+- Dorośli: Cena standardowa. (np. Dla Tk3 cena 55).  
+
 **Wynik:** Logi potwierdzają przydzielanie zniżek dla odpowiednich osób.
+
+### Test 7: Turyści niekorzystający z kolei
+**Cel:** Sprawdzenie czy nie wszyscy turyści muszą korzystać z kolei.  
+**Obserwacje w logach:**  
+```log
+[09:48:43.952] TURYSTA(1208): Turysta #30 przybywa (rowerzysta, 59 lat)
+[09:48:43.954] TURYSTA(1208): Turysta #30 tylko ogląda i odchodzi
+```
+**Oczekiwany rezultat:** Część turystów rezygnuje bez blokowania systemu.  
+**Wynik:** Turyści mogą odejść bez kupowania biletu.
+
+### Test 8: Wielokrotne przejazdy z biletem czasowym/dziennym
+**Cel:** Weryfikacja możliwości ponownego przejazdu.  
+**Obserwacje w logach:**   
+```log
+[09:48:52.986] KASJER(1177): Sprzedano bilet #27 (CZASOWY TK2 (2h)) turyscie #132 (rowerzysta, 20 lat) - cena: 40
+...
+[09:49:08.099] PRACOWNIK2(1176): Turysta #132 zakończył zjazd trasą T1 (łatwa) i zjeżdża na dół
+...
+[09:49:41.176] PRACOWNIK2(1176): Turysta #132 zakończył zjazd trasą T3 (trudna) i zjeżdża na dół
+...
+[09:49:41.579] TURYSTA(1313): Turysta #132 zakończył trasę zjazdową i dotarł na stację dolną (bilet #27)
+[09:49:41.594] TURYSTA(1313): Turysta #132 - bilet czasowy wygasł!
+[09:49:41.658] TURYSTA(1313): Turysta #132 kończy wizytę (przejazdy: 2)
+...
+[09:50:05.043] TURYSTA(1365): Turysta #178 kończy wizytę (przejazdy: 3)
+```
+**Oczekiwany rezultat:** Rowerzyści z biletami TK/DAILY mogą wykonać >1 przejazd.  
+**Wynik:** Logi pokazują turystów z liczbą przejazdów > 1.
+
+
 ----------
 ## 7. Linki do istotnych fragmentów kodu
 
