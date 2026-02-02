@@ -81,7 +81,7 @@
 | utils.c      | Funkcje pomocnicze IPC                     |
 | logger.c     | System logowania                           |
 | struktury.h  | Definicje struktur i stałych               |
-| operacje.h   | Deklaracje funkcji                         |
+| utils.h   | Deklaracje funkcji                         |
 | logger.h     | Deklaracje logowania                       |
 | Makefile     | Plik budowania                      	    |
 
@@ -265,22 +265,22 @@ System wykorzystuje dwie kolejki komunikatów do komunikacji między procesami:
 ## 5. Problemy napotkane podczas realizacji
 
 ### 5.1. Synchronizacja podczas awarii
-**Problem:** Podczas awaryjnego zatrzymania turyści próbowali wysyłać komunikaty, co powodowało zakleszczenie i nie zostawali nigdy wysłani.
+**Problem:** Podczas awaryjnego zatrzymania turyści próbowali wysyłać komunikaty, co powodowało zakleszczenie i nie zostawali nigdy wysłani.  
 **Rozwiązanie:** Dodanie ciągłego odbierania komunikatów (`process_platform_messages()`) w worker1 aż do gotowości obu pracowników.
 
 ### 5.2. Blokady semaforów przy zamykaniu
-**Problem:** Procesy turystów blokowały się na semaforach podczas zamykania systemu.
+**Problem:** Procesy turystów blokowały się na semaforach podczas zamykania systemu.  
 **Rozwiązanie:** aktywne sprawdzanie flag `shutdown_flag` i `gates_closed`.
 
 ### 5.3. Race condition przy awariach
-**Problem:** Worker1 i worker2 równocześnie modyfikowali emergency_stop, co powodowało problemy przy próbie wznowienia pracy kolei.
+**Problem:** Worker1 i worker2 równocześnie modyfikowali emergency_stop, co powodowało problemy przy próbie wznowienia pracy kolei.  
 **Rozwiązanie:** Synchronizacja awarii
 - Inicjator zapisuje emergency_initiator w shm i wysyła SIGUSR1.
 - Drugi worker ustawia worker?_ready=true i czeka.
 - Inicjator po gotowości drugiego wysyła SIGUSR2 i zeruje awarię.
 
 ### 5.4. Zombie procesy turystów
-**Problem:** Po zakończeniu procesów turystów pozostawały procesy zombie, które nie były zbierane przez proces główny.
+**Problem:** Po zakończeniu procesów turystów pozostawały procesy zombie, które nie były zbierane przez proces główny.  
 **Rozwiązanie:** Utworzenie dedykowanego wątku reaper_thread w main.c, który w pętli wywołuje waitpid(-1, &status, WNOHANG) i zbiera zakończone procesy potomne.
 
 ----------
@@ -424,9 +424,8 @@ Ceny aktualnie ustawione:
 | Funkcja | Plik | Opis | Link |
 |---------|------|------|------|
 | `open()` | logger.c | Otwarcie pliku logów | [logger.c#L82](https://github.com/Mixjis/kolejka/blob/main/src/logger.c#L82) |
-| `write()` | logger.c | Zapis logów do pliku | [logger.c#L30-L50](https://github.com/Mixjis/kolejka/blob/main/logger.c#L30-L50) |
-| `close()` | logger.c | Zamknięcie pliku logów | [logger.c#L55-L60](https://github.com/Mixjis/kolejka/blob/main/logger.c#L55-L60) |
-| `open()/write()` | main.c | Generowanie raportu końcowego | [main.c#L200-L250](https://github.com/Mixjis/kolejka/blob/main/main.c#L200-L250) |
+| `write()` | logger.c | Zapis do pliku | [logger.c#L59](https://github.com/Mixjis/kolejka/blob/main/src/logger.c#L59) |
+| `close()` | logger.c | Zamknięcie pliku logów | [logger.c#L129](https://github.com/Mixjis/kolejka/blob/main/src/logger.c#L129) |
 
 ---
 
@@ -434,11 +433,11 @@ Ceny aktualnie ustawione:
 
 | Funkcja | Plik | Opis | Link |
 |---------|------|------|------|
-| `fork()` + `execl()` | main.c | Tworzenie procesów turystów | [main.c#L93-L116](https://github.com/Mixjis/kolejka/blob/main/main.c#L93-L116) |
-| `fork()` + `execl()` | main.c | Uruchomienie procesu kasjera | [main.c#L50-L65](https://github.com/Mixjis/kolejka/blob/main/main.c#L50-L65) |
-| `fork()` + `execl()` | main.c | Uruchomienie procesów pracowników (worker1, worker2) | [main.c#L65-L80](https://github.com/Mixjis/kolejka/blob/main/main.c#L65-L80) |
-| `exit()` | tourist.c | Zakończenie procesu turysty | [tourist.c#L150-L160](https://github.com/Mixjis/kolejka/blob/main/tourist.c#L150-L160) |
-| `waitpid()` | main.c | Wątek reaper zbierający procesy zombie | [main.c#L170-L190](https://github.com/Mixjis/kolejka/blob/main/main.c#L170-L190) |
+| `fork()` + `execl()` | main.c | Tworzenie procesów turystów | [main.c#L93-L116](https://github.com/Mixjis/kolejka/blob/main/src/main.c#L93-L116) |
+| `fork()` + `execl()` | main.c | Uruchomienie procesu kasjera | [main.c#L209-L215](https://github.com/Mixjis/kolejka/blob/main/src/main.c#L209-L215) |
+| `fork()` + `execl()` | main.c | Uruchomienie procesów pracowników (worker1, worker2) | [main.c#L192-L206](https://github.com/Mixjis/kolejka/blob/main/src/main.c#L192-L206) |
+| `exit()` | utils.c | Zakończenie po błędzie  | [utils.c#L27](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L27) |
+| `waitpid()` | main.c | Wątek reaper zbierający procesy zombie | [main.c#L53](https://github.com/Mixjis/kolejka/blob/main/src/main.c#L53) |
 
 ---
 
@@ -446,12 +445,10 @@ Ceny aktualnie ustawione:
 
 | Funkcja | Plik | Opis | Link |
 |---------|------|------|------|
-| `pthread_create()` | worker.c | Tworzenie wątków krzesełek (detached) | [worker.c#L100-L130](https://github.com/Mixjis/kolejka/blob/main/worker.c#L100-L130) |
-| `pthread_create()` | worker2.c | Wątki obsługi wyjść turystów | [worker2.c#L80-L110](https://github.com/Mixjis/kolejka/blob/main/worker2.c#L80-L110) |
-| `pthread_detach()` | worker.c | Odłączanie wątków krzesełek | [worker.c#L125-L130](https://github.com/Mixjis/kolejka/blob/main/worker.c#L125-L130) |
-| `pthread_mutex_lock/unlock()` | worker.c | Synchronizacja listy oczekujących na peron | [worker.c#L60-L90](https://github.com/Mixjis/kolejka/blob/main/worker.c#L60-L90) |
-| `pthread_create()` | tourist.c | Wątki dzieci pod opieką | [tourist.c#L40-L60](https://github.com/Mixjis/kolejka/blob/main/tourist.c#L40-L60) |
-| `pthread_join()` | tourist.c | Oczekiwanie na zakończenie wątków dzieci | [tourist.c#L140-L150](https://github.com/Mixjis/kolejka/blob/main/tourist.c#L140-L150) |
+| `pthread_create()` | worker.c | Tworzenie wątków krzesełek | [worker.c#L463](https://github.com/Mixjis/kolejka/blob/main/src/worker.c#L463) |
+| `pthread_mutex_lock/unlock()` | worker2.c | mutex dla bramek wyjściowych | [worker2.c#L97-L103](https://github.com/Mixjis/kolejka/blob/main/src/worker2.c#L97-L103) |
+| `pthread_create()` | tourist.c | tworzenie wątku dziecka | [tourist.c#L85](https://github.com/Mixjis/kolejka/blob/main/src/tourist.c#L85) |
+| `pthread_join()` | tourist.c | Oczekiwanie na zakończenie wątków dzieci | [tourist.c#L102](https://github.com/Mixjis/kolejka/blob/main/src/tourist.c#L102) |
 
 ---
 
@@ -459,33 +456,27 @@ Ceny aktualnie ustawione:
 
 | Funkcja | Plik | Opis | Link |
 |---------|------|------|------|
-| `sigaction()` | worker.c | Rejestracja handlera SIGUSR1/SIGUSR2 | [worker.c#L20-L40](https://github.com/Mixjis/kolejka/blob/main/worker.c#L20-L40) |
-| `sigaction()` | worker2.c | Rejestracja handlera SIGUSR1/SIGUSR2 | [worker2.c#L20-L40](https://github.com/Mixjis/kolejka/blob/main/worker2.c#L20-L40) |
-| `kill()` | worker.c | Wysyłanie sygnału awarii do worker2 | [worker.c#L150-L170](https://github.com/Mixjis/kolejka/blob/main/worker.c#L150-L170) |
-| `kill()` | worker2.c | Wysyłanie sygnału awarii do worker1 | [worker2.c#L130-L150](https://github.com/Mixjis/kolejka/blob/main/worker2.c#L130-L150) |
-| Handler SIGUSR1 | worker.c/worker2.c | Obsługa awaryjnego zatrzymania | [worker.c#L180-L210](https://github.com/Mixjis/kolejka/blob/main/worker.c#L180-L210) |
-| Handler SIGUSR2 | worker.c/worker2.c | Obsługa wznowienia pracy | [worker.c#L210-L230](https://github.com/Mixjis/kolejka/blob/main/worker.c#L210-L230) |
-
+| `sigaction()` | worker.c | Rejestracja handlera SIGUSR1/SIGUSR2 | [worker.c#L485-L487](https://github.com/Mixjis/kolejka/blob/main/src/worker.c#L485-L487) |
+| `sigaction()` | worker2.c | Rejestracja handlera SIGUSR1/SIGUSR2 | [worker2.c#L213-L215](https://github.com/Mixjis/kolejka/blob/main/src/worker2.c#L213-L215) |
+| `kill()` | worker.c | Wysyłanie sygnału awarii do worker2 | [worker.c#L304](https://github.com/Mixjis/kolejka/blob/main/src/worker.c#L304) |
+| `kill()` | worker2.c | Wysyłanie sygnału awarii do worker1 | [worker2.c#L46](https://github.com/Mixjis/kolejka/blob/main/src/worker2.c#L46) |
+|`signal()`| mainc.c | Ustawienie Ignorowania sygnału | [main.c#L159-L160](https://github.com/Mixjis/kolejka/blob/main/src/main.c#L159-L160) |
 ---
 
 ### e) Synchronizacja procesów - Semafory (ftok(), semget(), semctl(), semop())
 
 | Funkcja | Plik | Opis | Link |
 |---------|------|------|------|
-| `ftok()` | utils.c | Generowanie klucza IPC | [utils.c#L10-L20](https://github.com/Mixjis/kolejka/blob/main/utils.c#L10-L20) |
-| `semget()` | utils.c | Tworzenie zestawu 11 semaforów | [utils.c#L25-L40](https://github.com/Mixjis/kolejka/blob/main/utils.c#L25-L40) |
-| `semctl()` | utils.c | Inicjalizacja wartości semaforów | [utils.c#L45-L70](https://github.com/Mixjis/kolejka/blob/main/utils.c#L45-L70) |
-| `semop()` | utils.c | Funkcje sem_opusc() i sem_podnies() | [utils.c#L75-L100](https://github.com/Mixjis/kolejka/blob/main/utils.c#L75-L100) |
-| Użycie SEM_STATION | tourist.c | Kontrola limitu osób na stacji | [tourist.c#L70-L85](https://github.com/Mixjis/kolejka/blob/main/tourist.c#L70-L85) |
-| Użycie SEM_CHAIRS | worker.c | Kontrola dostępnych krzesełek | [worker.c#L110-L125](https://github.com/Mixjis/kolejka/blob/main/worker.c#L110-L125) |
+| `ftok()` | utils.c | Generowanie klucza IPC | [utils.c#L24](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L24) |
+| `semget()` | utils.c | Tworzenie semaforów | [utils.c#L35](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L35) |
+| `semctl()` | utils.c | Inicjalizacja wartości semaforów | [utils.c#L42](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L42) |
+| `semop()` | utils.c | Funkcje sem_opusc() i sem_podnies() | [utils.c#L156](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L156) |
 
 ---
 
 ### f) Łącza (mkfifo(), pipe(), dup(), dup2(), popen())
 
-> **Uwaga:** Projekt wykorzystuje kolejki komunikatów zamiast łączy nazwanych/nienazwanych. Jeśli wymagane jest użycie FIFO/pipe, należy dodać tę funkcjonalność.
-
-*(Opcjonalnie można dodać FIFO np. do logowania lub komunikacji pomocniczej)*
+> Projekt nie wykorzystuje Łącz nazwanych ani nienazwanych
 
 ---
 
@@ -493,12 +484,12 @@ Ceny aktualnie ustawione:
 
 | Funkcja | Plik | Opis | Link |
 |---------|------|------|------|
-| `ftok()` | utils.c | Generowanie klucza pamięci dzielonej | [utils.c#L105-L110](https://github.com/Mixjis/kolejka/blob/main/utils.c#L105-L110) |
-| `shmget()` | utils.c | Tworzenie segmentu SharedMemory | [utils.c#L115-L130](https://github.com/Mixjis/kolejka/blob/main/utils.c#L115-L130) |
-| `shmat()` | utils.c | Dołączanie pamięci dzielonej | [utils.c#L135-L145](https://github.com/Mixjis/kolejka/blob/main/utils.c#L135-L145) |
-| `shmdt()` | main.c | Odłączanie pamięci przy zamykaniu | [main.c#L280-L290](https://github.com/Mixjis/kolejka/blob/main/main.c#L280-L290) |
-| `shmctl()` | main.c | Usuwanie segmentu po zakończeniu | [main.c#L295-L305](https://github.com/Mixjis/kolejka/blob/main/main.c#L295-L305) |
-| Struktura SharedMemory | struktury.h | Definicja struktury pamięci dzielonej | [struktury.h#L50-L100](https://github.com/Mixjis/kolejka/blob/main/struktury.h#L50-L100) |
+| `ftok()` | utils.c | Generowanie klucza pamięci dzielonej | [utils.c#L469](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L469) |
+| `shmget()` | utils.c | Tworzenie segmentu SharedMemory | [utils.c#L471](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L471) |
+| `shmat()` | utils.c | Dołączanie pamięci dzielonej | [utils.c#L302](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L302) |
+| `shmdt()` | main.c | Odłączanie pamięci przy zamykaniu | [utils.c#L311](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L311) |
+| `shmctl()` | main.c | Usuwanie segmentu po zakończeniu | [utils.c#L472](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L472) |
+| Struktura SharedMemory | struktury.h | Definicja struktury pamięci dzielonej | [struktury.h#L162-L236](https://github.com/Mixjis/kolejka/blob/main/src/struktury.h#L162-L236) |
 
 ---
 
@@ -506,18 +497,17 @@ Ceny aktualnie ustawione:
 
 | Funkcja | Plik | Opis | Link |
 |---------|------|------|------|
-| `ftok()` | utils.c | Generowanie kluczy kolejek | [utils.c#L150-L160](https://github.com/Mixjis/kolejka/blob/main/utils.c#L150-L160) |
-| `msgget()` | utils.c | Tworzenie kolejek MSG_KEY i MSG_WORKER_KEY | [utils.c#L165-L180](https://github.com/Mixjis/kolejka/blob/main/utils.c#L165-L180) |
-| `msgsnd()` | tourist.c | Wysyłanie żądania biletu do kasjera | [tourist.c#L45-L55](https://github.com/Mixjis/kolejka/blob/main/tourist.c#L45-L55) |
-| `msgrcv()` | cashier.c | Odbiór żądań od turystów (w tym VIP) | [cashier.c#L40-L70](https://github.com/Mixjis/kolejka/blob/main/cashier.c#L40-L70) |
-| `msgsnd()` | worker.c | Wysyłanie MSG_CHAIR_ARRIVAL do worker2 | [worker.c#L140-L155](https://github.com/Mixjis/kolejka/blob/main/worker.c#L140-L155) |
-| `msgctl()` | main.c | Usuwanie kolejek po zakończeniu | [main.c#L310-L320](https://github.com/Mixjis/kolejka/blob/main/main.c#L310-L320) |
+| `ftok()` | utils.c | Generowanie kluczy kolejek | [utils.c#L483](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L483) |
+| `msgget()` | utils.c | Tworzenie kolejki IPC_KEY_MSG_WORKER | [utils.c#L340](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L340) |
+| `msgsnd()` | tourist.c | Wysyłanie komunikatu | [utils.c#L386](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L386) |
+| `msgrcv()` | cashier.c | Odbiór komunikatu | [utils.c#L397](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L397) |
+| `msgctl()` | main.c | Usuwanie kolejek | [utils.c#L486](https://github.com/Mixjis/kolejka/blob/main/src/utils.c#L486) |
 
 ---
 
 ### i) Gniazda (socket(), bind(), listen(), accept(), connect())
 
-> **Uwaga:** Projekt nie wykorzystuje gniazd sieciowych - komunikacja odbywa się przez kolejki komunikatów i pamięć dzieloną. Gniazda nie są wymagane dla tego typu symulacji lokalnej.
+> Projekt nie wykorzystuje gniazd sieciowych 
 
 ---
 
@@ -533,6 +523,6 @@ Ceny aktualnie ustawione:
     ├── utils.c          # Funkcje pomocnicze IPC
     ├── logger.c         # System logowania
     ├── struktury.h      # Definicje struktur
-    ├── operacje.h       # Deklaracje funkcji
+    ├── utils.h       # Deklaracje funkcji
     └── logger.h         # Deklaracje logowania
 ```
