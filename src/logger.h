@@ -1,11 +1,9 @@
-// logger.h - deklaracje funkcji logowania
-
 #ifndef LOGGER_H
 #define LOGGER_H
 
 #include <stdbool.h>
 
-// Typy nadawców logów (dla kolorowania)
+// Typy nadawców logów (do kolorowania)
 typedef enum {
     LOG_SYSTEM = 0,
     LOG_CASHIER,

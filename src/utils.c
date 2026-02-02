@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <signal.h>
-#include "operacje.h"
+#include "utils.h"
 #include "struktury.h"
 
 // Union dla semctl
@@ -19,7 +19,7 @@ union semun {
     unsigned short *array;
 };
 
-// ==== KLUCZE ====
+// klucze
 key_t utworz_klucz(int id) {
     key_t klucz = ftok(IPC_KEY_PATH, id);
     if (klucz == -1) {
@@ -29,7 +29,7 @@ key_t utworz_klucz(int id) {
     return klucz;
 }
 
-// ==== SEMAFORY ====
+// funkcje semaforów
 int utworz_semafory(void) {
     key_t klucz = utworz_klucz(IPC_KEY_SEM);
     int sem_id = semget(klucz, SEM_COUNT, IPC_CREAT | IPC_EXCL | 0600);
@@ -260,7 +260,7 @@ void sem_ustaw_wartosc(int sem_id, int sem_num, int value) {
     }
 }
 
-// ==== PAMIĘĆ DZIELONA ====
+// funkcje pamięci dzielonej
 int utworz_pamiec(void) {
     key_t klucz = utworz_klucz(IPC_KEY_SHM);
     int shm_id = shmget(klucz, sizeof(SharedMemory), IPC_CREAT | IPC_EXCL | 0600);
@@ -313,7 +313,7 @@ void odlacz_pamiec(SharedMemory* shm) {
     }
 }
 
-// ==== KOLEJKI KOMUNIKATÓW ====
+// funkcje kolejek komunikatów
 int utworz_kolejke(void) {
     key_t klucz = utworz_klucz(IPC_KEY_MSG);
     int msg_id = msgget(klucz, IPC_CREAT | IPC_EXCL | 0600);
@@ -405,7 +405,7 @@ bool odbierz_komunikat(int msg_id, Message* msg, long mtype, bool blocking) {
     return true;
 }
 
-// ==== FUNKCJE POMOCNICZE ====
+// funkcje pomocnicze
 const char* nazwa_biletu(TicketType type) {
     switch (type) {
         case TICKET_SINGLE: return "JEDNORAZOWY";

@@ -1,4 +1,4 @@
-// cashier.c - proces kasjera (sprzedaż biletów, obsługa bramek wejściowych)
+// cashier.c - proces kasjera (sprzedaż biletów)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 #include <time.h>
 #include <sys/msg.h>
 #include "struktury.h"
-#include "operacje.h"
+#include "utils.h"
 #include "logger.h"
 
 // Flagi sygnałów

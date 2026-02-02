@@ -8,7 +8,7 @@
 #include <sys/msg.h>
 #include <pthread.h>
 #include "struktury.h"
-#include "operacje.h"
+#include "utils.h"
 #include "logger.h"
 
 // Flagi sygnałów
@@ -26,7 +26,7 @@ void worker1_signal_handler(int sig) {
     if (sig == SIGTERM) {
         shutdown_flag = 1;
     } else if (sig == SIGUSR1) {
-        // Zatrzymanie awaryjne (od worker2 lub main)
+        // Zatrzymanie awaryjne
         emergency_stop = 1;
         emergency_resume = 0;
     } else if (sig == SIGUSR2) {

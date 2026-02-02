@@ -12,7 +12,7 @@ SRCDIR = src
 
 # Pliki źródłowe i docelowe
 SOURCES = $(SRCDIR)/main.c $(SRCDIR)/cashier.c $(SRCDIR)/worker.c $(SRCDIR)/worker2.c $(SRCDIR)/tourist.c $(SRCDIR)/logger.c $(SRCDIR)/utils.c
-HEADERS = $(SRCDIR)/struktury.h $(SRCDIR)/operacje.h $(SRCDIR)/logger.h
+HEADERS = $(SRCDIR)/struktury.h $(SRCDIR)/utils.h $(SRCDIR)/logger.h
 
 # Główne pliki wykonywalne
 MAIN = kolej

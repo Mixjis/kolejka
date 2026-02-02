@@ -9,7 +9,7 @@
 #include <sys/msg.h>
 #include <pthread.h>
 #include "struktury.h"
-#include "operacje.h"
+#include "utils.h"
 #include "logger.h"
 
 // Globalne zmienne

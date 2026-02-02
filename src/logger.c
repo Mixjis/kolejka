@@ -13,12 +13,12 @@
 #include <sys/stat.h>
 #include "logger.h"
 #include "struktury.h"
-#include "operacje.h"
+#include "utils.h"
 
 #define LOG_FILE "kolej_log.txt"
 #define REPORT_FILE "raport_karnetow.txt"
 
-static int log_fd = -1;        // Deskryptor pliku logów (używamy write() zamiast fprintf dla atomowości)
+static int log_fd = -1;        // Deskryptor pliku logów
 static int report_fd = -1;     // Deskryptor pliku raportu
 
 // Pobierz kolor dla typu nadawcy
@@ -78,7 +78,7 @@ static void get_timestamp(char* buffer, size_t size) {
 }
 
 void logger_init(void) {
-    // Otwórz plik logów w trybie dopisywania (append) dla atomowości
+    // Otwórz plik logów
     log_fd = open(LOG_FILE, O_WRONLY | O_CREAT | O_APPEND, 0644);
     if (log_fd < 0) {
         perror("Nie można otworzyć pliku logów");
@@ -90,7 +90,7 @@ void logger_init(void) {
         perror("Nie można otworzyć pliku raportu");
     }
     
-    // Nagłówek pliku logów tylko jeśli plik jest pusty
+    // Nagłówek pliku logów
     if (log_fd >= 0) {
         struct stat st;
         if (fstat(log_fd, &st) == 0 && st.st_size == 0) {
@@ -111,7 +111,6 @@ void logger_init_child(void) {
         report_fd = -1;
     }
     
-    // Otwórz ponownie w trybie append - O_APPEND zapewnia atomowe dopisywanie
     log_fd = open(LOG_FILE, O_WRONLY | O_APPEND);
     if (log_fd < 0) {
         perror("Nie można otworzyć pliku logów (child)");
@@ -162,7 +161,7 @@ void logger(LogSender sender, const char* format, ...) {
     
     write(STDOUT_FILENO, console_line, strlen(console_line));
     
-    // Linia do pliku (bez kolorów) - O_APPEND zapewnia atomowość dla linii < PIPE_BUF
+    // Linia do pliku (bez kolorów)
     int len = snprintf(file_line, sizeof(file_line),
              "[%s] %s(%d): %s\n",
              timestamp, name, pid, message);
@@ -221,7 +220,6 @@ void logger_report_file_only(const char* format, ...) {
 }
 
 void logger_clear_files(void) {
-    // czyszczenie plików przed nową symulacją
     FILE* fd = fopen(LOG_FILE, "w");
     if (fd != NULL) fclose(fd);
     
@@ -230,9 +228,7 @@ void logger_clear_files(void) {
 }
 
 // Rejestrowanie zjazdu dla danego biletu
-// UWAGA: Wołający musi SAM trzymać SEM_MAIN i przekazać shm
 void rejestruj_zjazd(int ticket_id) {
-    // Ta funkcja jest teraz pusta - logika przeniesiona do tourist.c
     (void)ticket_id;
 }
 
@@ -293,7 +289,7 @@ void generuj_raport_koncowy(void) {
     
     sem_podnies(sem_id, SEM_MAIN);
     
-    // Generowanie prostego raportu - tylko do pliku, bez konsoli
+    // Generowanie raportu - tylko do pliku
     logger_report_file_only("============================================================");
     logger_report_file_only("         RAPORT KARNETOW - KOLEJ LINOWA");
     logger_report_file_only("============================================================");
