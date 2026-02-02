@@ -7,9 +7,12 @@ CC = gcc
 CFLAGS = -Wall -Wextra -pthread -D_GNU_SOURCE -g
 LDFLAGS = -pthread
 
+# Katalog źródłowy
+SRCDIR = src
+
 # Pliki źródłowe i docelowe
-SOURCES = main.c cashier.c worker.c worker2.c tourist.c logger.c utils.c
-HEADERS = struktury.h operacje.h logger.h
+SOURCES = $(SRCDIR)/main.c $(SRCDIR)/cashier.c $(SRCDIR)/worker.c $(SRCDIR)/worker2.c $(SRCDIR)/tourist.c $(SRCDIR)/logger.c $(SRCDIR)/utils.c
+HEADERS = $(SRCDIR)/struktury.h $(SRCDIR)/operacje.h $(SRCDIR)/logger.h
 
 # Główne pliki wykonywalne
 MAIN = kolej
@@ -43,9 +46,9 @@ $(WORKER2): worker2.o $(COMMON_OBJ)
 $(TOURIST): tourist.o $(COMMON_OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-# Kompilacja plików obiektowych
-%.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -c -o $@ $<
+# Kompilacja plików obiektowych z katalogu src
+%.o: $(SRCDIR)/%.c $(HEADERS)
+	$(CC) $(CFLAGS) -I$(SRCDIR) -c -o $@ $<
 
 # Uruchomienie symulacji
 run: all
@@ -64,4 +67,4 @@ help:
 	@echo "  make clean  	- usunięcie plików wykonywalnych i obiektowych"
 	@echo "  make help   	- ta pomoc"
 
-.PHONY: all run clean clean-ipc show-ipc help
+.PHONY: all run clean help

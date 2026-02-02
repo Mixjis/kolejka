@@ -418,3 +418,23 @@ Ceny aktualnie ustawione:
 **Wynik:** Logi potwierdzają przydzielanie zniżek dla odpowiednich osób.
 ----------
 ## 7. Linki do istotnych fragmentów kodu
+
+### a) Tworzenie i obsługa plików (creat(), open(), close(), read(), write(), unlink())
+
+
+
+## Pliki projektu
+```
+├──Makefile
+└──src
+    ├── main.c           # Główny proces
+    ├── cashier.c        # Proces kasjera
+    ├── worker.c         # Pracownik stacji dolnej
+    ├── worker2.c        # Pracownik stacji górnej
+    ├── tourist.c        # Proces turysty
+    ├── utils.c          # Funkcje pomocnicze IPC
+    ├── logger.c         # System logowania
+    ├── struktury.h      # Definicje struktur
+    ├── operacje.h       # Deklaracje funkcji
+    └── logger.h         # Deklaracje logowania
+```
