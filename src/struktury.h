@@ -37,8 +37,8 @@
 #define WORK_END_TIME        60     // Tk - koniec (sekundy)
 #define SHUTDOWN_DELAY       3       // Opóźnienie przed wyłączeniem po Tk
 
-// Szybkość generowania turystów
-#define TOURIST_SPAWN_DELAY_MAX  2000000  // opóźnienie między turystami
+
+
 
 // Procent VIPów
 #define VIP_PERCENT          1

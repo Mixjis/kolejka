@@ -302,12 +302,12 @@ int main(void) {
                 logger(LOG_SYSTEM, "Błąd tworzenia turysty #%d", tourist_id);
             }
             
-            // Losowe opóźnienie między turystami
-            volatile int delay_count = 0;
-            int max_delay = rand() % 100000;
-            while (delay_count < max_delay) {
-                delay_count++;
-            }
+            
+            
+           
+            
+            
+            
         }
     }
 
