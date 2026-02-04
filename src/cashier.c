@@ -168,10 +168,12 @@ int main(void) {
                 response.tourist_id = msg.tourist_id;
                 response.data = -1; // Odmowa
                 response.data2 = -1;
-                wyslij_komunikat(msg_id, &response);
+                while (!wyslij_komunikat_nowait(msg_id, &response)) {
+                    if (shutdown_flag) break;
+                }
                 logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla VIP #%d", msg.tourist_id);
             }
-            
+
             // Opróżnij kolejkę zwykłych komunikatów
             while (odbierz_komunikat(msg_id, &msg, MSG_TOURIST_TO_CASHIER, false)) {
                 Message response;
@@ -180,7 +182,9 @@ int main(void) {
                 response.tourist_id = msg.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                wyslij_komunikat(msg_id, &response);
+                while (!wyslij_komunikat_nowait(msg_id, &response)) {
+                    if (shutdown_flag) break;
+                }
                 logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla turysty #%d", msg.tourist_id);
             }
             
@@ -193,7 +197,9 @@ int main(void) {
                 response.tourist_id = qt.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                wyslij_komunikat(msg_id, &response);
+                while (!wyslij_komunikat_nowait(msg_id, &response)) {
+                    if (shutdown_flag) break;
+                }
                 logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla turysty #%d (z kolejki wewnętrznej)", qt.tourist_id);
             }
             
@@ -227,15 +233,17 @@ int main(void) {
                 response.tourist_id = qt.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                wyslij_komunikat(msg_id, &response);
+                while (!wyslij_komunikat_nowait(msg_id, &response)) {
+                    if (shutdown_flag) break;
+                }
                 logger(LOG_CASHIER, "Kolejka pełna - odmowa dla VIP #%d", qt.tourist_id);
             }
         }
-        
+
         // zwykli turyści
         while (odbierz_komunikat(msg_id, &msg, MSG_TOURIST_TO_CASHIER, false)) {
             if (shutdown_flag || gates_closed) break;
-            
+
             QueuedTourist qt;
             qt.pid = msg.sender_pid;
             qt.tourist_id = msg.tourist_id;
@@ -246,7 +254,7 @@ int main(void) {
             qt.child_ids[0] = msg.child_ids[0];
             qt.child_ids[1] = msg.child_ids[1];
             qt.ticket_type = msg.ticket_type;
-            
+
             if (!add_to_queue(&qt)) {
                 // Kolejka pełna - wyślij odmowę
                 Message response;
@@ -255,7 +263,9 @@ int main(void) {
                 response.tourist_id = qt.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                wyslij_komunikat(msg_id, &response);
+                while (!wyslij_komunikat_nowait(msg_id, &response)) {
+                    if (shutdown_flag) break;
+                }
                 logger(LOG_CASHIER, "Kolejka pełna - odmowa dla turysty #%d", qt.tourist_id);
             }
         }
@@ -291,15 +301,20 @@ int main(void) {
             }
             sem_podnies(sem_id, SEM_MAIN);
             
-            // Wysłanie potwierdzenia do turysty 
+            // Wysłanie potwierdzenia do turysty
             Message response;
             response.mtype = tourist.pid; // Adresowanie do konkretnego turysty
             response.sender_pid = getpid();
             response.tourist_id = tourist.tourist_id;
             response.data = ticket_id;
             response.data2 = ticket_type;
-            
-            if (wyslij_komunikat(msg_id, &response)) {
+
+            // Wysłanie potwierdzenia do turysty
+            while (!wyslij_komunikat_nowait(msg_id, &response)) {
+                if (shutdown_flag) break;
+            }
+
+            if (!shutdown_flag) {
                 const char* ticket_name = nazwa_biletu(ticket_type);
                 const char* discount_str = has_discount ? " (ze zniżką 25%)" : "";
                 const char* vip_str = tourist.is_vip ? " [VIP]" : "";

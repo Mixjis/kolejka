@@ -127,7 +127,21 @@ int utworz_semafory(void) {
         perror("Błąd semctl SETVAL SEM_REPORT");
         exit(1);
     }
-    
+
+    // SEM_CASHIER_QUEUE - limit turystów czekających na kasę
+    arg.val = CASHIER_QUEUE_LIMIT;
+    if (semctl(sem_id, SEM_CASHIER_QUEUE, SETVAL, arg) == -1) {
+        perror("Błąd semctl SETVAL SEM_CASHIER_QUEUE");
+        exit(1);
+    }
+
+    // SEM_PLATFORM_QUEUE - limit turystów czekających na peron
+    arg.val = PLATFORM_QUEUE_LIMIT;
+    if (semctl(sem_id, SEM_PLATFORM_QUEUE, SETVAL, arg) == -1) {
+        perror("Błąd semctl SETVAL SEM_PLATFORM_QUEUE");
+        exit(1);
+    }
+
     return sem_id;
 }
 
@@ -386,6 +400,16 @@ bool wyslij_komunikat(int msg_id, Message* msg) {
     while (msgsnd(msg_id, msg, MSG_SIZE, 0) == -1) {
         if (errno == EINTR) continue;
         perror("Błąd msgsnd");
+        return false;
+    }
+    return true;
+}
+
+bool wyslij_komunikat_nowait(int msg_id, Message* msg) {
+    while (msgsnd(msg_id, msg, MSG_SIZE, IPC_NOWAIT) == -1) {
+        if (errno == EINTR) continue;
+        if (errno == EAGAIN) return false; // Kolejka pełna
+        perror("Błąd msgsnd nowait");
         return false;
     }
     return true;

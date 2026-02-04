@@ -133,7 +133,8 @@ void* tourist_exit_thread(void* arg) {
         msg.sender_pid = getpid();
         msg.data = 3; // Zakończone
         msg.tourist_id = te->tourist_id;
-        wyslij_komunikat(g_msg_id, &msg);
+        while (!wyslij_komunikat_nowait(g_msg_id, &msg)) {
+        }
         
         free(te);
         return NULL;
@@ -193,7 +194,8 @@ void* tourist_exit_thread(void* arg) {
     msg.sender_pid = getpid();
     msg.data = 3; // Zjazd zakończony (różne od 2 = dotarcie na górę)
     msg.tourist_id = te->tourist_id;
-    wyslij_komunikat(g_msg_id, &msg);
+    while (!wyslij_komunikat_nowait(g_msg_id, &msg)) {
+    }
     
     logger(LOG_WORKER2, "Turysta #%d zakończył zjazd trasą %s i zjeżdża na dół", 
            te->tourist_id, trail_name);
@@ -349,7 +351,7 @@ int main(void) {
                 }
             }
             
-            // 2. Wyślij odpowiedzi do turystów czekających na wyjście (MSG_TOURIST_EXIT)
+            // Wyślij odpowiedzi do turystów czekających na wyjście (MSG_TOURIST_EXIT)
             while (odbierz_komunikat(g_msg_id, &cleanup_msg, MSG_TOURIST_EXIT, false)) {
                 Message reply;
                 reply.mtype = cleanup_msg.sender_pid;
@@ -386,7 +388,10 @@ int main(void) {
                 reply.sender_pid = getpid();
                 reply.data = 2; // Dotarłeś na górę
                 reply.tourist_id = chair_id * 100 + i;
-                wyslij_komunikat(g_msg_id, &reply);
+                while (!wyslij_komunikat_nowait(g_msg_id, &reply)) {
+                    if (shutdown_flag) break;
+                }
+                if (shutdown_flag) break;
             }
         }
         

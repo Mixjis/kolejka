@@ -27,7 +27,7 @@ static pid_t worker1_pid = 0;
 static pid_t worker2_pid = 0;
 
 // Lista procesów turystów
-#define MAX_TOURIST_PROCESSES 300
+#define MAX_TOURIST_PROCESSES 10000
 static pid_t tourist_pids[MAX_TOURIST_PROCESSES];
 static int tourist_pid_count = 0;
 static pthread_mutex_t tourist_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -179,7 +179,8 @@ int main(void) {
     g_shm_id = utworz_pamiec();
     g_msg_id = utworz_kolejke();
     g_msg_worker_id = utworz_kolejke_worker();
-    
+
+
     g_shm = dolacz_pamiec(g_shm_id);
     init_shared_memory();
     
@@ -237,18 +238,18 @@ int main(void) {
         if (now - sim_start >= WORK_END_TIME) {
             logger(LOG_SYSTEM, "Osiągnięto czas Tk - zamykam bramki wejściowe");
             
-            sem_opusc(g_sem_id, SEM_MAIN);
+            //sem_opusc(g_sem_id, SEM_MAIN);
             g_shm->gates_closed = true;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            //sem_podnies(g_sem_id, SEM_MAIN);
             
             break;
         }
         
         // Sprawdzanie czy możemy utworzyć więcej procesów
         if(tourists_created < TOTAL_TOURISTS){
-            pthread_mutex_lock(&tourist_mutex);
+            //pthread_mutex_lock(&tourist_mutex);
             int current_count = tourist_pid_count;
-            pthread_mutex_unlock(&tourist_mutex);
+            //pthread_mutex_unlock(&tourist_mutex);
             
             if (current_count >= MAX_TOURIST_PROCESSES) {
                 continue;
@@ -288,15 +289,13 @@ int main(void) {
             pid_t pid = create_tourist(tourist_id, age, type, is_vip, children_count);
             
             if (pid > 0) {
-                pthread_mutex_lock(&tourist_mutex);
+                //pthread_mutex_lock(&tourist_mutex);
                 if (tourist_pid_count < MAX_TOURIST_PROCESSES) {
                     tourist_pids[tourist_pid_count++] = pid;
                 }
-                pthread_mutex_unlock(&tourist_mutex);
-                
-                sem_opusc(g_sem_id, SEM_MAIN);
+                //pthread_mutex_unlock(&tourist_mutex);
+
                 g_shm->total_tourists_created += 1 + children_count;
-                sem_podnies(g_sem_id, SEM_MAIN);
 
             } else if (pid == -1) {
                 logger(LOG_SYSTEM, "Błąd tworzenia turysty #%d", tourist_id);

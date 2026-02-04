@@ -396,9 +396,11 @@ int receive_platform_messages(Message* msg) {
             refuse.sender_pid = getpid();
             refuse.data = -1;
             refuse.tourist_id = w.tourist_id;
-            wyslij_komunikat(g_msg_id, &refuse);
+            while (!wyslij_komunikat_nowait(g_msg_id, &refuse)) {
+                if (shutdown_flag) break;
+            }
         }
-        
+
         received++;
     }
     
@@ -434,7 +436,10 @@ bool dispatch_one_chair(void) {
         notify.sender_pid = getpid();
         notify.data = 1; // OK wsiadaj
         notify.tourist_id = group->tourist_ids[i];
-        wyslij_komunikat(g_msg_id, &notify);
+        while (!wyslij_komunikat_nowait(g_msg_id, &notify)) {
+            if (shutdown_flag) break;
+        }
+        if (shutdown_flag) break;
         
         // Log wpuszczenia turysty
         if (group->children_counts[i] > 0) {
@@ -562,7 +567,7 @@ int main(void) {
         
         // obsługa awarii
         if (emergency_stop) {
-            // Podczas awarii nadal odbieraj turystów do kolejki
+            // Podczas awarii nadal odbiera turystów z kolejki
             receive_platform_messages(&msg);
             
             sem_opusc(g_sem_id, SEM_MAIN);
@@ -623,7 +628,7 @@ int main(void) {
                 refuse.sender_pid = getpid();
                 refuse.data = -1;
                 refuse.tourist_id = cleanup_msg.tourist_id;
-                wyslij_komunikat(g_msg_id, &refuse);
+                wyslij_komunikat_nowait(g_msg_id, &refuse);
             }
 
             pthread_mutex_lock(&waiter_mutex);
@@ -633,7 +638,7 @@ int main(void) {
                 refuse.sender_pid = getpid();
                 refuse.data = -1;
                 refuse.tourist_id = waiters[i].tourist_id;
-                wyslij_komunikat(g_msg_id, &refuse);
+                wyslij_komunikat_nowait(g_msg_id, &refuse);
             }
             waiter_count = 0;
             pthread_mutex_unlock(&waiter_mutex);
@@ -642,7 +647,7 @@ int main(void) {
             break;
         }
 
-        // Normalne zakończenie - bramki zamknięte, peron pusty, kolejka pusta, krzesełka wróciły
+        //zakończenie - bramki zamknięte, peron pusty, kolejka pusta
         pthread_mutex_lock(&waiter_mutex);
         int current_waiters = waiter_count;
         pthread_mutex_unlock(&waiter_mutex);
@@ -652,56 +657,57 @@ int main(void) {
             break;
         }
         
-        // naprzemienne wpuszczanie na peron i wysyłanie krzesełek
-        
-        // odbieranie komunikatów od turystów
+        // Odbieranie komunikatów od turystów
         int received = 0;
-        for (int i = 0; i < 5; i++) {
-            if (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
-                PlatformWaiter w;
-                w.pid = msg.sender_pid;
-                w.tourist_id = msg.tourist_id;
-                w.type = msg.tourist_type;
-                w.children_count = msg.children_count;
-                w.child_ids[0] = msg.child_ids[0];
-                w.child_ids[1] = msg.child_ids[1];
-            
-                int gate_num = get_next_platform_gate();
+        while (odbierz_komunikat(g_msg_id, &msg, MSG_TOURIST_TO_PLATFORM, false)) {
+            if (shutdown_flag) break;
 
-                if (add_waiter(&w)) {
-                    sem_opusc(g_sem_id, SEM_MAIN);
-                    g_shm->tourists_on_platform++;
-                    sem_podnies(g_sem_id, SEM_MAIN);
+            PlatformWaiter w;
+            w.pid = msg.sender_pid;
+            w.tourist_id = msg.tourist_id;
+            w.type = msg.tourist_type;
+            w.children_count = msg.children_count;
+            w.child_ids[0] = msg.child_ids[0];
+            w.child_ids[1] = msg.child_ids[1];
 
-                    logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (typ: %s, dzieci: %d)",
-                           w.tourist_id, gate_num,
-                           w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy",
-                           w.children_count);
-                } else {
-                    Message refuse;
-                    refuse.mtype = w.pid;
-                    refuse.sender_pid = getpid();
-                    refuse.data = -1;
-                    refuse.tourist_id = w.tourist_id;
-                    wyslij_komunikat(g_msg_id, &refuse);
-                }
-                received++;
+            int gate_num = get_next_platform_gate();
+
+            if (add_waiter(&w)) {
+                sem_opusc(g_sem_id, SEM_MAIN);
+                g_shm->tourists_on_platform++;
+                sem_podnies(g_sem_id, SEM_MAIN);
+
+                logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (typ: %s, dzieci: %d)",
+                       w.tourist_id, gate_num,
+                       w.type == TOURIST_CYCLIST ? "rowerzysta" : "pieszy",
+                       w.children_count);
             } else {
-                break;  // Nie ma więcej komunikatów
+                Message refuse;
+                refuse.mtype = w.pid;
+                refuse.sender_pid = getpid();
+                refuse.data = -1;
+                refuse.tourist_id = w.tourist_id;
+                while (!wyslij_komunikat_nowait(g_msg_id, &refuse)) {
+                    if (shutdown_flag) break;
+                }
             }
+            received++;
         }
 
-        // wysyłanie krzesełek
-        for (int i = 0; i < 3; i++) {
-            if (!dispatch_one_chair()) {
-                break;  // Nie udało się wysłać
-            }
+        // Wysyłanie krzesełek - wysyłanie dopóki są czekający i wolne krzesełka
+        int dispatched = 0;
+        while (dispatch_one_chair()) {
+            dispatched++;
+            if (shutdown_flag) break;
         }
-        
-        // Próba wysłania jeśli dalej są czekający
+
         pthread_mutex_lock(&waiter_mutex);
         current_waiters = waiter_count;
         pthread_mutex_unlock(&waiter_mutex);
+
+        if (received == 0 && dispatched == 0) {
+            //usleep(100);
+        }
         
         if (received == 0 && current_waiters > 0) {
             dispatch_one_chair();

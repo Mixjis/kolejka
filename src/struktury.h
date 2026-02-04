@@ -7,7 +7,7 @@
 #include <time.h>
 
 // KONFIGURACJA SYMULACJI
-#define TOTAL_TOURISTS       10000   // Liczba turystów do obsłużenia
+#define TOTAL_TOURISTS       5000   // Liczba turystów do obsłużenia
 #define MAX_CHAIRS           72      // Łączna liczba krzesełek
 #define MAX_ACTIVE_CHAIRS    36      // Maks krzesełek jednocześnie w ruchu
 #define CHAIR_CAPACITY       4       // Pojemność jednego krzesełka
@@ -34,7 +34,7 @@
 
 // Godziny pracy (sekundy)
 #define WORK_START_TIME      5       // Tp - start
-#define WORK_END_TIME        60     // Tk - koniec (sekundy)
+#define WORK_END_TIME        240     // Tk - koniec (sekundy)
 #define SHUTDOWN_DELAY       3       // Opóźnienie przed wyłączeniem po Tk
 
 
@@ -113,7 +113,13 @@ typedef enum {
 #define SEM_WORKER_SYNC        8    // Synchronizacja pracowników
 #define SEM_LOG_FILE           9    // Mutex dla pliku logów
 #define SEM_REPORT             10   // Mutex dla raportu
-#define SEM_COUNT              11   // Liczba semaforów
+#define SEM_CASHIER_QUEUE      11   // Limit turystów czekających na kasę (zapobiega przepełnieniu kolejki)
+#define SEM_PLATFORM_QUEUE     12   // Limit turystów czekających na peron (zapobiega przepełnieniu kolejki)
+#define SEM_COUNT              13   // Liczba semaforów
+
+// Limity kolejek (zapobiegają przepełnieniu kolejki IPC)
+#define CASHIER_QUEUE_LIMIT    100
+#define PLATFORM_QUEUE_LIMIT   150
 
 // struktury danych
 
