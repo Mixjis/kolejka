@@ -183,15 +183,19 @@ void* chair_thread(void* arg) {
     }
     int total_passengers = group->count + total_children;
 
-    // Aktualizuj statystyki
-    sem_opusc(g_sem_id, SEM_MAIN);
-    g_shm->chair_departures++;
+    // Aktualizuj statystyki transportu (SEM_STATS)
+    sem_opusc(g_sem_id, SEM_STATS);
     g_shm->passengers_transported += total_passengers;
     g_shm->cyclists_transported += group->cyclists;
     g_shm->pedestrians_transported += group->pedestrians;
+    sem_podnies(g_sem_id, SEM_STATS);
+
+    // Aktualizuj operacje krzesełek (SEM_CHAIR_OPS)
+    sem_opusc(g_sem_id, SEM_CHAIR_OPS);
+    g_shm->chair_departures++;
     g_shm->active_chairs++;
     int chair_id = g_shm->chair_departures;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_CHAIR_OPS);
     
     // Log odjazdu
     char passengers_str[256] = "";
@@ -282,10 +286,10 @@ void* chair_thread(void* arg) {
     
     wyslij_komunikat(g_msg_worker_id, &msg);
     
-    // Aktualizacja statystyk
-    sem_opusc(g_sem_id, SEM_MAIN);
+    // Aktualizacja statystyk krzesełek (SEM_CHAIR_OPS)
+    sem_opusc(g_sem_id, SEM_CHAIR_OPS);
     g_shm->active_chairs--;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_CHAIR_OPS);
     
     // Zwolnienie semafora krzesełka
     sem_podnies_bez_undo(g_sem_id, SEM_CHAIRS);
@@ -382,9 +386,9 @@ int receive_platform_messages(Message* msg) {
         int gate_num = get_next_platform_gate();
 
         if (add_waiter(&w)) {
-            sem_opusc(g_sem_id, SEM_MAIN);
+            sem_opusc(g_sem_id, SEM_QUEUE);
             g_shm->tourists_on_platform++;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_QUEUE);
 
             logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (typ: %s, dzieci: %d)",
                    w.tourist_id, gate_num,
@@ -403,7 +407,7 @@ int receive_platform_messages(Message* msg) {
 
         received++;
     }
-    
+
     return received;
 }
 
@@ -454,10 +458,10 @@ bool dispatch_one_chair(void) {
         }
     }
     
-    // Aktualizuj licznik na peronie
-    sem_opusc(g_sem_id, SEM_MAIN);
+    // Aktualizuj licznik na peronie (SEM_QUEUE)
+    sem_opusc(g_sem_id, SEM_QUEUE);
     g_shm->tourists_on_platform -= group->count;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_QUEUE);
     
     // Uruchom wątek krzesełka
     pthread_t thread;
@@ -534,12 +538,18 @@ int main(void) {
     int next_emergency_delay = 3 + (rand() % 3);  // 3-5 sekund
     
     while (!shutdown_flag) {
-        // Sprawdź czy bramki zamknięte (koniec dnia)
+        // Sprawdź czy bramki zamknięte (koniec dnia) - osobne semafory dla różnych zasobów
         sem_opusc(g_sem_id, SEM_MAIN);
         bool gates_closed = g_shm->gates_closed;
-        int on_platform = g_shm->tourists_on_platform;
-        int active_chairs = g_shm->active_chairs;
         sem_podnies(g_sem_id, SEM_MAIN);
+
+        sem_opusc(g_sem_id, SEM_QUEUE);
+        int on_platform = g_shm->tourists_on_platform;
+        sem_podnies(g_sem_id, SEM_QUEUE);
+
+        sem_opusc(g_sem_id, SEM_CHAIR_OPS);
+        int active_chairs = g_shm->active_chairs;
+        sem_podnies(g_sem_id, SEM_CHAIR_OPS);
         
         // === OBSŁUGA AWARII ===
         if (!gates_closed) {
@@ -673,9 +683,9 @@ int main(void) {
             int gate_num = get_next_platform_gate();
 
             if (add_waiter(&w)) {
-                sem_opusc(g_sem_id, SEM_MAIN);
+                sem_opusc(g_sem_id, SEM_QUEUE);
                 g_shm->tourists_on_platform++;
-                sem_podnies(g_sem_id, SEM_MAIN);
+                sem_podnies(g_sem_id, SEM_QUEUE);
 
                 logger(LOG_WORKER1, "Turysta #%d wpuszczony przez bramkę peronową #%d (typ: %s, dzieci: %d)",
                        w.tourist_id, gate_num,

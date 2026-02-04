@@ -111,11 +111,11 @@ typedef struct {
 
 void* tourist_exit_thread(void* arg) {
     TouristExit* te = (TouristExit*)arg;
-    
-    // Zmniejszenie licznika turystów na górnej stacji
-    sem_opusc(g_sem_id, SEM_MAIN);
+
+    // Zmniejszenie licznika turystów na górnej stacji (SEM_QUEUE)
+    sem_opusc(g_sem_id, SEM_QUEUE);
     g_shm->tourists_at_top--;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_QUEUE);
     
     // Sprawdzanie czy to pieszy opuszcza system na górze (trail == -1)
     if (te->trail == (TrailType)(-1)) {
@@ -173,20 +173,24 @@ void* tourist_exit_thread(void* arg) {
     logger(LOG_WORKER2, "Turysta #%d zjeżdża trasą %s (%ds)", 
            te->tourist_id, trail_name, trail_time);
     
-    // Aktualizacja statystyk tras i licznika zjeżdżających
-    sem_opusc(g_sem_id, SEM_MAIN);
+    // Aktualizacja statystyk tras (SEM_STATS)
+    sem_opusc(g_sem_id, SEM_STATS);
     g_shm->trail_usage[te->trail]++;
+    sem_podnies(g_sem_id, SEM_STATS);
+
+    // Aktualizacja licznika zjeżdżających (SEM_QUEUE)
+    sem_opusc(g_sem_id, SEM_QUEUE);
     g_shm->tourists_descending++;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_QUEUE);
     
     // Symulacja zjazdu
     time_t start_time = time(NULL);
     while ((time(NULL) - start_time) < trail_time) {}
     
-    // Zmniejsz licznik zjeżdżających
-    sem_opusc(g_sem_id, SEM_MAIN);
+    // Zmniejsz licznik zjeżdżających (SEM_QUEUE)
+    sem_opusc(g_sem_id, SEM_QUEUE);
     g_shm->tourists_descending--;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_QUEUE);
     
     // Wyślij powiadomienie do turysty, że zjazd zakończony i może wrócić
     Message msg;
@@ -370,10 +374,10 @@ int main(void) {
             int chair_id = msg.data;
             int passenger_count = msg.data2;
             
-            // Zwiększ licznik turystów na górnej stacji
-            sem_opusc(g_sem_id, SEM_MAIN);
+            // Zwiększ licznik turystów na górnej stacji (SEM_QUEUE)
+            sem_opusc(g_sem_id, SEM_QUEUE);
             g_shm->tourists_at_top += passenger_count;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_QUEUE);
             
             logger(LOG_CHAIR, "Krzesełko #%d dotarło na górną stację z %d pasażerami",
                    chair_id, passenger_count);

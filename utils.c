@@ -1,3 +1,4 @@
+#define _GNU_SOURCE  // Wymagane dla semtimedop
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,7 +34,7 @@ key_t utworz_klucz(int id) {
 int utworz_semafory(void) {
     key_t klucz = utworz_klucz(IPC_KEY_SEM);
     int sem_id = semget(klucz, SEM_COUNT, IPC_CREAT | IPC_EXCL | 0600);
-    
+
     if (sem_id == -1) {
         if (errno == EEXIST) {
             // Usuń stare i utwórz nowe
@@ -48,79 +49,79 @@ int utworz_semafory(void) {
             exit(1);
         }
     }
-    
+
     union semun arg;
-    
-    // SEM_MAIN - mutex (1)
+
+    // SEM_MAIN - mutex główny (1)
     arg.val = 1;
     if (semctl(sem_id, SEM_MAIN, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_MAIN");
         exit(1);
     }
-    
+
     // SEM_STATION - limit osób na stacji (N)
     arg.val = STATION_CAPACITY;
     if (semctl(sem_id, SEM_STATION, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_STATION");
         exit(1);
     }
-    
+
     // SEM_PLATFORM - mutex peronu
     arg.val = 1;
     if (semctl(sem_id, SEM_PLATFORM, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_PLATFORM");
         exit(1);
     }
-    
+
     // SEM_CHAIRS - dostępne krzesełka
     arg.val = MAX_ACTIVE_CHAIRS;
     if (semctl(sem_id, SEM_CHAIRS, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_CHAIRS");
         exit(1);
     }
-    
+
     // SEM_GATE_ENTRY - bramki wejściowe
     arg.val = ENTRY_GATES;
     if (semctl(sem_id, SEM_GATE_ENTRY, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_GATE_ENTRY");
         exit(1);
     }
-    
+
     // SEM_GATE_PLATFORM - bramki na peron
     arg.val = PLATFORM_GATES;
     if (semctl(sem_id, SEM_GATE_PLATFORM, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_GATE_PLATFORM");
         exit(1);
     }
-    
+
     // SEM_GATE_EXIT - wyjścia górna stacja
     arg.val = EXIT_GATES;
     if (semctl(sem_id, SEM_GATE_EXIT, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_GATE_EXIT");
         exit(1);
     }
-    
+
     // SEM_EMERGENCY - flaga awarii (1 = normalnie, 0 = stop)
     arg.val = 1;
     if (semctl(sem_id, SEM_EMERGENCY, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_EMERGENCY");
         exit(1);
     }
-    
+
     // SEM_WORKER_SYNC - synchronizacja pracowników
     arg.val = 0;
     if (semctl(sem_id, SEM_WORKER_SYNC, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_WORKER_SYNC");
         exit(1);
     }
-    
+
     // SEM_LOG_FILE - mutex pliku logów
     arg.val = 1;
     if (semctl(sem_id, SEM_LOG_FILE, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_LOG_FILE");
         exit(1);
     }
-    
+
     // SEM_REPORT - mutex raportu
     arg.val = 1;
     if (semctl(sem_id, SEM_REPORT, SETVAL, arg) == -1) {
@@ -139,6 +140,48 @@ int utworz_semafory(void) {
     arg.val = PLATFORM_QUEUE_LIMIT;
     if (semctl(sem_id, SEM_PLATFORM_QUEUE, SETVAL, arg) == -1) {
         perror("Błąd semctl SETVAL SEM_PLATFORM_QUEUE");
+        exit(1);
+    }
+
+    // SEM_QUEUE - mutex dla liczników kolejek
+    arg.val = 1;
+    if (semctl(sem_id, SEM_QUEUE, SETVAL, arg) == -1) {
+        perror("Błąd semctl SETVAL SEM_QUEUE");
+        exit(1);
+    }
+
+    // SEM_STATS - mutex dla statystyk
+    arg.val = 1;
+    if (semctl(sem_id, SEM_STATS, SETVAL, arg) == -1) {
+        perror("Błąd semctl SETVAL SEM_STATS");
+        exit(1);
+    }
+
+    // SEM_GATES - mutex dla rejestrowania przejść przez bramki
+    arg.val = 1;
+    if (semctl(sem_id, SEM_GATES, SETVAL, arg) == -1) {
+        perror("Błąd semctl SETVAL SEM_GATES");
+        exit(1);
+    }
+
+    // SEM_TICKETS - mutex dla sprzedaży biletów i generowania ID
+    arg.val = 1;
+    if (semctl(sem_id, SEM_TICKETS, SETVAL, arg) == -1) {
+        perror("Błąd semctl SETVAL SEM_TICKETS");
+        exit(1);
+    }
+
+    // SEM_CHAIR_OPS - mutex dla operacji krzesełek
+    arg.val = 1;
+    if (semctl(sem_id, SEM_CHAIR_OPS, SETVAL, arg) == -1) {
+        perror("Błąd semctl SETVAL SEM_CHAIR_OPS");
+        exit(1);
+    }
+
+    // SEM_ACTIVE_TOURISTS - limit aktywnych turystów (throttling)
+    arg.val = MAX_ACTIVE_TOURISTS;
+    if (semctl(sem_id, SEM_ACTIVE_TOURISTS, SETVAL, arg) == -1) {
+        perror("Błąd semctl SETVAL SEM_ACTIVE_TOURISTS");
         exit(1);
     }
 
@@ -243,6 +286,34 @@ int sem_probuj_opusc_bez_undo(int sem_id, int sem_num) {
         return -1;
     }
     return 1; // Udało się
+}
+
+// Blokujące opuszczenie semafora z timeoutem (używa semtimedop)
+// Zwraca: 1 = sukces, 0 = timeout, -1 = błąd
+int sem_opusc_timeout(int sem_id, int sem_num, int timeout_ms) {
+    struct sembuf op;
+    op.sem_num = sem_num;
+    op.sem_op = -1;
+    op.sem_flg = SEM_UNDO;
+
+    struct timespec ts;
+    ts.tv_sec = timeout_ms / 1000;
+    ts.tv_nsec = (timeout_ms % 1000) * 1000000L;
+
+    while (1) {
+        if (semtimedop(sem_id, &op, 1, &ts) == 0) {
+            return 1; // Sukces - semafor opuszczony
+        }
+
+        if (errno == EINTR) {
+            continue; // Przerwane przez sygnał - powtórz
+        }
+        if (errno == EAGAIN) {
+            return 0; // Timeout
+        }
+        perror("Błąd semtimedop");
+        return -1;
+    }
 }
 
 void sem_czekaj_na_zero(int sem_id, int sem_num) {
@@ -417,7 +488,7 @@ bool wyslij_komunikat_nowait(int msg_id, Message* msg) {
 
 bool odbierz_komunikat(int msg_id, Message* msg, long mtype, bool blocking) {
     int flags = blocking ? 0 : IPC_NOWAIT;
-    
+
     while (msgrcv(msg_id, msg, MSG_SIZE, mtype, flags) == -1) {
         if (errno == EINTR) continue;
         if (errno == ENOMSG && !blocking) return false;
@@ -427,6 +498,28 @@ bool odbierz_komunikat(int msg_id, Message* msg, long mtype, bool blocking) {
         return false;
     }
     return true;
+}
+
+// Odbieranie komunikatu z timeoutem (symulowane przez polling + nanosleep)
+// Zwraca: true = odebrano, false = timeout lub błąd
+bool odbierz_komunikat_timeout(int msg_id, Message* msg, long mtype, int timeout_ms) {
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 10000000L; // 10ms między próbami
+
+    int attempts = timeout_ms / 10;
+    if (attempts < 1) attempts = 1;
+
+    for (int i = 0; i < attempts; i++) {
+        if (msgrcv(msg_id, msg, MSG_SIZE, mtype, IPC_NOWAIT) != -1) {
+            return true; // Sukces
+        }
+        if (errno != ENOMSG && errno != EAGAIN && errno != EINTR) {
+            return false; // Prawdziwy błąd
+        }
+        nanosleep(&ts, NULL);
+    }
+    return false; // Timeout
 }
 
 // funkcje pomocnicze

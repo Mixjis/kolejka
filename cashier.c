@@ -280,16 +280,20 @@ int main(void) {
             bool has_discount = (tourist.age < 10 || tourist.age > 65);
             int price = cena_biletu(ticket_type, has_discount);
             
-            // Aktualizacja statystyk
-            sem_opusc(sem_id, SEM_MAIN);
+            // Generowanie ID biletu (SEM_TICKETS)
+            sem_opusc(sem_id, SEM_TICKETS);
+            int ticket_id = ++shm->next_ticket_id;
+            sem_podnies(sem_id, SEM_TICKETS);
+
+            // Aktualizacja statystyk sprzedaży (SEM_STATS)
+            sem_opusc(sem_id, SEM_STATS);
             shm->tickets_sold[ticket_type]++;
             shm->total_revenue += price;
-            int ticket_id = ++shm->next_ticket_id;
-            
+
             if (tourist.is_vip) {
                 shm->vip_served++;
             }
-            
+
             // Dzieci z opiekunem
             if (tourist.children_count > 0) {
                 shm->children_with_guardian += tourist.children_count;
@@ -299,7 +303,7 @@ int main(void) {
                     shm->total_revenue += child_price;
                 }
             }
-            sem_podnies(sem_id, SEM_MAIN);
+            sem_podnies(sem_id, SEM_STATS);
             
             // Wysłanie potwierdzenia do turysty
             Message response;

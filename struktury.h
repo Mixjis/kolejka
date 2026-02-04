@@ -30,7 +30,7 @@
 #define TRAIL_T1_TIME        1       // Łatwa
 #define TRAIL_T2_TIME        2       // Średnia
 #define TRAIL_T3_TIME        3       // Trudna
-#define CHAIR_TRAVEL_TIME    4       // Czas przejazdu krzesełka
+#define CHAIR_TRAVEL_TIME    1       // Czas przejazdu krzesełka
 
 // Godziny pracy (sekundy)
 #define WORK_START_TIME      5       // Tp - start
@@ -102,7 +102,7 @@ typedef enum {
 #define IPC_KEY_MSG_WORKER     'W'
 
 // indeksy semaforów
-#define SEM_MAIN               0    // Główny mutex pamięci dzielonej
+#define SEM_MAIN               0    // Główny mutex - tylko dla krytycznych operacji wielozasobowych
 #define SEM_STATION            1    // Limit osób na stacji (N)
 #define SEM_PLATFORM           2    // Dostęp do peronu
 #define SEM_CHAIRS             3    // Liczba dostępnych krzesełek
@@ -113,9 +113,18 @@ typedef enum {
 #define SEM_WORKER_SYNC        8    // Synchronizacja pracowników
 #define SEM_LOG_FILE           9    // Mutex dla pliku logów
 #define SEM_REPORT             10   // Mutex dla raportu
-#define SEM_CASHIER_QUEUE      11   // Limit turystów czekających na kasę (zapobiega przepełnieniu kolejki)
-#define SEM_PLATFORM_QUEUE     12   // Limit turystów czekających na peron (zapobiega przepełnieniu kolejki)
-#define SEM_COUNT              13   // Liczba semaforów
+#define SEM_CASHIER_QUEUE      11   // Limit turystów czekających na kasę
+#define SEM_PLATFORM_QUEUE     12   // Limit turystów czekających na peron
+#define SEM_QUEUE              13   // Mutex dla liczników kolejek (tourists_in_station, on_platform, at_top, itp.)
+#define SEM_STATS              14   // Mutex dla statystyk (tickets_sold, passengers_transported, itp.)
+#define SEM_GATES              15   // Mutex dla rejestrowania przejść przez bramki
+#define SEM_TICKETS            16   // Mutex dla sprzedaży biletów i generowania ID
+#define SEM_CHAIR_OPS          17   // Mutex dla operacji krzesełek (active_chairs, chair_departures)
+#define SEM_ACTIVE_TOURISTS    18   // Limit aktywnych procesów turystów (throttling)
+#define SEM_COUNT              19   // Liczba semaforów
+
+// Limit aktywnych turystów (zapobiega przeciążeniu systemu)
+#define MAX_ACTIVE_TOURISTS    500
 
 // Limity kolejek (zapobiegają przepełnieniu kolejki IPC)
 #define CASHIER_QUEUE_LIMIT    100

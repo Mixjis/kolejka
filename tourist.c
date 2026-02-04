@@ -117,21 +117,20 @@ bool buy_ticket(void) {
         return false;
     }
 
-    // Czekaj na miejsce w kolejce do kasjera
-    while (sem_probuj_opusc(g_sem_id, SEM_CASHIER_QUEUE) != 1) {
-        if (shutdown_flag) {
+    // Czekaj na miejsce w kolejce do kasjera (blokująco z timeoutem)
+    while (1) {
+        int result = sem_opusc_timeout(g_sem_id, SEM_CASHIER_QUEUE, 100);
+        //int result = sem_opusc(g_sem_id, SEM_CASHIER_QUEUE);
+        if (result == 1) break; // Sukces
+        if (shutdown_flag || g_shm->gates_closed) {
             return false;
         }
-        if (g_shm->gates_closed) {
-            return false;
-        }
-        //usleep(100);
     }
 
-    // Zwiększ licznik czekających przy kasie
-    sem_opusc(g_sem_id, SEM_MAIN);
+    // Zwiększ licznik czekających przy kasie (SEM_QUEUE)
+    sem_opusc(g_sem_id, SEM_QUEUE);
     g_shm->tourists_at_cashier++;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_QUEUE);
 
     // Wyślij prośbę o bilet (VIP używa innego typu)
     if (g_is_vip) {
@@ -152,9 +151,9 @@ bool buy_ticket(void) {
     //próbowanie aż się uda lub shutdown
     while (!wyslij_komunikat_nowait(g_msg_id, &msg)) {
         if (shutdown_flag || g_shm->gates_closed) {
-            sem_opusc(g_sem_id, SEM_MAIN);
+            sem_opusc(g_sem_id, SEM_QUEUE);
             g_shm->tourists_at_cashier--;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_QUEUE);
             sem_podnies(g_sem_id, SEM_CASHIER_QUEUE);
             return false;
         }
@@ -175,10 +174,10 @@ bool buy_ticket(void) {
         //usleep(100);
     }
 
-    // Zmniejsz licznik czekających przy kasie
-    sem_opusc(g_sem_id, SEM_MAIN);
+    // Zmniejsz licznik czekających przy kasie (SEM_QUEUE)
+    sem_opusc(g_sem_id, SEM_QUEUE);
     g_shm->tourists_at_cashier--;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_QUEUE);
     sem_podnies(g_sem_id, SEM_CASHIER_QUEUE);
 
     if (shutdown_flag) {
@@ -248,14 +247,17 @@ bool enter_station(void) {
     // Sprawdź ważność biletu
     if (!is_ticket_valid()) {
         logger(LOG_TOURIST, "Turysta #%d - bilet wygasł! Nie mogę wejść.", g_tourist_id);
-        sem_opusc(g_sem_id, SEM_MAIN);
+        sem_opusc(g_sem_id, SEM_STATS);
         g_shm->rejected_expired++;
-        sem_podnies(g_sem_id, SEM_MAIN);
+        sem_podnies(g_sem_id, SEM_STATS);
         return false;
     }
     
-    // Czekaj na semafor stacji (limit N osób)
-    while (sem_probuj_opusc(g_sem_id, SEM_STATION) != 1) {
+    // Czekaj na semafor stacji (limit N osób) - blokująco z timeoutem
+    while (1) {
+        int result = sem_opusc_timeout(g_sem_id, SEM_STATION, 100);
+        //int result = sem_opusc(g_sem_id, SEM_STATION);
+        if (result == 1) break; // Sukces
         if (shutdown_flag) {
             return false;
         }
@@ -264,7 +266,7 @@ bool enter_station(void) {
         bool gates_now_closed = g_shm->gates_closed;
         bool running = g_shm->is_running;
         sem_podnies(g_sem_id, SEM_MAIN);
-        
+
         if (gates_now_closed) {
             logger(LOG_TOURIST, "Turysta #%d - bramki zamknięte podczas oczekiwania, odchodzę", g_tourist_id);
             return false;
@@ -284,8 +286,11 @@ bool enter_station(void) {
         return false;
     }
     
-    // Czekaj na bramkę wejściową (4 bramki)
-    while (sem_probuj_opusc(g_sem_id, SEM_GATE_ENTRY) != 1) {
+    // Czekaj na bramkę wejściową (4 bramki) - blokująco z timeoutem
+    while (1) {
+        int result = sem_opusc_timeout(g_sem_id, SEM_GATE_ENTRY, 100);
+        //int result = sem_opusc(g_sem_id, SEM_GATE_ENTRY);
+        if (result == 1) break; // Sukces
         if (shutdown_flag) {
             sem_podnies(g_sem_id, SEM_STATION); // Zwolnij stację
             return false;
@@ -301,12 +306,12 @@ bool enter_station(void) {
         }
     }
     
-    // Przydziel numer bramki wejściowej
-    sem_opusc(g_sem_id, SEM_MAIN);
+    // Przydziel numer bramki wejściowej (SEM_QUEUE)
+    sem_opusc(g_sem_id, SEM_QUEUE);
     g_entry_gate = (g_tourist_id % ENTRY_GATES) + 1;
     g_shm->tourists_in_station++;
     logger(LOG_SYSTEM, "%d/50 turystów na stacji dolnej", g_shm->tourists_in_station);
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_QUEUE);
     
     // Rejestruj przejście przez bramkę (id karnetu - godzina)
     rejestruj_przejscie_bramki(g_ticket_id, g_entry_gate);
@@ -344,20 +349,23 @@ bool go_to_platform(void) {
     if (gates_closed) {
         // Bramki zamknięte - opuść stację dolną
         logger(LOG_TOURIST, "Turysta #%d - bramki zamknięte, opuszczam stację dolną", g_tourist_id);
-        sem_opusc(g_sem_id, SEM_MAIN);
+        sem_opusc(g_sem_id, SEM_QUEUE);
         g_shm->tourists_in_station--;
-        sem_podnies(g_sem_id, SEM_MAIN);
+        sem_podnies(g_sem_id, SEM_QUEUE);
         sem_podnies(g_sem_id, SEM_STATION);
         return false;
     }
     
-    // Czekaj na bramkę na peron (3 bramki) - ale najpierw sprawdź awarię
-    while (sem_probuj_opusc(g_sem_id, SEM_GATE_PLATFORM) != 1) {
+    // Czekaj na bramkę na peron (3 bramki) - blokująco z timeoutem
+    while (1) {
+        int result = sem_opusc_timeout(g_sem_id, SEM_GATE_PLATFORM, 100);
+        //int result = sem_opusc(g_sem_id, SEM_GATE_PLATFORM);
+        if (result == 1) break; // Sukces
         if (shutdown_flag) {
             // Zwolnij zasoby - opuszczamy stację bez przejścia na peron
-            sem_opusc(g_sem_id, SEM_MAIN);
+            sem_opusc(g_sem_id, SEM_QUEUE);
             g_shm->tourists_in_station--;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_QUEUE);
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
@@ -366,20 +374,20 @@ bool go_to_platform(void) {
         bool running = g_shm->is_running;
         gates_closed = g_shm->gates_closed;
         sem_podnies(g_sem_id, SEM_MAIN);
-        
+
         if (gates_closed) {
             // Bramki zamknięte - opuść stację dolną
             logger(LOG_TOURIST, "Turysta #%d - bramki zamknięte podczas oczekiwania na peron, opuszczam stację", g_tourist_id);
-            sem_opusc(g_sem_id, SEM_MAIN);
+            sem_opusc(g_sem_id, SEM_QUEUE);
             g_shm->tourists_in_station--;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_QUEUE);
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
         if (!running) {
-            sem_opusc(g_sem_id, SEM_MAIN);
+            sem_opusc(g_sem_id, SEM_QUEUE);
             g_shm->tourists_in_station--;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_QUEUE);
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
@@ -402,9 +410,9 @@ bool go_to_platform(void) {
         if (gates_closed || !running) {
             // Zwolnij bramkę i opuść stację
             sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
-            sem_opusc(g_sem_id, SEM_MAIN);
+            sem_opusc(g_sem_id, SEM_QUEUE);
             g_shm->tourists_in_station--;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_QUEUE);
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
@@ -413,24 +421,26 @@ bool go_to_platform(void) {
     
     if (shutdown_flag) {
         sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
-        sem_opusc(g_sem_id, SEM_MAIN);
+        sem_opusc(g_sem_id, SEM_QUEUE);
         g_shm->tourists_in_station--;
-        sem_podnies(g_sem_id, SEM_MAIN);
+        sem_podnies(g_sem_id, SEM_QUEUE);
         sem_podnies(g_sem_id, SEM_STATION);
         return false;
     }
 
-    // Czekaj na miejsce w kolejce do platformy 
-    while (sem_probuj_opusc(g_sem_id, SEM_PLATFORM_QUEUE) != 1) {
+    // Czekaj na miejsce w kolejce do platformy - blokująco z timeoutem
+    while (1) {
+        int result = sem_opusc_timeout(g_sem_id, SEM_PLATFORM_QUEUE, 100);
+        //int result = sem_opusc(g_sem_id, SEM_PLATFORM_QUEUE);
+        if (result == 1) break; // Sukces
         if (shutdown_flag || g_shm->gates_closed) {
             sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
-            sem_opusc(g_sem_id, SEM_MAIN);
+            sem_opusc(g_sem_id, SEM_QUEUE);
             g_shm->tourists_in_station--;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_QUEUE);
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
-        //usleep(100);
     }
 
     // Wyślij komunikat do worker1
@@ -448,9 +458,9 @@ bool go_to_platform(void) {
         if (shutdown_flag || g_shm->gates_closed) {
             sem_podnies(g_sem_id, SEM_PLATFORM_QUEUE);
             sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
-            sem_opusc(g_sem_id, SEM_MAIN);
+            sem_opusc(g_sem_id, SEM_QUEUE);
             g_shm->tourists_in_station--;
-            sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_QUEUE);
             sem_podnies(g_sem_id, SEM_STATION);
             return false;
         }
@@ -462,11 +472,11 @@ bool go_to_platform(void) {
     // Zwolnij bramkę na peron
     sem_podnies(g_sem_id, SEM_GATE_PLATFORM);
     
-    // Opuściliśmy stację - zwolnij miejsce
+    // Opuściliśmy stację - zwolnij miejsce (SEM_QUEUE)
     int platform_gate = (g_tourist_id % PLATFORM_GATES) + 1;
-    sem_opusc(g_sem_id, SEM_MAIN);
+    sem_opusc(g_sem_id, SEM_QUEUE);
     g_shm->tourists_in_station--;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_QUEUE);
     
     // Zwolnij semafor limitu stacji
     sem_podnies(g_sem_id, SEM_STATION);
@@ -553,12 +563,12 @@ void exit_at_top(void) {
         //usleep(100);
     }
     
-    // Rejestruj zjazd - wyjście na górze dla pieszego
-    sem_opusc(g_sem_id, SEM_MAIN);
+    // Rejestruj zjazd - wyjście na górze dla pieszego (SEM_STATS)
+    sem_opusc(g_sem_id, SEM_STATS);
     if (g_ticket_id > 0 && g_ticket_id < MAX_TICKETS) {
         g_shm->ticket_rides[g_ticket_id]++;
     }
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_STATS);
     
     logger(LOG_TOURIST, "Turysta #%d (pieszy) zakończył wizytę na górnej stacji (bilet #%d)", 
            g_tourist_id, g_ticket_id);
@@ -608,12 +618,12 @@ void descend_trail(void) {
         //usleep(100);
     }
 
-    // Rejestruj zjazd dla tego biletu
-    sem_opusc(g_sem_id, SEM_MAIN);
+    // Rejestruj zjazd dla tego biletu (SEM_STATS)
+    sem_opusc(g_sem_id, SEM_STATS);
     if (g_ticket_id > 0 && g_ticket_id < MAX_TICKETS) {
         g_shm->ticket_rides[g_ticket_id]++;
     }
-    sem_podnies(g_sem_id, SEM_MAIN);
+    sem_podnies(g_sem_id, SEM_STATS);
     
     logger(LOG_TOURIST, "Turysta #%d zakończył trasę zjazdową i dotarł na stację dolną (bilet #%d)", 
            g_tourist_id, g_ticket_id);
@@ -627,9 +637,9 @@ bool can_ride_again(void) {
     
     if (!is_ticket_valid()) {
         logger(LOG_TOURIST, "Turysta #%d - bilet czasowy wygasł!", g_tourist_id);
-        sem_opusc(g_sem_id, SEM_MAIN);
+        sem_opusc(g_sem_id, SEM_STATS);
         g_shm->rejected_expired++;
-        sem_podnies(g_sem_id, SEM_MAIN);
+        sem_podnies(g_sem_id, SEM_STATS);
         return false;
     }
     
@@ -698,9 +708,10 @@ int main(int argc, char* argv[]) {
     sem_podnies(g_sem_id, SEM_MAIN);
     
     if (!is_running || gates_closed) {
-        sem_opusc(g_sem_id, SEM_MAIN);
+        sem_opusc(g_sem_id, SEM_STATS);
         g_shm->total_tourists_finished += 1 + g_children_count;
-        sem_podnies(g_sem_id, SEM_MAIN);
+        sem_podnies(g_sem_id, SEM_STATS);
+        sem_podnies(g_sem_id, SEM_ACTIVE_TOURISTS);
         odlacz_pamiec(g_shm);
         return 0;
     }
@@ -724,15 +735,16 @@ int main(int argc, char* argv[]) {
     // Turyści nie korzystający z kolei 5% szans
     if (rand() % 100 < TOURIST_NO_RIDE_PERCENT) {
         logger(LOG_TOURIST, "Turysta #%d tylko ogląda i odchodzi", g_tourist_id);
-        
+
         if (g_children_count > 0) {
             finish_children_threads();
         }
-        
-        sem_opusc(g_sem_id, SEM_MAIN);
+
+        sem_opusc(g_sem_id, SEM_STATS);
         g_shm->total_tourists_finished += 1 + g_children_count;
-        sem_podnies(g_sem_id, SEM_MAIN);
-        
+        sem_podnies(g_sem_id, SEM_STATS);
+        sem_podnies(g_sem_id, SEM_ACTIVE_TOURISTS);
+
         odlacz_pamiec(g_shm);
         return 0;
     }
@@ -740,15 +752,16 @@ int main(int argc, char* argv[]) {
     // 1. Kupno biletu
     if (!buy_ticket()) {
         logger(LOG_TOURIST, "Turysta #%d nie mógł kupić biletu - rezygnuje", g_tourist_id);
-        
+
         if (g_children_count > 0) {
             finish_children_threads();
         }
-        
-        sem_opusc(g_sem_id, SEM_MAIN);
+
+        sem_opusc(g_sem_id, SEM_STATS);
         g_shm->total_tourists_finished += 1 + g_children_count;
-        sem_podnies(g_sem_id, SEM_MAIN);
-        
+        sem_podnies(g_sem_id, SEM_STATS);
+        sem_podnies(g_sem_id, SEM_ACTIVE_TOURISTS);
+
         odlacz_pamiec(g_shm);
         return 0;
     }
@@ -796,12 +809,15 @@ int main(int argc, char* argv[]) {
     }
     
     logger(LOG_TOURIST, "Turysta #%d kończy wizytę (przejazdy: %d)", g_tourist_id, ride_count);
-    
-    // Aktualizuj licznik
-    sem_opusc(g_sem_id, SEM_MAIN);
+
+    // Aktualizuj licznik (SEM_STATS)
+    sem_opusc(g_sem_id, SEM_STATS);
     g_shm->total_tourists_finished += 1 + g_children_count;
-    sem_podnies(g_sem_id, SEM_MAIN);
-    
+    sem_podnies(g_sem_id, SEM_STATS);
+
+    // Zwolnij miejsce dla następnego turysty (throttling)
+    sem_podnies(g_sem_id, SEM_ACTIVE_TOURISTS);
+
     odlacz_pamiec(g_shm);
     return 0;
 }

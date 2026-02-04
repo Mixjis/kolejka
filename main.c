@@ -247,14 +247,21 @@ int main(void) {
         
         // Sprawdzanie czy możemy utworzyć więcej procesów
         if(tourists_created < TOTAL_TOURISTS){
-            //pthread_mutex_lock(&tourist_mutex);
+            pthread_mutex_lock(&tourist_mutex);
             int current_count = tourist_pid_count;
-            //pthread_mutex_unlock(&tourist_mutex);
-            
+            pthread_mutex_unlock(&tourist_mutex);
+
             if (current_count >= MAX_TOURIST_PROCESSES) {
                 continue;
             }
-            
+
+            // Czekaj na wolne miejsce (throttling) - blokująco z timeoutem
+            // int result = sem_opusc_timeout(g_sem_id, SEM_ACTIVE_TOURISTS, 100);
+            // if (result != 1) {
+            //     // Timeout - sprawdź flagi i kontynuuj
+            //     continue;
+            // }
+
             // Generowanie turysty
             tourists_created++;
             
@@ -289,11 +296,11 @@ int main(void) {
             pid_t pid = create_tourist(tourist_id, age, type, is_vip, children_count);
             
             if (pid > 0) {
-                //pthread_mutex_lock(&tourist_mutex);
+                pthread_mutex_lock(&tourist_mutex);
                 if (tourist_pid_count < MAX_TOURIST_PROCESSES) {
                     tourist_pids[tourist_pid_count++] = pid;
                 }
-                //pthread_mutex_unlock(&tourist_mutex);
+                pthread_mutex_unlock(&tourist_mutex);
 
                 g_shm->total_tourists_created += 1 + children_count;
 
@@ -352,14 +359,18 @@ int main(void) {
     if (worker1_pid > 0) waitpid(worker1_pid, &status, 0);
     if (worker2_pid > 0) waitpid(worker2_pid, &status, 0);
 
-    sem_opusc(g_sem_id, SEM_MAIN);
-            int in_station = g_shm->tourists_in_station;
-            int on_platform = g_shm->tourists_on_platform;
-            int active_chairs = g_shm->active_chairs;
-            int at_top = g_shm->tourists_at_top;
-            int at_cashier = g_shm->tourists_at_cashier;
-            int descending = g_shm->tourists_descending;
-    sem_podnies(g_sem_id, SEM_MAIN);
+    // Odczyt liczników - rozdzielone semafory
+    sem_opusc(g_sem_id, SEM_QUEUE);
+    int in_station = g_shm->tourists_in_station;
+    int on_platform = g_shm->tourists_on_platform;
+    int at_top = g_shm->tourists_at_top;
+    int at_cashier = g_shm->tourists_at_cashier;
+    int descending = g_shm->tourists_descending;
+    sem_podnies(g_sem_id, SEM_QUEUE);
+
+    sem_opusc(g_sem_id, SEM_CHAIR_OPS);
+    int active_chairs = g_shm->active_chairs;
+    sem_podnies(g_sem_id, SEM_CHAIR_OPS);
             
     logger(LOG_SYSTEM, "(kasa: %d, stacja: %d, peron: %d, krzesełka: %d, góra: %d, zjazd: %d)", 
                         at_cashier, in_station, on_platform, active_chairs, at_top, descending);
@@ -382,9 +393,9 @@ int main(void) {
     pthread_join(reaper, NULL);
     
     if (killed_count > 0) {
-        sem_opusc(g_sem_id, SEM_MAIN);
+        sem_opusc(g_sem_id, SEM_STATS);
         g_shm->total_tourists_finished += killed_count;
-        sem_podnies(g_sem_id, SEM_MAIN);
+        sem_podnies(g_sem_id, SEM_STATS);
         logger(LOG_SYSTEM, "Wymuszono zakończenie %d turystów", killed_count);
     }
 

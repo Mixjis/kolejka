@@ -237,16 +237,17 @@ void rejestruj_przejscie_bramki(int ticket_id, int gate_number) {
     int shm_id = polacz_pamiec();
     SharedMemory* shm = dolacz_pamiec(shm_id);
     int sem_id = polacz_semafory();
-    
-    sem_opusc(sem_id, SEM_MAIN);
+
+    // Użycie SEM_GATES dla rejestrowania przejść przez bramki
+    sem_opusc(sem_id, SEM_GATES);
     if (shm->gate_entries_count < MAX_GATE_ENTRIES) {
         shm->gate_entries[shm->gate_entries_count].ticket_id = ticket_id;
         shm->gate_entries[shm->gate_entries_count].entry_time = time(NULL);
         shm->gate_entries[shm->gate_entries_count].gate_number = gate_number;
         shm->gate_entries_count++;
     }
-    sem_podnies(sem_id, SEM_MAIN);
-    
+    sem_podnies(sem_id, SEM_GATES);
+
     odlacz_pamiec(shm);
 }
 
@@ -255,10 +256,9 @@ void generuj_raport_koncowy(void) {
     int shm_id = polacz_pamiec();
     SharedMemory* shm = dolacz_pamiec(shm_id);
     int sem_id = polacz_semafory();
-    
-    sem_opusc(sem_id, SEM_MAIN);
-    
-    // Kopiuj dane o zjazdach per bilet
+
+    // Kopiuj dane o zjazdach per bilet (SEM_STATS)
+    sem_opusc(sem_id, SEM_STATS);
     int max_ticket_id = shm->next_ticket_id;
     int* ticket_rides = NULL;
     if (max_ticket_id > 0) {
@@ -267,15 +267,17 @@ void generuj_raport_koncowy(void) {
             memcpy(ticket_rides, shm->ticket_rides, max_ticket_id * sizeof(int));
         }
     }
-    
-    // Kopiowanie danych o przejściach przez bramki
+    sem_podnies(sem_id, SEM_STATS);
+
+    // Kopiowanie danych o przejściach przez bramki (SEM_GATES)
+    sem_opusc(sem_id, SEM_GATES);
     int gate_entries_count = shm->gate_entries_count;
     struct {
         int ticket_id;
         time_t entry_time;
         int gate_number;
     } *gate_entries = NULL;
-    
+
     if (gate_entries_count > 0) {
         gate_entries = malloc(gate_entries_count * sizeof(*gate_entries));
         if (gate_entries) {
@@ -286,8 +288,7 @@ void generuj_raport_koncowy(void) {
             }
         }
     }
-    
-    sem_podnies(sem_id, SEM_MAIN);
+    sem_podnies(sem_id, SEM_GATES);
     
     // Generowanie raportu - tylko do pliku
     logger_report_file_only("============================================================");

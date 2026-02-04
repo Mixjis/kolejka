@@ -8,7 +8,7 @@ CFLAGS = -Wall -Wextra -pthread -D_GNU_SOURCE -g
 LDFLAGS = -pthread
 
 # Katalog źródłowy
-SRCDIR = src
+SRCDIR = .
 
 # Pliki źródłowe i docelowe
 SOURCES = $(SRCDIR)/main.c $(SRCDIR)/cashier.c $(SRCDIR)/worker.c $(SRCDIR)/worker2.c $(SRCDIR)/tourist.c $(SRCDIR)/logger.c $(SRCDIR)/utils.c
