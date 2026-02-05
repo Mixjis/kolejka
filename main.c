@@ -99,6 +99,7 @@ pid_t create_tourist(int tourist_id, int age, TouristType type, bool is_vip, int
     }
 
     if (pid == 0) {
+        //logger(LOG_SYSTEM,"TURYSTA #%d!",tourist_id);
         // Proces potomny
         char id_str[16], age_str[16], type_str[16], vip_str[16], children_str[16];
         snprintf(id_str, sizeof(id_str), "%d", tourist_id);
@@ -238,9 +239,9 @@ int main(void) {
         if (now - sim_start >= WORK_END_TIME) {
             logger(LOG_SYSTEM, "Osiągnięto czas Tk - zamykam bramki wejściowe");
             
-            //sem_opusc(g_sem_id, SEM_MAIN);
+            sem_opusc(g_sem_id, SEM_MAIN);
             g_shm->gates_closed = true;
-            //sem_podnies(g_sem_id, SEM_MAIN);
+            sem_podnies(g_sem_id, SEM_MAIN);
             
             break;
         }
@@ -254,13 +255,6 @@ int main(void) {
             if (current_count >= MAX_TOURIST_PROCESSES) {
                 continue;
             }
-
-            // Czekaj na wolne miejsce (throttling) - blokująco z timeoutem
-            // int result = sem_opusc_timeout(g_sem_id, SEM_ACTIVE_TOURISTS, 100);
-            // if (result != 1) {
-            //     // Timeout - sprawdź flagi i kontynuuj
-            //     continue;
-            // }
 
             // Generowanie turysty
             tourists_created++;

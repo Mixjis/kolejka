@@ -168,9 +168,7 @@ int main(void) {
                 response.tourist_id = msg.tourist_id;
                 response.data = -1; // Odmowa
                 response.data2 = -1;
-                while (!wyslij_komunikat_nowait(msg_id, &response)) {
-                    if (shutdown_flag) break;
-                }
+                wyslij_komunikat(msg_id, &response);
                 logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla VIP #%d", msg.tourist_id);
             }
 
@@ -182,9 +180,7 @@ int main(void) {
                 response.tourist_id = msg.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                while (!wyslij_komunikat_nowait(msg_id, &response)) {
-                    if (shutdown_flag) break;
-                }
+                wyslij_komunikat(msg_id, &response);
                 logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla turysty #%d", msg.tourist_id);
             }
             
@@ -197,9 +193,7 @@ int main(void) {
                 response.tourist_id = qt.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                while (!wyslij_komunikat_nowait(msg_id, &response)) {
-                    if (shutdown_flag) break;
-                }
+                wyslij_komunikat(msg_id, &response);
                 logger(LOG_CASHIER, "Bramki zamknięte - odmowa dla turysty #%d (z kolejki wewnętrznej)", qt.tourist_id);
             }
             
@@ -233,9 +227,7 @@ int main(void) {
                 response.tourist_id = qt.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                while (!wyslij_komunikat_nowait(msg_id, &response)) {
-                    if (shutdown_flag) break;
-                }
+                wyslij_komunikat(msg_id, &response);
                 logger(LOG_CASHIER, "Kolejka pełna - odmowa dla VIP #%d", qt.tourist_id);
             }
         }
@@ -263,9 +255,7 @@ int main(void) {
                 response.tourist_id = qt.tourist_id;
                 response.data = -1;
                 response.data2 = -1;
-                while (!wyslij_komunikat_nowait(msg_id, &response)) {
-                    if (shutdown_flag) break;
-                }
+                wyslij_komunikat(msg_id, &response);
                 logger(LOG_CASHIER, "Kolejka pełna - odmowa dla turysty #%d", qt.tourist_id);
             }
         }
@@ -314,9 +304,7 @@ int main(void) {
             response.data2 = ticket_type;
 
             // Wysłanie potwierdzenia do turysty
-            while (!wyslij_komunikat_nowait(msg_id, &response)) {
-                if (shutdown_flag) break;
-            }
+            wyslij_komunikat(msg_id, &response);
 
             if (!shutdown_flag) {
                 const char* ticket_name = nazwa_biletu(ticket_type);

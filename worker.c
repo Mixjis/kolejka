@@ -219,52 +219,35 @@ void* chair_thread(void* arg) {
     logger(LOG_CHAIR, "Krzesełko #%d odjeżdża z pasażerami: [%s] (R:%d, P:%d)",
            chair_id, passengers_str, group->cyclists, group->pedestrians);
     
-    // Symulacja przejazdu
     while (time_traveled < travel_time && !shutdown_flag) {
-        // sprawdzanie czy jest awaria
-        sem_opusc(g_sem_id, SEM_MAIN);
+        // Sprawdzenie awarii na początku sekundy (bez busy loop!)
         bool emergency = g_shm->emergency_stop;
-        sem_podnies(g_sem_id, SEM_MAIN);
-        
+
         if (emergency) {
-            // zatrzymanie krzesełka
+            // Zatrzymanie krzesełka
             logger(LOG_CHAIR, "Krzesełko #%d ZATRZYMANE w trakcie jazdy! (przejechane: %d/%d s)",
                    chair_id, time_traveled, travel_time);
-            
-            // Czekanie na koniec awarii
-            while (emergency && !shutdown_flag) {
-                sem_opusc(g_sem_id, SEM_MAIN);
-                emergency = g_shm->emergency_stop;
-                sem_podnies(g_sem_id, SEM_MAIN);
+
+            // Czekanie na koniec awarii - aktywne czekanie
+            while (g_shm->emergency_stop && !shutdown_flag) {
             }
-            
+
             if (!shutdown_flag) {
                 logger(LOG_CHAIR, "Krzesełko #%d WZNAWIA jazdę (pozostało: %d s)",
                        chair_id, travel_time - time_traveled);
             }
         } else {
-            // Normalny ruch
-            time_t second_start = time(NULL);
-            bool interrupted = false;
-            
-            // Czekanie 1 sekundy, ze sprawdzaniem awarii
-            while ((time(NULL) - second_start) < 1 && !shutdown_flag) {
-                // Sprawdzanie czy nie wystąpiła awaria w trakcie tej sekundy
-                sem_opusc(g_sem_id, SEM_MAIN);
-                emergency = g_shm->emergency_stop;
-                sem_podnies(g_sem_id, SEM_MAIN);
-                
-                if (emergency) {
-                    interrupted = true;
-                    break;
+            // Normalny ruch - aktywne czekanie
+            for (int i = 0; i < 10 && !shutdown_flag; i++) {
+                if (g_shm->emergency_stop) {
+                    break; // Przerwij i wróć do sprawdzenia awarii
                 }
             }
-            
-            // Jeśli sekunda minęła bez przerwania - doliczam
-            if (!interrupted && !shutdown_flag) {
+
+            // Jeśli nie było awarii - dolicz sekundę
+            if (!g_shm->emergency_stop && !shutdown_flag) {
                 time_traveled++;
             }
-            // Jeśli przerwana awarią - powrót do pętli głównej
         }
     }
 
@@ -333,14 +316,13 @@ void initiate_emergency_stop(void) {
 
 // Wznowienie po awarii
 void resume_from_emergency(void) {
-
     // Oznacz gotowość
     sem_opusc(g_sem_id, SEM_MAIN);
     g_shm->worker1_ready = true;
     bool worker2_ready = g_shm->worker2_ready;
     sem_podnies(g_sem_id, SEM_MAIN);
-    
-    // Czekaj na worker2
+
+    // Czekaj na worker2 - sprawdzaj co 50ms zamiast busy loop
     while (!worker2_ready && !shutdown_flag) {
         sem_opusc(g_sem_id, SEM_MAIN);
         worker2_ready = g_shm->worker2_ready;
@@ -372,6 +354,10 @@ void resume_from_emergency(void) {
 int receive_platform_messages(Message* msg) {
     int received = 0;
     
+    sem_opusc(g_sem_id, SEM_MAIN);
+    bool gates_closed = g_shm->gates_closed;
+    sem_podnies(g_sem_id, SEM_MAIN);
+    
     while (odbierz_komunikat(g_msg_id, msg, MSG_TOURIST_TO_PLATFORM, false)) {
         if (shutdown_flag) break;
         
@@ -384,6 +370,19 @@ int receive_platform_messages(Message* msg) {
         w.child_ids[1] = msg->child_ids[1];
     
         int gate_num = get_next_platform_gate();
+
+        // Jeśli bramki zamknięte - odmowa dla nowych turystów
+        if (gates_closed) {
+            logger(LOG_WORKER1, "Turysta #%d - ODMOWA wejścia na peron (bramki zamknięte)", w.tourist_id);
+            Message refuse;
+            refuse.mtype = w.pid;
+            refuse.sender_pid = getpid();
+            refuse.data = -1;
+            refuse.tourist_id = w.tourist_id;
+            wyslij_komunikat(g_msg_id, &refuse);
+            received++;
+            continue;
+        }
 
         if (add_waiter(&w)) {
             sem_opusc(g_sem_id, SEM_QUEUE);
@@ -400,9 +399,7 @@ int receive_platform_messages(Message* msg) {
             refuse.sender_pid = getpid();
             refuse.data = -1;
             refuse.tourist_id = w.tourist_id;
-            while (!wyslij_komunikat_nowait(g_msg_id, &refuse)) {
-                if (shutdown_flag) break;
-            }
+            wyslij_komunikat(g_msg_id, &refuse);
         }
 
         received++;
@@ -433,16 +430,14 @@ bool dispatch_one_chair(void) {
         return false;
     }
     
-    // Powiadom turystów o wsiadaniu 
+    // Powiadom turystów o wsiadaniu
     for (int i = 0; i < group->count; i++) {
         Message notify;
         notify.mtype = group->tourist_pids[i];
         notify.sender_pid = getpid();
         notify.data = 1; // OK wsiadaj
         notify.tourist_id = group->tourist_ids[i];
-        while (!wyslij_komunikat_nowait(g_msg_id, &notify)) {
-            if (shutdown_flag) break;
-        }
+        wyslij_komunikat(g_msg_id, &notify);
         if (shutdown_flag) break;
         
         // Log wpuszczenia turysty
@@ -589,20 +584,20 @@ int main(void) {
                 // My zainicjowaliśmy - czekaj na worker2
                 while (!w2_ready && !shutdown_flag) {
                     receive_platform_messages(&msg);
-                    
                     sem_opusc(g_sem_id, SEM_MAIN);
                     w2_ready = g_shm->worker2_ready;
                     sem_podnies(g_sem_id, SEM_MAIN);
                 }
-                
+
                 if (w2_ready && !shutdown_flag) {
                     logger(LOG_EMERGENCY, "PRACOWNIK1: Worker2 gotowy - Zatrzymanie ruchu kolei...");
-                    
-                    time_t start_time = time(NULL);
-                    while(time(NULL) - start_time < EMERGENCY_DURATION && !shutdown_flag) {
-                        //receive_platform_messages(&msg);
+
+                    int waited_intervals = 0;
+                    int required_intervals = EMERGENCY_DURATION * 10; // 10 x 100ms = 1 sekunda
+                    while (waited_intervals < required_intervals && !shutdown_flag) {
+                        waited_intervals++;
                     }
-                    
+
                     resume_from_emergency();
                 }
             } else if (initiator == 2) {
@@ -612,13 +607,13 @@ int main(void) {
                 sem_opusc(g_sem_id, SEM_MAIN);
                 g_shm->worker1_ready = true;
                 sem_podnies(g_sem_id, SEM_MAIN);
-                
+
                 logger(LOG_EMERGENCY, "PRACOWNIK1: Potwierdzam gotowość (awaria od worker2)");
-                
+
                 while (emergency_stop && !emergency_resume && !shutdown_flag) {
                     receive_platform_messages(&msg);
                 }
-                
+
                 if (emergency_resume) {
                     emergency_stop = 0;
                     emergency_resume = 0;
@@ -630,7 +625,7 @@ int main(void) {
         
         // Sprawdź czy zakończyć pracę
         if (shutdown_flag) {
-            // Wymuszony shutdown
+            // Wymuszony shutdown - wyślij odmowy do wszystkich czekających
             Message cleanup_msg;
             while (odbierz_komunikat(g_msg_id, &cleanup_msg, MSG_TOURIST_TO_PLATFORM, false)) {
                 Message refuse;
@@ -638,22 +633,32 @@ int main(void) {
                 refuse.sender_pid = getpid();
                 refuse.data = -1;
                 refuse.tourist_id = cleanup_msg.tourist_id;
-                wyslij_komunikat_nowait(g_msg_id, &refuse);
+                // Używamy blokującego wysyłania - MUSI dotrzeć
+                wyslij_komunikat(g_msg_id, &refuse);
             }
 
             pthread_mutex_lock(&waiter_mutex);
+            int waiters_to_clear = waiter_count;
             for (int i = 0; i < waiter_count; i++) {
                 Message refuse;
                 refuse.mtype = waiters[i].pid;
                 refuse.sender_pid = getpid();
                 refuse.data = -1;
                 refuse.tourist_id = waiters[i].tourist_id;
-                wyslij_komunikat_nowait(g_msg_id, &refuse);
+                // Używamy blokującego wysyłania - MUSI dotrzeć
+                wyslij_komunikat(g_msg_id, &refuse);
             }
             waiter_count = 0;
             pthread_mutex_unlock(&waiter_mutex);
 
-            logger(LOG_WORKER1, "Wymuszony shutdown - zamykam stację dolną");
+            // Zmniejsz licznik turystów na peronie dla wszystkich waiters
+            if (waiters_to_clear > 0) {
+                sem_opusc(g_sem_id, SEM_QUEUE);
+                g_shm->tourists_on_platform -= waiters_to_clear;
+                sem_podnies(g_sem_id, SEM_QUEUE);
+            }
+
+            logger(LOG_WORKER1, "Wymuszony shutdown - zamykam stację dolną (wysłano %d odmów)", waiters_to_clear);
             break;
         }
 
@@ -663,6 +668,21 @@ int main(void) {
         pthread_mutex_unlock(&waiter_mutex);
         
         if (gates_closed && on_platform == 0 && current_waiters == 0 && active_chairs == 0) {
+            // Przed zakończeniem - opróżnij kolejkę komunikatów i odeślij odmowy
+            Message cleanup_msg;
+            int refused_count = 0;
+            while (odbierz_komunikat(g_msg_id, &cleanup_msg, MSG_TOURIST_TO_PLATFORM, false)) {
+                Message refuse;
+                refuse.mtype = cleanup_msg.sender_pid;
+                refuse.sender_pid = getpid();
+                refuse.data = -1;
+                refuse.tourist_id = cleanup_msg.tourist_id;
+                wyslij_komunikat(g_msg_id, &refuse);
+                refused_count++;
+            }
+            if (refused_count > 0) {
+                logger(LOG_WORKER1, "Odeślano %d odmów spóźnionym turystom", refused_count);
+            }
             logger(LOG_WORKER1, "Koniec dnia - wszyscy turyści obsłużeni");
             break;
         }
@@ -682,6 +702,19 @@ int main(void) {
 
             int gate_num = get_next_platform_gate();
 
+            // Jeśli bramki zamknięte - odmowa dla nowych turystów
+            if (gates_closed) {
+                logger(LOG_WORKER1, "Turysta #%d - ODMOWA wejścia na peron (bramki zamknięte)", w.tourist_id);
+                Message refuse;
+                refuse.mtype = w.pid;
+                refuse.sender_pid = getpid();
+                refuse.data = -1;
+                refuse.tourist_id = w.tourist_id;
+                wyslij_komunikat(g_msg_id, &refuse);
+                received++;
+                continue;
+            }
+
             if (add_waiter(&w)) {
                 sem_opusc(g_sem_id, SEM_QUEUE);
                 g_shm->tourists_on_platform++;
@@ -697,9 +730,8 @@ int main(void) {
                 refuse.sender_pid = getpid();
                 refuse.data = -1;
                 refuse.tourist_id = w.tourist_id;
-                while (!wyslij_komunikat_nowait(g_msg_id, &refuse)) {
-                    if (shutdown_flag) break;
-                }
+                // Używamy blokującego wysyłania - odmowa MUSI dotrzeć
+                wyslij_komunikat(g_msg_id, &refuse);
             }
             received++;
         }
@@ -716,7 +748,6 @@ int main(void) {
         pthread_mutex_unlock(&waiter_mutex);
 
         if (received == 0 && dispatched == 0) {
-            //usleep(100);
         }
         
         if (received == 0 && current_waiters > 0) {

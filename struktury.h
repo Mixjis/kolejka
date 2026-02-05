@@ -33,8 +33,8 @@
 #define CHAIR_TRAVEL_TIME    1       // Czas przejazdu krzesełka
 
 // Godziny pracy (sekundy)
-#define WORK_START_TIME      5       // Tp - start
-#define WORK_END_TIME        240     // Tk - koniec (sekundy)
+#define WORK_START_TIME      20       // Tp - start
+#define WORK_END_TIME        100    // Tk - koniec (sekundy)
 #define SHUTDOWN_DELAY       3       // Opóźnienie przed wyłączeniem po Tk
 
 
@@ -124,7 +124,7 @@ typedef enum {
 #define SEM_COUNT              19   // Liczba semaforów
 
 // Limit aktywnych turystów (zapobiega przeciążeniu systemu)
-#define MAX_ACTIVE_TOURISTS    500
+#define MAX_ACTIVE_TOURISTS    10000
 
 // Limity kolejek (zapobiegają przepełnieniu kolejki IPC)
 #define CASHIER_QUEUE_LIMIT    100

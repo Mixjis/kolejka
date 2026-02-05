@@ -1,4 +1,4 @@
-#define _GNU_SOURCE  // Wymagane dla semtimedop
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

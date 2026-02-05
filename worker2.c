@@ -69,9 +69,12 @@ void initiate_emergency_stop_w2(void) {
 // Wznowienie po awarii (gdy worker2 jest inicjatorem)
 void resume_from_emergency_w2(void) {
     logger(LOG_EMERGENCY, "PRACOWNIK2: Worker1 gotowy - Zatrzymanie ruchu kolei");
-    
-    time_t start_time = time(NULL);
-    while (time(NULL) - start_time < EMERGENCY_DURATION && !shutdown_flag) {}
+
+    int waited_intervals = 0;
+    int required_intervals = EMERGENCY_DURATION * 10;
+    while (waited_intervals < required_intervals && !shutdown_flag) {
+        waited_intervals++;
+    }
     if (shutdown_flag) return;
     
     // Wznów działanie
@@ -133,9 +136,8 @@ void* tourist_exit_thread(void* arg) {
         msg.sender_pid = getpid();
         msg.data = 3; // Zakończone
         msg.tourist_id = te->tourist_id;
-        while (!wyslij_komunikat_nowait(g_msg_id, &msg)) {
-        }
-        
+        wyslij_komunikat(g_msg_id, &msg);
+
         free(te);
         return NULL;
     }
@@ -182,11 +184,13 @@ void* tourist_exit_thread(void* arg) {
     sem_opusc(g_sem_id, SEM_QUEUE);
     g_shm->tourists_descending++;
     sem_podnies(g_sem_id, SEM_QUEUE);
-    
-    // Symulacja zjazdu
-    time_t start_time = time(NULL);
-    while ((time(NULL) - start_time) < trail_time) {}
-    
+
+    int waited_intervals = 0;
+    int required_intervals = trail_time * 10;
+    while (waited_intervals < required_intervals) {
+        waited_intervals++;
+    }
+
     // Zmniejsz licznik zjeżdżających (SEM_QUEUE)
     sem_opusc(g_sem_id, SEM_QUEUE);
     g_shm->tourists_descending--;
@@ -198,9 +202,8 @@ void* tourist_exit_thread(void* arg) {
     msg.sender_pid = getpid();
     msg.data = 3; // Zjazd zakończony (różne od 2 = dotarcie na górę)
     msg.tourist_id = te->tourist_id;
-    while (!wyslij_komunikat_nowait(g_msg_id, &msg)) {
-    }
-    
+    wyslij_komunikat(g_msg_id, &msg);
+
     logger(LOG_WORKER2, "Turysta #%d zakończył zjazd trasą %s i zjeżdża na dół", 
            te->tourist_id, trail_name);
     free(te);
@@ -308,23 +311,24 @@ int main(void) {
                     w1_ready = g_shm->worker1_ready;
                     sem_podnies(g_sem_id, SEM_MAIN);
                 }
-                
+
                 if (w1_ready && !shutdown_flag) {
                     resume_from_emergency_w2();
                 }
             } else if (initiator == 1) {
                 // Worker1 zainicjował - loguj i odpowiedz gotowością
                 logger(LOG_EMERGENCY, "PRACOWNIK2: Odebrano sygnał AWARII od worker1!");
-                
+
                 sem_opusc(g_sem_id, SEM_MAIN);
                 g_shm->worker2_ready = true;
                 sem_podnies(g_sem_id, SEM_MAIN);
-                
+
                 logger(LOG_EMERGENCY, "PRACOWNIK2: Potwierdzam gotowość (awaria od worker1)");
-                
-                // Czekaj na sygnał wznowienia
-                while (emergency_stop && !emergency_resume && !shutdown_flag) {}
-                
+
+                // Czekaj na sygnał wznowienia - aktywne czekanie
+                while (emergency_stop && !emergency_resume && !shutdown_flag) {
+                }
+
                 if (emergency_resume) {
                     emergency_stop = 0;
                     emergency_resume = 0;
@@ -356,6 +360,7 @@ int main(void) {
             }
             
             // Wyślij odpowiedzi do turystów czekających na wyjście (MSG_TOURIST_EXIT)
+            int exit_count = 0;
             while (odbierz_komunikat(g_msg_id, &cleanup_msg, MSG_TOURIST_EXIT, false)) {
                 Message reply;
                 reply.mtype = cleanup_msg.sender_pid;
@@ -363,9 +368,17 @@ int main(void) {
                 reply.data = 3; // Zakończone
                 reply.tourist_id = cleanup_msg.tourist_id;
                 wyslij_komunikat(g_msg_id, &reply);
+                exit_count++;
             }
-            
-            logger(LOG_WORKER2, "Symulacja zakończona");
+
+            // Zmniejsz licznik turystów na górze dla wszystkich obsłużonych
+            if (exit_count > 0) {
+                sem_opusc(g_sem_id, SEM_QUEUE);
+                g_shm->tourists_at_top -= exit_count;
+                sem_podnies(g_sem_id, SEM_QUEUE);
+            }
+
+            logger(LOG_WORKER2, "Symulacja zakończona (obsłużono %d wyjść)", exit_count);
             break;
         }
         
@@ -392,9 +405,7 @@ int main(void) {
                 reply.sender_pid = getpid();
                 reply.data = 2; // Dotarłeś na górę
                 reply.tourist_id = chair_id * 100 + i;
-                while (!wyslij_komunikat_nowait(g_msg_id, &reply)) {
-                    if (shutdown_flag) break;
-                }
+                wyslij_komunikat(g_msg_id, &reply);
                 if (shutdown_flag) break;
             }
         }
